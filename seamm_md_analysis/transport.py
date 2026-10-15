@@ -73,6 +73,25 @@ def _detrend(G, used):
     return g - g[:used].mean(axis=0), s
 
 
+def _usable_sigma(sigma):
+    """Whether errors can weight a fit: given, finite and all positive.
+
+    The spread over runs is zero for a single run, which would make a weighted
+    fit fail, so such errors are not used.
+    """
+    if sigma is None:
+        return False
+    sigma = np.asarray(sigma, dtype=float)
+    return sigma.size > 0 and bool(np.all(np.isfinite(sigma)) and np.all(sigma > 0))
+
+
+def _sigma_kwargs(sigma):
+    """The curve_fit arguments for weighting by ``sigma``, if it is usable."""
+    if _usable_sigma(sigma):
+        return {"sigma": sigma, "absolute_sigma": True}
+    return {}
+
+
 def windowed_displacement_products(Ga, Gb, m, n_origins):
     """Sum over time origins of the products of displacements.
 
@@ -181,8 +200,8 @@ def species_helfand_moments(v, species, m=None):
 
     For each molecule and direction, the square of the integral of its
     velocity over a window of k steps, averaged over n - m time origins, then
-    averaged over the molecules of the species. A fourth column holds the same
-    for the sum of the three velocity components.
+    averaged over the molecules of the species. A fourth column holds the total,
+    the sum over x, y and z.
 
     Parameters
     ----------
@@ -211,9 +230,9 @@ def species_helfand_moments(v, species, m=None):
     M_errs = []
     for molecules in species:
         vs = v[:, molecules, :]
-        series = np.concatenate((vs, vs.sum(axis=2, keepdims=True)), axis=2)
-        G = cumulative_trapezoid(series, axis=0, initial=0.0)
+        G = cumulative_trapezoid(vs, axis=0, initial=0.0)
         S = windowed_displacement_products(G, G, m, n_origins)
+        S = np.concatenate((S, S.sum(axis=2, keepdims=True)), axis=2)
         Ms.append(np.average(S, axis=1) / n_origins)
         M_errs.append(np.std(S, axis=1) / n_origins)
     return Ms, M_errs
@@ -307,7 +326,8 @@ def fit_slope(y, xs, sigma=None, start=0.1, end=0.9):
     xs : numpy.ndarray(n) or [float]
         The times.
     sigma : numpy.ndarray(n)
-        The standard error of y, to weight the fit (optional).
+        The standard error of y, to weight the fit (optional). Without it, or
+        if any value is zero or not finite, the fit is unweighted.
     start : float = 0.1
         The fraction of the curve to skip at the beginning.
     end : float = 0.9
@@ -321,9 +341,7 @@ def fit_slope(y, xs, sigma=None, start=0.1, end=0.9):
     n = len(y)
     i = int(n * start)
     j = int(n * end)
-    kwargs = {}
-    if sigma is not None:
-        kwargs = {"sigma": sigma[i:j], "absolute_sigma": True}
+    kwargs = _sigma_kwargs(None if sigma is None else sigma[i:j])
     popt, pcov, infodict, msg, ierr = curve_fit(
         axb, xs[i:j], y[i:j], full_output=True, **kwargs
     )
@@ -344,7 +362,8 @@ def fit_helfand_moment(y, xs, sigma=None, start=1, logger=logger):
     xs : numpy.ndarray(n) or [float]
         The times.
     sigma : numpy.ndarray(n)
-        The standard error of y, to weight the fit (optional).
+        The standard error of y, to weight the fit (optional). Without it, or
+        if any value is zero or not finite, the fit is unweighted.
     start : float = 1
         The time, in the units of xs, before which the curve is ignored.
 
@@ -360,9 +379,7 @@ def fit_helfand_moment(y, xs, sigma=None, start=1, logger=logger):
     if i > len(y):
         i = len(y) // 2
 
-    kwargs = {}
-    if sigma is not None:
-        kwargs = {"sigma": sigma[i:], "absolute_sigma": True}
+    kwargs = _sigma_kwargs(None if sigma is None else sigma[i:])
     popt, pcov, infodict, msg, ierr = curve_fit(
         axb, xs[i:], y[i:], full_output=True, **kwargs
     )
@@ -382,7 +399,10 @@ def fit_helfand_moment(y, xs, sigma=None, start=1, logger=logger):
 
 
 def helfand_slope(y, xs, sigma):
-    """The local slope of a Helfand moment, by differences two points apart.
+    """The local slope of a Helfand moment, by central differences.
+
+    The slope of a Helfand moment is the running Green–Kubo integral, so it is
+    zero at the origin.
 
     Parameters
     ----------
@@ -396,22 +416,24 @@ def helfand_slope(y, xs, sigma):
     Returns
     -------
     numpy.ndarray(n)
-        The slope; the first two points are zero.
+        The slope: zero at the first point, a central difference in between and
+        a backward difference at the last point.
     xs
         The times, unchanged.
     numpy.ndarray(n)
-        The error of the slope, taken as the sum of the two errors.
+        The error of the slope, from the sum of the errors of the two points.
     """
+    y = np.asarray(y, dtype=float)
+    sigma = np.asarray(sigma, dtype=float)
     n = len(y)
     dx = xs[1] - xs[0]
-    # The difference over points k and k+2 is stored at k+2, as in the
-    # original thermal_conductivity_step, to keep its results unchanged.
     slope = np.zeros_like(y)
-    slope[2:] = (y[2:] - y[0 : n - 2]) / (2 * dx)
+    slope[1 : n - 1] = (y[2:] - y[0 : n - 2]) / (2 * dx)
+    slope[n - 1] = (y[n - 1] - y[n - 2]) / dx
     new_sigma = np.zeros_like(y)
-    new_sigma[2:] = sigma[2:] + sigma[0 : n - 2]
-    new_sigma[0] = new_sigma[3]
-    new_sigma[1] = new_sigma[3]
+    new_sigma[1 : n - 1] = (sigma[2:] + sigma[0 : n - 2]) / (2 * dx)
+    new_sigma[n - 1] = (sigma[n - 1] + sigma[n - 2]) / dx
+    new_sigma[0] = new_sigma[1]
     return slope, xs, new_sigma
 
 
@@ -421,8 +443,14 @@ def fit_green_kubo_integral(y, xs, sigma=None):
     The plateau of the integral, a = sum of the amplitudes, is the transport
     coefficient. A single exponential a (1 - exp(-t / tau)) is fitted first
     over the initial rise; a second exponential is then added over tau / 2 to
-    20 tau, and kept unless it gives a negative value or one more than twice
-    the first.
+    20 tau. The second exponential is kept only if both amplitudes are
+    positive, the two time constants differ, the slower one is short enough
+    for the plateau to be reached within the fitted data (3 tau), and the
+    value is no more than twice that of the single exponential. Otherwise the
+    single exponential is used.
+
+    The standard error of the value includes the covariance of the two
+    amplitudes, which are strongly correlated.
 
     Parameters
     ----------
@@ -431,7 +459,9 @@ def fit_green_kubo_integral(y, xs, sigma=None):
     xs : numpy.ndarray(n) or [float]
         The times.
     sigma : numpy.ndarray(n)
-        The standard error of y (optional; unweighted without it).
+        The standard error of y (optional). Without it, or if any value is
+        zero or not finite (as for the spread of a single run), the fit is
+        unweighted and the errors come from the residuals.
 
     Returns
     -------
@@ -440,9 +470,9 @@ def fit_green_kubo_integral(y, xs, sigma=None):
         constants with their errors, and the fitted curve.
     """
     y = np.asarray(y, dtype=float)
-    if sigma is None:
-        sigma = np.ones_like(y)
-    sigma = np.asarray(sigma, dtype=float)
+    weighted = _usable_sigma(sigma)
+    if weighted:
+        sigma = np.asarray(sigma, dtype=float)
 
     dx = xs[1] - xs[0]
     width = max(1, int(0.4 / dx))  # 0.4 in the units of xs, normally ps
@@ -461,7 +491,11 @@ def fit_green_kubo_integral(y, xs, sigma=None):
     if 2 * npts > y.size:
         npts = y.size // 2
 
-    sigma0 = sigma + np.average(sigma[0 : y.size // 10])
+    if weighted:
+        sigma0 = sigma + np.average(sigma[0 : y.size // 10])
+        kwargs1 = {"sigma": sigma0[1:npts], "absolute_sigma": True}
+    else:
+        kwargs1 = {}
 
     # First fit with single exponential
     with warnings.catch_warnings():
@@ -472,9 +506,8 @@ def fit_green_kubo_integral(y, xs, sigma=None):
             xs[1:npts],
             y[1:npts],
             full_output=True,
-            sigma=sigma0[1:npts],
-            absolute_sigma=True,
             p0=[a_guess, tau_guess],
+            **kwargs1,
         )
 
     a1 = popt1[0]
@@ -498,9 +531,12 @@ def fit_green_kubo_integral(y, xs, sigma=None):
                 xs[i_min:i_max],
                 y[i_min:i_max],
                 full_output=True,
-                sigma=sigma[i_min:i_max],
-                absolute_sigma=True,
                 p0=[a1, tau1, 0.1 * a1, 5 * tau1],
+                **(
+                    {"sigma": sigma[i_min:i_max], "absolute_sigma": True}
+                    if weighted
+                    else {}
+                ),
             )
         err = np.sqrt(np.diag(pcov)).tolist()
         a = [popt[0], popt[2]]
@@ -508,8 +544,17 @@ def fit_green_kubo_integral(y, xs, sigma=None):
         tau = [popt[1], popt[3]]
         tau_err = [err[1], err[3]]
         value = a[0] + a[1]
-        value_err = a_err[0] + a_err[1]
-        if value < 0 or abs(value) > 2 * abs(a1):  # Shouldn't change this much!
+        value_err = float(np.sqrt(pcov[0, 0] + pcov[2, 2] + 2 * pcov[0, 2]))
+        t_end = xs[min(i_max, len(xs)) - 1]
+        if (
+            not np.all(np.isfinite(popt))
+            or not np.all(np.isfinite(pcov))
+            or min(a) <= 0
+            or min(tau) <= 0
+            or abs(tau[1] - tau[0]) < 0.1 * max(tau)  # the same exponential
+            or 3 * max(tau) > t_end  # no plateau within the data
+            or value > 2 * abs(a1)  # Shouldn't change this much!
+        ):
             a, a_err, tau, tau_err, value, value_err = single()
     except Exception:
         a, a_err, tau, tau_err, value, value_err = single()

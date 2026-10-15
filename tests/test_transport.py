@@ -31,10 +31,20 @@ def test_species_helfand_moments_match_loop(rng):
     for m in (None, 30):
         new, new_err = transport.species_helfand_moments(v, species, m=m)
         old, old_err = reference.diff_create_helfand_moments(v, species, m=m)
+        # x, y and z as before; the total is now their sum, not the moment of
+        # the summed velocities (which added the noisy cross terms)
         for a, b in zip(new, old):
-            np.testing.assert_allclose(a, b, rtol=1e-9, atol=1e-12 * abs(b).max())
+            b = b[:, :3]
+            np.testing.assert_allclose(
+                a[:, :3], b, rtol=1e-9, atol=1e-12 * abs(b).max()
+            )
+            np.testing.assert_allclose(a[:, 3], a[:, :3].sum(axis=1))
         for a, b in zip(new_err, old_err):
-            np.testing.assert_allclose(a, b, rtol=1e-8, atol=1e-11 * abs(b).max())
+            b = b[:, :3]
+            np.testing.assert_allclose(
+                a[:, :3], b, rtol=1e-8, atol=1e-11 * abs(b).max()
+            )
+            assert np.all(np.isfinite(a[:, 3])) and np.all(a[:, 3] >= 0)
 
 
 def test_msd_by_species_matches_loop(rng):
@@ -117,7 +127,7 @@ def test_green_kubo_ou_process(rng):
 
 
 def test_green_kubo_without_sigma(rng):
-    # Without sigma the fit is unweighted: the same as a uniform sigma
+    # Without sigma the fit is unweighted: the same value as a uniform sigma
     from seamm_md_analysis.correlate import tensor_correlation_functions
 
     dt, tau = 0.01, 0.5
@@ -130,6 +140,51 @@ def test_green_kubo_without_sigma(rng):
     uniform = transport.fit_green_kubo_integral(integral[0], ts, sigma=np.ones(m))
     assert fit.value == pytest.approx(uniform.value)
     assert np.isfinite(fit.stderr)
+    # The spread of a single run is zero: that is the same as no sigma
+    zero = transport.fit_green_kubo_integral(integral[0], ts, sigma=np.zeros(m))
+    assert zero.value == pytest.approx(fit.value)
+    assert zero.stderr == pytest.approx(fit.stderr)
+
+
+def _ou_integral(seed, n=100_000, m=1500, dt=0.01, tau=0.5):
+    """The running Green-Kubo integral of an OU series; the plateau is tau."""
+    from scipy.integrate import cumulative_trapezoid
+
+    from seamm_md_analysis.correlate import ccovf
+
+    J = _ou_process(np.random.default_rng(seed), n, dt, tau, 1.0)
+    integral = cumulative_trapezoid(ccovf(J, J)[:m], initial=0.0) * dt
+    return integral, list(np.arange(m) * dt)
+
+
+def test_green_kubo_rejects_unphysical_second_exponential():
+    # This series once gave a second exponential with a negative amplitude and
+    # a time constant of 46 ps, beyond the 15 ps of data, and a value of 0.018
+    integral, ts = _ou_integral(12345)
+    fit = transport.fit_green_kubo_integral(integral, ts)
+    assert fit.value == pytest.approx(0.5, rel=0.25)
+    assert min(fit.a) > 0
+    assert 3 * max(fit.tau) < ts[-1]
+
+
+def test_green_kubo_errors_are_sensible():
+    # With two nearly equal time constants the amplitudes are individually
+    # undetermined; the error of their sum must still be small
+    for seed in range(10):
+        integral, ts = _ou_integral(seed)
+        fit = transport.fit_green_kubo_integral(integral, ts)
+        assert 0.3 < fit.value < 0.7
+        assert 0 < fit.stderr < 0.2
+
+
+def test_fit_helfand_moment_with_zero_sigma():
+    # A single run has zero spread; the fit must not fail and return its guess
+    xs = list(np.arange(200) * 0.1)
+    y = 3.0 * np.array(xs) + 1.0
+    fit = transport.fit_helfand_moment(y, xs, sigma=np.zeros(200), start=1)
+    assert fit.slope == pytest.approx(3.0)
+    fit = transport.fit_slope(y, xs, sigma=np.zeros(200))
+    assert fit.slope == pytest.approx(3.0)
 
 
 def test_green_kubo_too_short():
@@ -138,13 +193,18 @@ def test_green_kubo_too_short():
 
 
 def test_helfand_slope():
+    # Central differences: the slope of t^2 is exactly 2t at the interior points
     xs = list(np.arange(10) * 0.5)
-    y = 4.0 * np.array(xs)
-    slope, x, err = transport.helfand_slope(y, xs, np.ones(10))
-    assert slope[0] == 0 and slope[1] == 0
-    np.testing.assert_allclose(slope[2:], 4.0)
+    t = np.array(xs)
+    slope, x, err = transport.helfand_slope(4.0 * t, xs, np.ones(10))
+    assert slope[0] == 0
+    np.testing.assert_allclose(slope[1:], 4.0)
     assert x is xs
-    np.testing.assert_allclose(err, 2.0)
+    # the error is in the units of the slope: (1 + 1) / (2 * 0.5)
+    np.testing.assert_allclose(err[:-1], 2.0)
+    np.testing.assert_allclose(err[-1], 4.0)
+    slope, _, _ = transport.helfand_slope(t**2, xs, np.ones(10))
+    np.testing.assert_allclose(slope[1:-1], 2 * t[1:-1])
 
 
 def test_yeh_hummer_correction():
