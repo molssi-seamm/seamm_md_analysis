@@ -503,3 +503,47 @@ class MDData:
                 convert_units=False,
             )
         return u
+
+
+#: The choices for which earlier MD runs an analysis reads
+md_run_sources = (
+    "the last MD run",
+    "the last MD run of each loop iteration",
+)
+
+
+def select_md_runs(records, source="the last MD run", name=None):
+    """Choose the MD runs an analysis reads from the records in ``_md_runs``.
+
+    Parameters
+    ----------
+    records : [dict]
+        The records MD steps added to ``_md_runs``, oldest first.
+    source : str
+        "the last MD run", or "the last MD run of each loop iteration": every run by
+        the same MD step as the last one, which in a loop are the runs of the
+        iterations, treated as independent replicas.
+    name : str = None
+        Only consider runs that sampled this observable or per-particle property,
+        e.g. "heat_flux" or "molecules/position".
+
+    Returns
+    -------
+    [dict]
+        The chosen records, oldest first; empty if there are none.
+    """
+    records = list(records or [])
+    if name is not None:
+        records = [
+            r
+            for r in records
+            if name in r.get("observables", {}) or name in r.get("particles", {})
+        ]
+    if len(records) == 0:
+        return []
+    last = records[-1]
+    if source == "the last MD run":
+        return [last]
+    if source == "the last MD run of each loop iteration":
+        return [r for r in records if r.get("step") == last.get("step")]
+    raise ValueError(f"Unknown source of MD runs: '{source}'")

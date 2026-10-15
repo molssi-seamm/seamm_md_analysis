@@ -161,3 +161,50 @@ Defects found on the way:
   one atom. It now checks the number of particles.
 * **Thermal Conductivity:** a missing ``state.json`` gave a ``NameError``; the
   sampling interval was taken as fs even when the file gave ps.
+
+Phase 3: requirements and analysing earlier MD
+==============================================
+
+Done on 2026-10-15.
+
+* **The library** gained ``requirements`` (:class:`~seamm_md_analysis.Need`,
+  :class:`~seamm_md_analysis.Requirements`, :class:`~seamm_md_analysis.Provides`,
+  ``check``), ``select_md_runs``, and ``step_support``, the code the analysis steps
+  share. The protocol is described in :ref:`analysis-steps`.
+* **seamm**: ``builder.validate`` calls each step's ``check_flowchart(preceding)``;
+  the editor validates before submitting. **seamm_exec**: ``run_flowchart`` validates
+  before running any step, except in an iteration of a parallel loop, which its
+  parent job checked. A failing check is logged, never reported, so a bug in a step
+  cannot stop every job.
+* **LAMMPS**: ``md_provides`` and ``request_sampling`` on NVE, NVT, NPT and Heat Flux
+  (``md_provides.py``); before running, the LAMMPS step calls ``check_configuration``
+  on the steps after it up to the next LAMMPS step, following the flowchart's edges
+  without calling ``next()``, which a Loop may override.
+* **Diffusivity and Thermal Conductivity**: the ``md source``, ``md files`` and
+  ``number of blocks`` parameters, both modes, automatic sampling in mode A, and the
+  dialogs hide what does not apply, including the sub-flowchart tab in mode B.
+
+Decisions taken while implementing:
+
+* **Mode B reads the last run that samples the first need**, not simply the last
+  run, both when checking the flowchart and when running. A LAMMPS step with an NVT
+  run sampling centres of mass followed by a Heat Flux run then feeds both
+  Diffusivity (the NVT run) and Thermal Conductivity (the Heat Flux run).
+* **A single run is divided into blocks** (5 by default) analyzed as independent runs
+  for the errors. Thermal Conductivity requires at least 2000 heat-flux samples per
+  block; Diffusivity at least 10 frames.
+* **Sources:** "the last MD run", "the last MD run of each loop iteration" (runs by
+  the same step, i.e. the iterations of a Loop), and files. "All runs of the last MD
+  step", for production split over several sub-steps, waits for the segments of
+  phase 8.
+* **Diffusivity's requirements:** positions of the molecules (or atoms, for monatomic
+  systems) at least every 1 ps, turned on at 100 fs; velocities at least every 20 fs,
+  turned on at 10 fs. Thermal Conductivity: the heat flux every two steps. Mode A
+  turns on what is missing in the last MD sub-step of the sub-flowchart and says so.
+* **Thermal Conductivity in mode B** uses the Green–Kubo approach only (the only one
+  implemented) at the temperature of the MD; the approach and temperature parameters
+  apply only when it runs its own MD.
+
+Found on the way: when the correlation window is shorter than the start of the
+Helfand-moment fit (at least 1 ps), Thermal Conductivity silently dropped the Helfand
+Moments rows; it now says why.
