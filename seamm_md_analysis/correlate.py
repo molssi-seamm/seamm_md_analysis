@@ -122,6 +122,44 @@ def tensor_correlation_functions(J, m=None):
     return ccf, integral
 
 
+def autocorrelation_functions(X, m=None, demean=True):
+    """The autocorrelation function of each series and its running integral.
+
+    This is the Green–Kubo input for independent series, such as the five
+    components of the shear stress used for the viscosity
+    (:func:`seamm_md_analysis.transport.shear_stress_components`).
+
+    Parameters
+    ----------
+    X : numpy.ndarray(k, n)
+        The k series, each of n samples.
+    m : int
+        The number of lags to keep; all of them by default.
+    demean : bool = True
+        Subtract the mean of each series first. When the true mean is known to be
+        zero, as for the shear stress of a fluid, do not: the sample mean of a
+        series of length T lowers every lag by about 2 sigma^2 tau / T, so the
+        running integral falls linearly and the transport coefficient is
+        underestimated.
+
+    Returns
+    -------
+    numpy.ndarray(k, m)
+        The autocorrelation functions, <X_i(t) X_i(0)>.
+    numpy.ndarray(k, m)
+        Their running integrals, in units of the sampling interval.
+    """
+    X = np.asarray(X, dtype=float)
+    if m is None:
+        m = X.shape[1]
+    acf = np.zeros((X.shape[0], m))
+    integral = np.zeros((X.shape[0], m))
+    for i, x in enumerate(X):
+        acf[i] = ccovf(x, x, demean=demean)[:m]
+        integral[i] = cumulative_trapezoid(acf[i], initial=0.0)
+    return acf, integral
+
+
 def moving_average(a, n):
     """The moving average of a series over a window of n points.
 

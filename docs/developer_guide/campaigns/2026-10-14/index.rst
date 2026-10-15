@@ -208,3 +208,41 @@ Decisions taken while implementing:
 Found on the way: when the correlation window is shorter than the start of the
 Helfand-moment fit (at least 1 ps), Thermal Conductivity silently dropped the Helfand
 Moments rows; it now says why.
+
+Phase 4: the viscosity
+======================
+
+Done on 2026-10-15.
+
+* **The library** gained ``shear_stress_components``, ``autocorrelation_functions``,
+  ``component_helfand_moments``, ``publish_viscosity`` / ``preceding_viscosity``
+  (the workspace variable ``_viscosity``) and ``plots.plot_components``.
+* **LAMMPS**: the NVE, NVT and NPT sub-steps sample the full pressure tensor ("Sample
+  the pressure tensor") instead of its three off-diagonal components. The parameters
+  ``shear stress*`` were renamed ``pressure tensor*``; ``NVE_Parameters`` translates
+  the old names when a flowchart is read (format 2.0 and 3.0), as NPT already did for
+  "keep orthorhombic". The sampled tensor is written to ``md.h5md`` as
+  ``pressure_tensor``, replacing the coarser one from the thermodynamic state, so
+  ``pressure_offdiagonal`` is no longer written.
+* **Viscosity** (new, ``viscosity_step``): Green-Kubo and Helfand moments of the five
+  shear components and their average, in both modes; needs ``pressure_tensor`` at
+  least every 5 fs and a periodic system. It publishes the Green-Kubo average for
+  later steps and stores it as ``viscosity#Green-Kubo#<model>``.
+* **Diffusivity**: "Viscosity from" chooses the preceding Viscosity step (the default)
+  or a given value for the Yeh-Hummer correction, which is now on by default and
+  skipped with a note when there is no viscosity. Older flowcharts, which always
+  give the viscosity, keep it.
+
+Decisions taken while implementing:
+
+* **The mean of the shear stress is not subtracted.** For a fluid it is zero, and
+  subtracting the sample mean of a block of length T lowers the correlation function
+  by about 2 sigma^2 tau / T at every lag. With synthetic stresses of known viscosity
+  (0.9 mPa s, 200 ps blocks) the Green-Kubo fit averaged 0.837 with the mean
+  subtracted and 0.878 without, over eight seeds.
+* **The average is fitted, not averaged.** The Green-Kubo and Helfand values of the
+  average are fits to the curve averaged over the five components, which is less
+  noisy than any one of them; its error comes from the spread of the fits to each
+  run or block.
+* **The Viscosity step resets its data at the start of each run**, so it gives the
+  right answer inside a loop. Thermal Conductivity does not, which is worth fixing.

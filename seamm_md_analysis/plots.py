@@ -15,6 +15,17 @@ tensor_labels = [
     ("yz", "rgb(0,255,255)", "rgba(0,255,255,0.1)"),
 ]
 
+#: Labels and colors of the five shear components used for the viscosity, in the
+#: order of :data:`seamm_md_analysis.transport.SHEAR_COMPONENTS`, and their average.
+shear_labels = [
+    ("xy", "rgb(127,127,0)", "rgba(127,127,0,0.1)"),
+    ("xz", "rgb(255,0,255)", "rgba(255,0,255,0.1)"),
+    ("yz", "rgb(0,255,255)", "rgba(0,255,255,0.1)"),
+    ("(xx-yy)/2", "red", "rgba(255,0,0,0.1)"),
+    ("(yy-zz)/2", "blue", "rgba(0,0,255,0.1)"),
+    ("", "black", "rgba(0,0,0,0.1)"),
+]
+
 #: Labels and colors of the x, y and z components and their total.
 vector_labels = [
     ("x", "red", "rgba(255,0,0,0.1)"),
@@ -132,6 +143,84 @@ def _kappa_hover(prefix=""):
         return f"{prefix}{label} = {fit['kappa']:.3f} ± {fit['stderr']:.3f} W/m/K"
 
     return hover
+
+
+def plot_components(
+    figure,
+    name,
+    rows,
+    ts,
+    trace_name,
+    ylabel,
+    yunits,
+    err=None,
+    fit=None,
+    labels=shear_labels,
+    symbol="",
+    fit_units=None,
+    fit_yunits=None,
+    _range=None,
+):
+    """Plot the components of a curve, such as running Green–Kubo integrals.
+
+    A general form of the heat-flux plots below, for any quantity and units.
+
+    Parameters
+    ----------
+    figure : seamm_util.Figure
+        The figure that contains the plots.
+    name : str
+        The name of the plot in the figure.
+    rows : numpy.ndarray(n_components, m)
+        The curves.
+    ts : [float]
+        The times, in ps.
+    trace_name : str
+        The name of the data traces, followed by the component label.
+    ylabel : str
+        The label of the y axis.
+    yunits : str
+        The units of the curves.
+    err : numpy.ndarray(n_components, m)
+        Their standard errors (optional).
+    fit : [{str: any}]
+        For each component, a dict with the fitted curve "xs" and "ys", and the
+        fitted "value" and its "stderr" for the hover text (optional).
+    labels : [(str, str, str)]
+        The label, line color and band color of each component.
+    symbol : str
+        The symbol of the fitted value in the hover text, e.g. "η".
+    fit_units : str
+        The units of the fitted value in the hover text; by default ``yunits``.
+    fit_yunits : str
+        The units of the fitted curves, if different from ``yunits``.
+    _range : [float]
+        The range of the time axis.
+    """
+    units = yunits if fit_units is None else fit_units
+
+    def hover(label, fit):
+        text = f"{symbol}{label} = {fit['value']:.4g}"
+        if fit.get("stderr") is not None:
+            text += f" ± {fit['stderr']:.2g}"
+        return f"{text} {units}"
+
+    plot, x_axis, y_axis = _new_plot(figure, name, "t (ps)", ylabel, _range=_range)
+    add_component_traces(
+        plot,
+        x_axis,
+        y_axis,
+        rows,
+        ts,
+        trace_name,
+        yunits,
+        err=err,
+        fit=fit,
+        hover=hover,
+        labels=labels,
+        fit_yunits=fit_yunits,
+    )
+    return plot
 
 
 def plot_correlation_functions(

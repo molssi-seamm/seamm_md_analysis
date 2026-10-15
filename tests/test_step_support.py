@@ -179,3 +179,30 @@ def test_check_mode_b_uses_the_run_that_samples_the_first_need():
     lammps = SimpleNamespace(title="LAMMPS", subflowchart=Flowchart(nvt, heat_flux))
     node = SimpleNamespace(title="Diffusivity")
     assert ss.check_md_flowchart(node, [lammps], needs, "the last MD run") == []
+
+
+class Workspace:
+    title = "Viscosity"
+    _id = ("3",)
+
+    def __init__(self):
+        self.variables = {}
+
+    def variable_exists(self, name):
+        return name in self.variables
+
+    def get_variable(self, name):
+        return self.variables[name]
+
+    def set_variable(self, name, value):
+        self.variables[name] = value
+
+
+def test_publish_and_read_viscosity():
+    node = Workspace()
+    assert ss.preceding_viscosity(node) is None
+    record = ss.publish_viscosity(node, 8.9e-4, stderr=2e-5, T=298.15)
+    assert record["value"] == pytest.approx(8.9e-4)
+    assert record["units"] == "Pa*s"
+    assert record["step"] == "Viscosity" and record["id"] == "3"
+    assert ss.preceding_viscosity(node) == record

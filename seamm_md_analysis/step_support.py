@@ -250,3 +250,59 @@ def md_inputs(node, P, name=None):
         what = "" if name is None else f" that sampled {name}"
         raise RuntimeError(f"'{node.title}': there is no earlier MD run{what}.")
     return [Path(r["path"]) for r in chosen]
+
+
+#: The workspace variable holding the result of the last Viscosity step
+viscosity_variable = "_viscosity"
+
+
+def publish_viscosity(node, value, stderr=None, T=None, method="Green-Kubo"):
+    """Record a viscosity for the steps after this one, such as Diffusivity.
+
+    Parameters
+    ----------
+    node : seamm.Node
+        The step that calculated it.
+    value : float
+        The shear viscosity, in Pa s.
+    stderr : float = None
+        Its standard error, in Pa s.
+    T : float = None
+        The temperature, in K.
+    method : str = "Green-Kubo"
+        How it was calculated.
+
+    Returns
+    -------
+    dict
+        The record, also stored in the workspace variable ``_viscosity``.
+    """
+    record = {
+        "value": float(value),
+        "stderr": None if stderr is None else float(stderr),
+        "units": "Pa*s",
+        "T": None if T is None else float(T),
+        "method": method,
+        "step": node.title,
+        "id": ".".join(str(i) for i in node._id),
+    }
+    node.set_variable(viscosity_variable, record)
+    return record
+
+
+def preceding_viscosity(node):
+    """The viscosity published by the last Viscosity step run, or None.
+
+    Parameters
+    ----------
+    node : seamm.Node
+        The step asking, for the workspace variables.
+
+    Returns
+    -------
+    dict or None
+        The record written by :func:`publish_viscosity`.
+    """
+    if not node.variable_exists(viscosity_variable):
+        return None
+    return node.get_variable(viscosity_variable)

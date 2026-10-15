@@ -62,3 +62,31 @@ def test_errors_and_moving_average():
     np.testing.assert_allclose(
         correlate.moving_average(np.arange(6.0), 3), [1.0, 2.0, 3.0, 4.0]
     )
+
+
+def test_autocorrelation_functions_match_tensor_diagonal():
+    from seamm_md_analysis.correlate import (
+        autocorrelation_functions,
+        tensor_correlation_functions,
+    )
+
+    rng = np.random.default_rng(7)
+    J = rng.normal(size=(3, 500))
+    J[:, 1:] += 0.6 * J[:, :-1]
+    acf, integral = autocorrelation_functions(J, m=100)
+    ccf, ccf_integral = tensor_correlation_functions(J, m=100)
+    assert acf.shape == (3, 100)
+    np.testing.assert_allclose(acf, ccf[:3])
+    np.testing.assert_allclose(integral, ccf_integral[:3])
+    full, _ = autocorrelation_functions(J[:2])
+    assert full.shape == (2, 500)
+
+
+def test_autocorrelation_functions_without_demeaning():
+    from seamm_md_analysis.correlate import autocorrelation_functions
+
+    X = np.array([[1.0, 1.0, 1.0, 1.0]])
+    acf, _ = autocorrelation_functions(X, demean=False)
+    np.testing.assert_allclose(acf, [[1.0, 1.0, 1.0, 1.0]])
+    acf, _ = autocorrelation_functions(X)
+    np.testing.assert_allclose(acf, [[0.0, 0.0, 0.0, 0.0]])

@@ -19,7 +19,11 @@ from . import (  # noqa: F401
     transport,
     units,
 )
-from .correlate import ccovf, tensor_correlation_functions  # noqa: F401
+from .correlate import (  # noqa: F401
+    autocorrelation_functions,
+    ccovf,
+    tensor_correlation_functions,
+)
 from .h5md import H5MDWriter, standard_observables  # noqa: F401
 from .io import (  # noqa: F401
     MDData,
@@ -46,14 +50,17 @@ from .stats import (  # noqa: F401
     statistical_inefficiency,
 )
 from .transport import (  # noqa: F401
+    SHEAR_COMPONENTS,
     GreenKuboFit,
     LinearFit,
     collective_helfand_moments,
+    component_helfand_moments,
     fit_green_kubo_integral,
     fit_helfand_moment,
     fit_slope,
     helfand_slope,
     msd_by_species,
+    shear_stress_components,
     species_helfand_moments,
     yeh_hummer_correction,
 )

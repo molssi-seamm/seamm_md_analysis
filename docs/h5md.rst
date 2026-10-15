@@ -118,7 +118,8 @@ shapes.
      - 3×3
      - ``atm``
      - The full symmetric tensor (the pressure, not the stress). Periodic systems
-       only.
+       only. When it is sampled on its own, often for the viscosity, it is written
+       at that rate rather than with the thermodynamic state.
    * - ``total_energy``, ``kinetic_energy``, ``potential_energy``
      - scalar
      - ``kcal mol-1``
