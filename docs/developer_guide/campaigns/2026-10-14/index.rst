@@ -66,8 +66,10 @@ Changes in behaviour
 
   - ``fit_slope`` with weights passed ``sigma[i:]`` with ``y[i:j]``, a shape
     error whenever the fit ended before the last point. No caller used weights.
-  - ``fit_green_kubo_integral`` failed without ``sigma``, and with a
-    ``NameError`` on very short series.
+  - ``fit_green_kubo_integral`` failed without ``sigma``, with a ``NameError``
+    on very short series, and when the sampling was coarser than 0.4 ps (a
+    zero-width moving average; this is what ended the 2025-11-19 argon demo
+    job, Job_003234).
   - ``read_dump_trajectory`` failed on a dump with a single timed frame.
   - The MSD trace had units Å instead of Å^2 in its metadata.
 

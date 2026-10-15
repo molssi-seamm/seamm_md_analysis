@@ -445,7 +445,7 @@ def fit_green_kubo_integral(y, xs, sigma=None):
     sigma = np.asarray(sigma, dtype=float)
 
     dx = xs[1] - xs[0]
-    width = int(0.4 / dx)
+    width = max(1, int(0.4 / dx))  # 0.4 in the units of xs, normally ps
     ma = moving_average(y, width)
 
     # Find the initial, steep rise. Ignore the first couple of points.

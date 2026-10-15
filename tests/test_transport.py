@@ -163,3 +163,18 @@ def test_collective_helfand_moments_large_mean(rng):
     new = transport.collective_helfand_moments(J, m=100)
     old = reference.tc_create_helfand_moments(J, m=100)
     np.testing.assert_allclose(new, old, rtol=1e-9)
+
+
+def test_green_kubo_coarse_sampling(rng):
+    # Sampling coarser than 0.4 ps used to give a zero-width moving average
+    dt, tau = 0.5, 5.0
+    J = _ou_process(rng, 20_000, dt, tau, 1.0)
+    from seamm_md_analysis.correlate import ccovf
+    from scipy.integrate import cumulative_trapezoid
+
+    m = 400
+    integral = cumulative_trapezoid(ccovf(J, J)[:m], initial=0.0) * dt
+    fit = transport.fit_green_kubo_integral(
+        integral, list(np.arange(m) * dt), sigma=np.full(m, 0.1)
+    )
+    assert np.isfinite(fit.value)
