@@ -28,6 +28,9 @@ GreenKuboFit = namedtuple("GreenKuboFit", "value stderr a a_err tau tau_err xs y
 #: The Yeh–Hummer constant for a cubic cell (Yeh and Hummer, 2004).
 YEH_HUMMER_XI = 2.837297
 
+#: The five independent components of the shear stress of an isotropic fluid.
+SHEAR_COMPONENTS = ("xy", "xz", "yz", "(xx-yy)/2", "(yy-zz)/2")
+
 # Columns of the arrays handed to one batch of FFTs, to bound the memory.
 _FFT_COLUMNS = 256
 
@@ -193,6 +196,83 @@ def collective_helfand_moments(J, m=None):
         Gb = Ga if a == b else G[b]
         M[i] = windowed_displacement_products(Ga, Gb, m, n_origins)
     return M / n_origins
+
+
+def component_helfand_moments(X, m=None, demean=True):
+    """The Helfand moment of each of several independent series.
+
+    .. math::
+
+        M_i(k) = \\left\\langle \\left( \\int_0^{k} X_i \\, dt \\right)^2
+                 \\right\\rangle
+
+    averaged over n - m time origins, in units of the sampling interval squared.
+    For the shear stress (:func:`shear_stress_components`) this gives the
+    Helfand moments of the viscosity.
+
+    Parameters
+    ----------
+    X : numpy.ndarray(k, n)
+        The k series, each of n samples.
+    m : int
+        The number of lags; by default min(n // 20, 10000).
+    demean : bool = True
+        Subtract the mean of each series first. A non-zero mean adds a term
+        growing as the square of the time, which is not part of the transport
+        coefficient. When the true mean is known to be zero, as for the shear
+        stress of a fluid, do not: subtracting the sample mean of a finite series
+        biases the moments low.
+
+    Returns
+    -------
+    numpy.ndarray(k, m)
+        The Helfand moments.
+    """
+    X = np.asarray(X, dtype=float)
+    if demean:
+        X = X - X.mean(axis=1, keepdims=True)
+    n = X.shape[1]
+    if m is None:
+        m = min(n // 20, 10000)
+    n_origins = n - m
+    G = cumulative_trapezoid(X, axis=1, initial=0.0).T
+    S = windowed_displacement_products(G, G, m, n_origins)
+    return S.T / n_origins
+
+
+def shear_stress_components(pressure_tensor):
+    """The five independent shear components of a pressure tensor.
+
+    For an isotropic fluid, Pxy, Pxz, Pyz, (Pxx - Pyy)/2 and (Pyy - Pzz)/2 all
+    have the same autocorrelation function, so each gives the shear viscosity by
+    Green–Kubo, and averaging the five improves the statistics over using only
+    the three off-diagonal components (Daivis and Evans, 1994). The order is that
+    of :data:`SHEAR_COMPONENTS`.
+
+    Parameters
+    ----------
+    pressure_tensor : numpy.ndarray(n, 3, 3)
+        The pressure tensor at each sample.
+
+    Returns
+    -------
+    numpy.ndarray(5, n)
+        The five components.
+    """
+    P = np.asarray(pressure_tensor, dtype=float)
+    if P.ndim != 3 or P.shape[1:] != (3, 3):
+        raise ValueError(
+            f"Expected a pressure tensor of shape (n, 3, 3), not {P.shape}"
+        )
+    return np.stack(
+        [
+            P[:, 0, 1],
+            P[:, 0, 2],
+            P[:, 1, 2],
+            (P[:, 0, 0] - P[:, 1, 1]) / 2,
+            (P[:, 1, 1] - P[:, 2, 2]) / 2,
+        ]
+    )
 
 
 def species_helfand_moments(v, species, m=None):

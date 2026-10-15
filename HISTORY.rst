@@ -1,6 +1,19 @@
 =======
 History
 =======
+2026.10.15.2 -- Functions for the viscosity
+    * ``shear_stress_components`` gives the five independent shear components of a
+      pressure tensor, Pxy, Pxz, Pyz, (Pxx-Pyy)/2 and (Pyy-Pzz)/2, which all give the
+      viscosity of an isotropic fluid.
+    * ``autocorrelation_functions`` and ``component_helfand_moments`` give the
+      Green-Kubo and Helfand inputs for independent series such as these. Both can
+      leave the mean in, for series whose true mean is zero: subtracting the mean of
+      a finite series biases the transport coefficient low.
+    * ``publish_viscosity`` and ``preceding_viscosity`` pass a viscosity from the
+      Viscosity step to later steps, such as Diffusivity, through the variable
+      ``_viscosity``.
+    * ``plots.plot_components`` plots curves of any quantity and units, by component.
+
 2026.10.15.1 -- What analyses need from the MD
     * Analysis steps and MD steps can say, before anything runs, what an analysis
       needs (``Requirements``, ``Need``) and what an MD run will sample (``Provides``),

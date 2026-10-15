@@ -238,3 +238,68 @@ def test_green_kubo_coarse_sampling(rng):
         integral, list(np.arange(m) * dt), sigma=np.full(m, 0.1)
     )
     assert np.isfinite(fit.value)
+
+
+def test_component_helfand_moments_match_collective(rng):
+    # Without demeaning, the diagonal of the collective moments
+    J = rng.normal(size=(3, 700)) + 0.3
+    J[:, 1:] += 0.5 * J[:, :-1]
+    for m in (None, 1, 50, 349):
+        new = transport.component_helfand_moments(J, m=m, demean=False)
+        old = transport.collective_helfand_moments(J, m=m)[:3]
+        np.testing.assert_allclose(new, old, rtol=1e-9, atol=1e-12 * abs(old).max())
+
+
+def test_component_helfand_moments_demean(rng):
+    # A constant offset does not change the demeaned moments
+    X = rng.normal(size=(5, 600))
+    a = transport.component_helfand_moments(X, m=40)
+    b = transport.component_helfand_moments(X + 7.0, m=40)
+    np.testing.assert_allclose(a, b, rtol=1e-9, atol=1e-12 * abs(a).max())
+
+
+def test_viscosity_like_ou_components(rng):
+    # Five independent components, each with a Green-Kubo integral of 1.0
+    from seamm_md_analysis.correlate import autocorrelation_functions
+
+    dt, tau = 0.01, 0.5
+    X = np.stack([_ou_process(rng, 300_000, dt, tau, np.sqrt(2.0)) for _ in range(5)])
+    m = 1000
+    acf, integral = autocorrelation_functions(X, m=m)
+    integral *= dt
+    ts = list(np.arange(m) * dt)
+    values = [transport.fit_green_kubo_integral(y, ts).value for y in integral]
+    assert np.mean(values) == pytest.approx(1.0, rel=0.1)
+    M = transport.component_helfand_moments(X, m=m) * dt**2
+    slope = transport.fit_helfand_moment(
+        M.mean(axis=0), ts, sigma=np.full(m, 1.0), start=3.0
+    )
+    assert slope.slope == pytest.approx(2.0, rel=0.1)
+
+
+def test_shear_stress_components():
+    P = np.array(
+        [
+            [[1.0, 2.0, 3.0], [2.0, 5.0, 6.0], [3.0, 6.0, 9.0]],
+            [[0.0, -1.0, 0.5], [-1.0, 2.0, 0.25], [0.5, 0.25, -2.0]],
+        ]
+    )
+    X = transport.shear_stress_components(P)
+    assert X.shape == (5, 2)
+    np.testing.assert_allclose(X[:, 0], [2.0, 3.0, 6.0, -2.0, -2.0])
+    np.testing.assert_allclose(X[:, 1], [-1.0, 0.5, 0.25, -1.0, 2.0])
+    assert len(transport.SHEAR_COMPONENTS) == 5
+    with pytest.raises(ValueError):
+        transport.shear_stress_components(np.zeros((4, 6)))
+
+
+def test_shear_components_of_isotropic_stress_agree(rng):
+    # A traceless symmetric tensor with Gaussian elements is isotropic, so the
+    # five components have the same variance (1/2 here).
+    n = 20_000
+    A = rng.normal(size=(n, 3, 3))
+    S = (A + A.transpose(0, 2, 1)) / 2
+    S -= np.trace(S, axis1=1, axis2=2)[:, None, None] * np.eye(3) / 3
+    X = transport.shear_stress_components(S)
+    var = X.var(axis=1)
+    assert var == pytest.approx(np.full(5, 0.5), rel=0.05)

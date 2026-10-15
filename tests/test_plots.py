@@ -100,3 +100,26 @@ def test_species_traces():
     plot = figure.add_plot("M")
     plots.add_helfand_trace(plot, "x", "y", "Li+", msd[:, :3], [0.0, 1.0, 2.0])
     assert [t["name"] for t in plot.traces] == ["Li+ Mx", "Li+ My", "Li+ Mz"]
+
+
+def test_plot_components_any_units():
+    figure = Figure()
+    rows = np.ones((5, 4))
+    fit = [{"xs": [0.1], "ys": [1.0], "value": 0.9, "stderr": None}] * 5
+    plot = plots.plot_components(
+        figure,
+        "GKI",
+        rows,
+        [0.0, 0.1, 0.2, 0.3],
+        "η",
+        "η (mPa*s)",
+        "mPa*s",
+        err=rows * 0.1,
+        fit=fit,
+        symbol="η",
+    )
+    assert plot.name == "GKI"
+    # fit, error band and data for each of the five components
+    assert len(plot.traces) == 15
+    hover = [t["hovertemplate"] for t in plot.traces if t.get("hovertemplate")]
+    assert hover[0] == "ηxy = 0.9 mPa*s"
