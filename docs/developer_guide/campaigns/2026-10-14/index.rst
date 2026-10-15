@@ -143,9 +143,13 @@ Decisions taken while implementing:
 * **The off-diagonal pressure** sampled for viscosity (``Pxy Pxz Pyz``) is written as
   ``pressure_offdiagonal`` (attribute ``components`` = "xy xz yz") until phase 4
   replaces it by the full ``pressure_tensor``.
-* The temperature used by Thermal Conductivity is the plain mean of the temperature
-  observable. The older ``state.json`` value excluded the equilibration detected by
-  pymbar; for an NVE run the two differ by a few hundredths of a kelvin.
+* **Thermal Conductivity averages the temperature over the same samples as the heat
+  flux:** the whole run. Before, the temperature came from ``state.json``, which drops
+  the equilibration period detected by pymbar and keeps only uncorrelated samples
+  (494 of 5,001 in an argon test), while the heat flux was used whole. The two were
+  thus taken over different parts of the run. For that argon NVE run the temperature
+  changed by 0.03 K, or 0.05% in the thermal conductivity. Dropping an equilibration
+  period, if wanted later, must cut the heat flux and the temperature at the same step.
 
 Defects found on the way:
 
