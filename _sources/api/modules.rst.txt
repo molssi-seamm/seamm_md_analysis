@@ -1,0 +1,7 @@
+seamm_md_analysis
+=================
+
+.. toctree::
+   :maxdepth: 4
+
+   seamm_md_analysis

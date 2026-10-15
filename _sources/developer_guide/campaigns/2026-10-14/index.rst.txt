@@ -1,0 +1,116 @@
+2026-10-14 MD analysis, phase 1: the shared library
+===================================================
+
+The campaign's design is in the SEAMM developer guide:
+`MD analysis: H5MD output, a shared library and analysis steps
+<https://molssi-seamm.github.io/developer_guide/campaigns/2026-10-14/index.html>`__.
+This package is its phase 1.
+
+Phase 1
+-------
+
+The code that ``diffusivity_step`` and ``thermal_conductivity_step`` had each
+copied and let drift is gathered here, and both steps import it, with no change
+for users.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - Here
+     - Was
+   * - ``stats.fmt_err``
+     - ``fmt_err`` in both steps. They differed in the decimals used when the
+       error is unusable (3 in Diffusivity, 2 in Thermal Conductivity): now the
+       ``fallback_decimals`` argument.
+   * - ``correlate.ccovf``, ``acf_err``, ``ccf_err``, ``moving_average``,
+       ``tensor_correlation_functions``
+     - ``thermal_conductivity_step.analysis``: ``statsmodels``' ``ccovf``,
+       ``acf_err``, ``ccf_err``, ``moving_average``,
+       ``create_correlation_functions``. ``ccovf`` uses the same definition
+       and scipy's FFT correlation, so ``statsmodels`` is no longer needed.
+   * - ``transport.collective_helfand_moments``
+     - ``create_helfand_moments`` in Thermal Conductivity.
+   * - ``transport.species_helfand_moments``, ``msd_by_species``
+     - ``create_helfand_moments`` and ``compute_msd`` in Diffusivity.
+   * - ``transport.fit_green_kubo_integral``, ``fit_helfand_moment``,
+       ``helfand_slope``
+     - The same in Thermal Conductivity (``get_helfand_slope``).
+   * - ``transport.fit_slope``
+     - The same in Diffusivity.
+   * - ``transport.yeh_hummer_correction``
+     - Inline in Diffusivity (twice).
+   * - ``plots``
+     - The plot functions of both steps, now one helper
+       (``add_component_traces``) with thin wrappers.
+   * - ``legacy.read_trajectory``, ``read_vector_trajectory``,
+       ``read_dump_trajectory``
+     - The pandas reader in Thermal Conductivity; the two readers in
+       Diffusivity.
+
+Changes in behaviour
+--------------------
+
+* **Speed.** The Helfand moments and MSDs are computed with FFTs. The old code
+  looped over every time origin in Python, which took O(n m) time. For a heat
+  flux of a million points with m = 10,000 that is about 2 minutes, against 0.4 s
+  now (this Mac). For the Helfand moments of 512 molecules over 1,001 frames it
+  was 3.3 s, against 0.09 s now. The results are the same to rounding: the tests
+  check this against the original loops, and on real LAMMPS output from earlier
+  jobs they agree to about 1e-15 relative.
+* **Precision.** A flux with a non-zero mean has a running integral that drifts
+  linearly. The straight line is removed before the FFTs and its contribution
+  added back exactly, so the rounding error does not grow with the length of
+  the series.
+* **Latent bugs fixed:**
+
+  - ``fit_slope`` with weights passed ``sigma[i:]`` with ``y[i:j]``, a shape
+    error whenever the fit ended before the last point. No caller used weights.
+  - ``fit_green_kubo_integral`` failed without ``sigma``, with a ``NameError``
+    on very short series, and when the sampling was coarser than 0.4 ps (a
+    zero-width moving average; this is what ended the 2025-11-19 argon demo
+    job, Job_003234).
+  - ``read_dump_trajectory`` failed on a dump with a single timed frame.
+  - The MSD trace had units Å instead of Å^2 in its metadata.
+
+* **Defects corrected** (Paul, 2026-10-14: fix the older problems in phase 1).
+  These change results:
+
+  - ``fit_green_kubo_integral`` accepted any second exponential whose plateau
+    was positive and less than twice the first. On an OU test series it kept
+    one with a negative amplitude and a time constant of 46 ps, beyond the 15 ps
+    of data, and gave 0.018 instead of about 0.5. The second exponential is now
+    kept only if both amplitudes are positive, the two time constants differ by
+    more than 10 %, and three times the slower one lies within the fitted data.
+  - Its error was the sum of the errors of the two amplitudes. When the two time
+    constants are nearly equal the amplitudes are individually undetermined and
+    strongly anticorrelated, so the error came out as large as 10^6 for a value
+    of 0.5. The error now includes their covariance.
+  - All the fits treated the errors as weights even when they were zero, as
+    they are for a single run (the spread over runs). Thermal Conductivity's
+    Helfand-moment fit then returned its starting guess, 1.00. A fit with
+    missing, zero or non-finite errors is now unweighted.
+  - ``helfand_slope`` stored the central difference over points k and k+2 at
+    k+2 instead of k+1, which shifted the curve by one sample, and its error was
+    the error of the moment, not divided by 2 dt. Both are corrected; the slope
+    at the origin is zero, as the running Green–Kubo integral is.
+  - The fourth column of ``species_helfand_moments``, the total, was the moment
+    of the summed velocity components, (vx + vy + vz)^2. Its cross terms
+    average to zero only for an isotropic system, and add noise in any case. It
+    is now the sum of the three moments, as for the MSD.
+
+Defects found and corrected in the steps at the same time:
+
+* **LAMMPS Heat Flux sub-step** (``lammps_step``). To remove each atom's average
+  stress, the callback passed the average stress, negated, as a virial to
+  ``fix external``. ``compute stress/atom`` multiplies a virial by -nktv2p
+  (-68,568 in real units), so the stress was changed by +68,568 times its
+  average. For argon this made the heat flux about 10^4 times too large and the
+  thermal conductivity about 4e7 W/m/K; it is now 0.1 W/m/K, as measured. For
+  molecular systems the correction reached neither stress compute, and the
+  convective term was counted twice (both ``heat/flux`` computes include it).
+* **Diffusivity.** The per-direction coefficients Dx, Dy and Dz used the 1/6
+  (MSD) or 1/3 (Helfand) of the total, so they were a third of the diffusion
+  coefficient, and they got a third of the Yeh–Hummer correction. They are now
+  D_alpha = slope / 2 (MSD) or slope (Helfand moments), and equal D for an
+  isotropic system.

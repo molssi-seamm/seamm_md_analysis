@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>seamm_md_analysis.transport &#8212; SEAMM MD Analysis  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/seamm_md_analysis/transport';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">SEAMM MD Analysis  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_guide/index.html">
+    Developer Documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_guide/index.html">
+    Developer Documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">seamm_md_analysis.transport</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for seamm_md_analysis.transport</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">"""Transport coefficients: Helfand moments, mean square displacements, and fits</span>
+<span class="sd">of Green–Kubo integrals and Helfand moments."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">k</span> <span class="k">as</span> <span class="n">k_B</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.fft</span><span class="w"> </span><span class="kn">import</span> <span class="n">irfft</span><span class="p">,</span> <span class="n">next_fast_len</span><span class="p">,</span> <span class="n">rfft</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumulative_trapezoid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizeWarning</span><span class="p">,</span> <span class="n">curve_fit</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.correlate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_PAIRS</span><span class="p">,</span> <span class="n">moving_average</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">#: A straight-line fit: the slope, its standard error, and the fitted curve.</span>
+<span class="n">LinearFit</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">"LinearFit"</span><span class="p">,</span> <span class="s2">"slope stderr xs ys"</span><span class="p">)</span>
+
+<span class="c1">#: A fit of a Green–Kubo integral by one or two rising exponentials.</span>
+<span class="n">GreenKuboFit</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">"GreenKuboFit"</span><span class="p">,</span> <span class="s2">"value stderr a a_err tau tau_err xs ys"</span><span class="p">)</span>
+
+<span class="c1">#: The Yeh–Hummer constant for a cubic cell (Yeh and Hummer, 2004).</span>
+<span class="n">YEH_HUMMER_XI</span> <span class="o">=</span> <span class="mf">2.837297</span>
+
+<span class="c1"># Columns of the arrays handed to one batch of FFTs, to bound the memory.</span>
+<span class="n">_FFT_COLUMNS</span> <span class="o">=</span> <span class="mi">256</span>
+
+
+<div class="viewcode-block" id="axb">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.axb">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">axb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A straight line, a * x + b."""</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span></div>
+
+
+
+<div class="viewcode-block" id="exp_1">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.exp_1">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">exp_1</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A single rising exponential, a * (1 - exp(-t / tau))."""</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="n">tau</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="exp_2">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.exp_2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">exp_2</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">tau1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">tau2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The sum of two rising exponentials."""</span>
+    <span class="k">return</span> <span class="n">a1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="n">tau1</span><span class="p">))</span> <span class="o">+</span> <span class="n">a2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="n">tau2</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_lagged_products</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""sum_{i &lt; n_origins} a[i + k] * b[i] for k = 0 .. m-1, along axis 0.</span>
+
+<span class="sd">    a and b are 2-D (time, columns); the FFTs are batched over the columns.</span>
+<span class="sd">    """</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">next_fast_len</span><span class="p">(</span><span class="n">n_origins</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">n_origins</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_FFT_COLUMNS</span><span class="p">):</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="n">_FFT_COLUMNS</span><span class="p">)</span>
+        <span class="n">fa</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span> <span class="n">n_origins</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="p">],</span> <span class="n">length</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">fb</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span><span class="n">b</span><span class="p">[:</span><span class="n">n_origins</span><span class="p">,</span> <span class="n">cols</span><span class="p">],</span> <span class="n">length</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[:,</span> <span class="n">cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span><span class="n">fa</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">fb</span><span class="p">),</span> <span class="n">length</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:</span><span class="n">m</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_detrend</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">used</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Split G (time, columns) into a straight line s * i plus a centred rest."""</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">used</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">used</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">G</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">used</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">G</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span> <span class="o">-</span> <span class="n">g</span><span class="p">[:</span><span class="n">used</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">s</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_usable_sigma</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether errors can weight a fit: given, finite and all positive.</span>
+
+<span class="sd">    The spread over runs is zero for a single run, which would make a weighted</span>
+<span class="sd">    fit fail, so such errors are not used.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sigma</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sigma</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sigma_kwargs</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The curve_fit arguments for weighting by ``sigma``, if it is usable."""</span>
+    <span class="k">if</span> <span class="n">_usable_sigma</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"sigma"</span><span class="p">:</span> <span class="n">sigma</span><span class="p">,</span> <span class="s2">"absolute_sigma"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="windowed_displacement_products">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.windowed_displacement_products">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">windowed_displacement_products</span><span class="p">(</span><span class="n">Ga</span><span class="p">,</span> <span class="n">Gb</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Sum over time origins of the products of displacements.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S(k) = \\sum_{i=0}^{N_0 - 1} (G_a[i+k] - G_a[i]) (G_b[i+k] - G_b[i])</span>
+
+<span class="sd">    for lags k = 0 .. m-1 and a fixed set of N_0 origins, computed with FFTs.</span>
+<span class="sd">    With G the running integral of a flux, S/N_0 is the Helfand moment.</span>
+
+<span class="sd">    Each series is split into a straight line and the rest before the FFTs,</span>
+<span class="sd">    and the line's contribution is added back exactly. A flux with a non-zero</span>
+<span class="sd">    mean has a running integral that drifts linearly, and without this the</span>
+<span class="sd">    rounding error would grow as the square of the length of the series.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ga, Gb : numpy.ndarray(n, ...)</span>
+<span class="sd">        The series, with time along the first axis. They may be the same array.</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The number of lags.</span>
+<span class="sd">    n_origins : int</span>
+<span class="sd">        The number of time origins, N_0; n_origins + m - 1 must not exceed n.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(m, ...)</span>
+<span class="sd">        S for each lag and column.</span>
+<span class="sd">    """</span>
+    <span class="n">same</span> <span class="o">=</span> <span class="n">Ga</span> <span class="ow">is</span> <span class="n">Gb</span>
+    <span class="n">Ga</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Ga</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">Ga</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">n_origins</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n_origins</span><span class="si">}</span><span class="s2"> origins and </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2"> lags need more than </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> points"</span><span class="p">)</span>
+    <span class="n">used</span> <span class="o">=</span> <span class="n">n_origins</span> <span class="o">+</span> <span class="n">m</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">ga</span><span class="p">,</span> <span class="n">sa</span> <span class="o">=</span> <span class="n">_detrend</span><span class="p">(</span><span class="n">Ga</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">used</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">same</span><span class="p">:</span>
+        <span class="n">gb</span><span class="p">,</span> <span class="n">sb</span> <span class="o">=</span> <span class="n">ga</span><span class="p">,</span> <span class="n">sa</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gb</span><span class="p">,</span> <span class="n">sb</span> <span class="o">=</span> <span class="n">_detrend</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Gb</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">used</span><span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">window_sums</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="c1"># sum_{i &lt; n_origins} x[i + k], for each lag k</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">cs</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="n">n_origins</span><span class="p">]</span> <span class="o">-</span> <span class="n">cs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="c1"># sum_i ga[i+k] gb[i+k] - ga[i+k] gb[i] - ga[i] gb[i+k] + ga[i] gb[i]</span>
+    <span class="n">s_same</span> <span class="o">=</span> <span class="n">window_sums</span><span class="p">(</span><span class="n">ga</span> <span class="o">*</span> <span class="n">gb</span><span class="p">)</span>
+    <span class="n">c_ab</span> <span class="o">=</span> <span class="n">_lagged_products</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+    <span class="n">c_ba</span> <span class="o">=</span> <span class="n">c_ab</span> <span class="k">if</span> <span class="n">same</span> <span class="k">else</span> <span class="n">_lagged_products</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">ga</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">s_same</span> <span class="o">-</span> <span class="n">c_ab</span> <span class="o">-</span> <span class="n">c_ba</span> <span class="o">+</span> <span class="n">s_same</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># The straight lines: displacements gain s * k</span>
+    <span class="n">kk</span> <span class="o">=</span> <span class="n">k</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">window_sums</span><span class="p">(</span><span class="n">ga</span><span class="p">)</span> <span class="o">-</span> <span class="n">ga</span><span class="p">[:</span><span class="n">n_origins</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">da</span> <span class="k">if</span> <span class="n">same</span> <span class="k">else</span> <span class="n">window_sums</span><span class="p">(</span><span class="n">gb</span><span class="p">)</span> <span class="o">-</span> <span class="n">gb</span><span class="p">[:</span><span class="n">n_origins</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">S</span> <span class="o">+=</span> <span class="n">kk</span> <span class="o">*</span> <span class="p">(</span><span class="n">sa</span> <span class="o">*</span> <span class="n">db</span> <span class="o">+</span> <span class="n">sb</span> <span class="o">*</span> <span class="n">da</span><span class="p">)</span> <span class="o">+</span> <span class="n">n_origins</span> <span class="o">*</span> <span class="n">sa</span> <span class="o">*</span> <span class="n">sb</span> <span class="o">*</span> <span class="n">kk</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># no displacement at lag 0</span>
+    <span class="k">return</span> <span class="n">S</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">m</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span></div>
+
+
+
+<div class="viewcode-block" id="collective_helfand_moments">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.collective_helfand_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collective_helfand_moments</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The Helfand moments of a collective vector flux, such as the heat flux.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        M_{ab}(k) = \\left\\langle \\int_0^{k} J_a \\, dt \\int_0^{k} J_b \\, dt</span>
+<span class="sd">                    \\right\\rangle</span>
+
+<span class="sd">    averaged over n - m time origins, in units of the sampling interval squared,</span>
+<span class="sd">    for the six components in :data:`seamm_md_analysis.correlate.TENSOR_COMPONENTS`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    J : numpy.ndarray(3, n)</span>
+<span class="sd">        The x, y and z components of the flux.</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The number of lags; by default min(n // 20, 10000).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(6, m)</span>
+<span class="sd">        The Helfand moments.</span>
+<span class="sd">    """</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">J</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">n_origins</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">cumulative_trapezoid</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_PAIRS</span><span class="p">):</span>
+        <span class="n">Ga</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+        <span class="n">Gb</span> <span class="o">=</span> <span class="n">Ga</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="k">else</span> <span class="n">G</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+        <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">Ga</span><span class="p">,</span> <span class="n">Gb</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">M</span> <span class="o">/</span> <span class="n">n_origins</span></div>
+
+
+
+<div class="viewcode-block" id="species_helfand_moments">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.species_helfand_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">species_helfand_moments</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Single-molecule Helfand moments from velocities, for each species.</span>
+
+<span class="sd">    For each molecule and direction, the square of the integral of its</span>
+<span class="sd">    velocity over a window of k steps, averaged over n - m time origins, then</span>
+<span class="sd">    averaged over the molecules of the species. A fourth column holds the total,</span>
+<span class="sd">    the sum over x, y and z.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : numpy.ndarray(n, n_molecules, 3)</span>
+<span class="sd">        The velocities at each step.</span>
+<span class="sd">    species : [[int]]</span>
+<span class="sd">        The indices of the molecules of each species.</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The number of lags; by default min(n // 2, 5000).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [numpy.ndarray(m, 4)]</span>
+<span class="sd">        The Helfand moments of each species, in units of velocity times the</span>
+<span class="sd">        sampling interval, squared.</span>
+<span class="sd">    [numpy.ndarray(m, 4)]</span>
+<span class="sd">        The standard deviation over the molecules.</span>
+<span class="sd">    """</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+    <span class="n">n_origins</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span>
+
+    <span class="n">Ms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">M_errs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">molecules</span> <span class="ow">in</span> <span class="n">species</span><span class="p">:</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">molecules</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">cumulative_trapezoid</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">Ms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_origins</span><span class="p">)</span>
+        <span class="n">M_errs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_origins</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Ms</span><span class="p">,</span> <span class="n">M_errs</span></div>
+
+
+
+<div class="viewcode-block" id="squared_displacement_sums">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.squared_displacement_sums">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">squared_displacement_sums</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Sum over all time origins of the squared displacement at each lag.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S(k) = \\sum_{i=0}^{n-1-k} (x[i+k] - x[i])^2</span>
+
+<span class="sd">    computed with FFTs for every column.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : numpy.ndarray(n, ...)</span>
+<span class="sd">        The positions, with time along the first axis.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(n, ...)</span>
+<span class="sd">        S for lags 0 .. n-1; divide by n - k for the mean square displacement.</span>
+<span class="sd">    """</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sq</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sq</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="c1"># sum_{i=0}^{n-1-k} x[i]^2 + sum_{i=k}^{n-1} x[i]^2</span>
+    <span class="n">squares</span> <span class="o">=</span> <span class="n">cs</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">cs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">squares</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_lagged_products</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)[:</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># no displacement at lag 0</span>
+    <span class="k">return</span> <span class="n">S</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="msd_by_species">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.msd_by_species">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">msd_by_species</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The mean square displacement of each species, averaged over molecules.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xyz : numpy.ndarray(n, n_molecules, 3)</span>
+<span class="sd">        The unwrapped positions at each step.</span>
+<span class="sd">    species : [[int]]</span>
+<span class="sd">        The indices of the molecules of each species.</span>
+<span class="sd">    average : bool = True</span>
+<span class="sd">        Add a fourth column with the total MSD (the sum over x, y and z).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [numpy.ndarray(n, 3 or 4)]</span>
+<span class="sd">        The MSD of each species.</span>
+<span class="sd">    [numpy.ndarray(n, 3 or 4)]</span>
+<span class="sd">        The standard deviation over the molecules.</span>
+<span class="sd">    """</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">squared_displacement_sums</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">msd</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">molecules</span> <span class="ow">in</span> <span class="n">species</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[:,</span> <span class="n">molecules</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)[:,</span> <span class="n">molecules</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="n">msd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span>
+        <span class="n">err</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span> <span class="o">/</span> <span class="n">norm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">msd</span><span class="p">,</span> <span class="n">err</span></div>
+
+
+
+<div class="viewcode-block" id="fit_slope">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.fit_slope">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_slope</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A straight-line fit to the part of a curve between two fractions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : numpy.ndarray(n)</span>
+<span class="sd">        The curve, for example an MSD or a Helfand moment.</span>
+<span class="sd">    xs : numpy.ndarray(n) or [float]</span>
+<span class="sd">        The times.</span>
+<span class="sd">    sigma : numpy.ndarray(n)</span>
+<span class="sd">        The standard error of y, to weight the fit (optional). Without it, or</span>
+<span class="sd">        if any value is zero or not finite, the fit is unweighted.</span>
+<span class="sd">    start : float = 0.1</span>
+<span class="sd">        The fraction of the curve to skip at the beginning.</span>
+<span class="sd">    end : float = 0.9</span>
+<span class="sd">        The fraction of the curve at which to stop.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    LinearFit</span>
+<span class="sd">        The slope, its standard error, and the fitted line over the range.</span>
+<span class="sd">    """</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">start</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">end</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">_sigma_kwargs</span><span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">sigma</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ierr</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+        <span class="n">axb</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">],</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">axb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">LinearFit</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">j</span><span class="p">],</span> <span class="n">ys</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fit_helfand_moment">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.fit_helfand_moment">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_helfand_moment</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A straight-line fit to a Helfand moment, from time ``start`` to the end.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : numpy.ndarray(n)</span>
+<span class="sd">        The Helfand moment.</span>
+<span class="sd">    xs : numpy.ndarray(n) or [float]</span>
+<span class="sd">        The times.</span>
+<span class="sd">    sigma : numpy.ndarray(n)</span>
+<span class="sd">        The standard error of y, to weight the fit (optional). Without it, or</span>
+<span class="sd">        if any value is zero or not finite, the fit is unweighted.</span>
+<span class="sd">    start : float = 1</span>
+<span class="sd">        The time, in the units of xs, before which the curve is ignored.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    LinearFit</span>
+<span class="sd">        The slope, its standard error, and the fitted line.</span>
+<span class="sd">    """</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># The curves bend near the origin, so ignore the first part</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span> <span class="o">/</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="n">_sigma_kwargs</span><span class="p">(</span><span class="kc">None</span> <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">sigma</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
+    <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ierr</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+        <span class="n">axb</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">popt</span><span class="si">=}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pcov</span><span class="si">=}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">infodict</span><span class="p">,</span> <span class="n">compact</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">msg</span><span class="si">=}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ierr</span><span class="si">=}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">slope</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="p">[</span><span class="n">axb</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:]]</span>
+    <span class="k">return</span> <span class="n">LinearFit</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span> <span class="n">ys</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="helfand_slope">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.helfand_slope">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">helfand_slope</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The local slope of a Helfand moment, by central differences.</span>
+
+<span class="sd">    The slope of a Helfand moment is the running Green–Kubo integral, so it is</span>
+<span class="sd">    zero at the origin.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : numpy.ndarray(n)</span>
+<span class="sd">        The Helfand moment.</span>
+<span class="sd">    xs : numpy.ndarray(n) or [float]</span>
+<span class="sd">        The times.</span>
+<span class="sd">    sigma : numpy.ndarray(n)</span>
+<span class="sd">        The standard error of y.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(n)</span>
+<span class="sd">        The slope: zero at the first point, a central difference in between and</span>
+<span class="sd">        a backward difference at the last point.</span>
+<span class="sd">    xs</span>
+<span class="sd">        The times, unchanged.</span>
+<span class="sd">    numpy.ndarray(n)</span>
+<span class="sd">        The error of the slope, from the sum of the errors of the two points.</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">slope</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">slope</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">dx</span>
+    <span class="n">new_sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">new_sigma</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">+</span> <span class="n">sigma</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">new_sigma</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">sigma</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">dx</span>
+    <span class="n">new_sigma</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_sigma</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">slope</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">new_sigma</span></div>
+
+
+
+<div class="viewcode-block" id="fit_green_kubo_integral">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.fit_green_kubo_integral">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_green_kubo_integral</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Fit a Green–Kubo running integral by one or two rising exponentials.</span>
+
+<span class="sd">    The plateau of the integral, a = sum of the amplitudes, is the transport</span>
+<span class="sd">    coefficient. A single exponential a (1 - exp(-t / tau)) is fitted first</span>
+<span class="sd">    over the initial rise; a second exponential is then added over tau / 2 to</span>
+<span class="sd">    20 tau. The second exponential is kept only if both amplitudes are</span>
+<span class="sd">    positive, the two time constants differ, the slower one is short enough</span>
+<span class="sd">    for the plateau to be reached within the fitted data (3 tau), and the</span>
+<span class="sd">    value is no more than twice that of the single exponential. Otherwise the</span>
+<span class="sd">    single exponential is used.</span>
+
+<span class="sd">    The standard error of the value includes the covariance of the two</span>
+<span class="sd">    amplitudes, which are strongly correlated.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : numpy.ndarray(n)</span>
+<span class="sd">        The running integral.</span>
+<span class="sd">    xs : numpy.ndarray(n) or [float]</span>
+<span class="sd">        The times.</span>
+<span class="sd">    sigma : numpy.ndarray(n)</span>
+<span class="sd">        The standard error of y (optional). Without it, or if any value is</span>
+<span class="sd">        zero or not finite (as for the spread of a single run), the fit is</span>
+<span class="sd">        unweighted and the errors come from the residuals.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    GreenKuboFit</span>
+<span class="sd">        The plateau value and its standard error, the amplitudes and time</span>
+<span class="sd">        constants with their errors, and the fitted curve.</span>
+<span class="sd">    """</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">weighted</span> <span class="o">=</span> <span class="n">_usable_sigma</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weighted</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.4</span> <span class="o">/</span> <span class="n">dx</span><span class="p">))</span>  <span class="c1"># 0.4 in the units of xs, normally ps</span>
+    <span class="n">ma</span> <span class="o">=</span> <span class="n">moving_average</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+    <span class="c1"># Find the initial, steep rise. Ignore the first couple of points.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ma</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Too few points to fit the Green–Kubo integral."</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ma</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ma</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.9</span> <span class="o">*</span> <span class="n">ma</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">width</span><span class="p">]:</span>
+            <span class="k">break</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">width</span>
+    <span class="n">tau_guess</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">npts</span><span class="p">]</span>
+    <span class="n">a_guess</span> <span class="o">=</span> <span class="n">ma</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">npts</span> <span class="o">*=</span> <span class="mi">20</span>
+    <span class="k">if</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">npts</span> <span class="o">&gt;</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">npts</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">weighted</span><span class="p">:</span>
+        <span class="n">sigma0</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">sigma</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">10</span><span class="p">])</span>
+        <span class="n">kwargs1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"sigma"</span><span class="p">:</span> <span class="n">sigma0</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">npts</span><span class="p">],</span> <span class="s2">"absolute_sigma"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kwargs1</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># First fit with single exponential</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">OptimizeWarning</span><span class="p">)</span>
+        <span class="n">popt1</span><span class="p">,</span> <span class="n">pcov1</span><span class="p">,</span> <span class="n">infodict1</span><span class="p">,</span> <span class="n">msg1</span><span class="p">,</span> <span class="n">ierr1</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+            <span class="n">exp_1</span><span class="p">,</span>
+            <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">npts</span><span class="p">],</span>
+            <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">npts</span><span class="p">],</span>
+            <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="n">a_guess</span><span class="p">,</span> <span class="n">tau_guess</span><span class="p">],</span>
+            <span class="o">**</span><span class="n">kwargs1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">a1</span> <span class="o">=</span> <span class="n">popt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tau1</span> <span class="o">=</span> <span class="n">popt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Keep the next fit to a "good" part of the data</span>
+    <span class="n">i_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tau1</span> <span class="o">/</span> <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># tau / 2</span>
+    <span class="n">i_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tau1</span> <span class="o">/</span> <span class="n">dx</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span>  <span class="c1"># 20 * tau1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">single</span><span class="p">():</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov1</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">popt1</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">popt1</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">err</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">popt1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># And add a second exponential</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">OptimizeWarning</span><span class="p">)</span>
+            <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span><span class="p">,</span> <span class="n">infodict</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">ierr</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span>
+                <span class="n">exp_2</span><span class="p">,</span>
+                <span class="n">xs</span><span class="p">[</span><span class="n">i_min</span><span class="p">:</span><span class="n">i_max</span><span class="p">],</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">i_min</span><span class="p">:</span><span class="n">i_max</span><span class="p">],</span>
+                <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="n">a1</span><span class="p">,</span> <span class="n">tau1</span><span class="p">,</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">a1</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">tau1</span><span class="p">],</span>
+                <span class="o">**</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">"sigma"</span><span class="p">:</span> <span class="n">sigma</span><span class="p">[</span><span class="n">i_min</span><span class="p">:</span><span class="n">i_max</span><span class="p">],</span> <span class="s2">"absolute_sigma"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+                    <span class="k">if</span> <span class="n">weighted</span>
+                    <span class="k">else</span> <span class="p">{}</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">popt</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="n">a_err</span> <span class="o">=</span> <span class="p">[</span><span class="n">err</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">err</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="p">[</span><span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">popt</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="n">tau_err</span> <span class="o">=</span> <span class="p">[</span><span class="n">err</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">err</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">value_err</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">pcov</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pcov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">i_max</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">popt</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">min</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">tau</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>  <span class="c1"># the same exponential</span>
+            <span class="ow">or</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">t_end</span>  <span class="c1"># no plateau within the data</span>
+            <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>  <span class="c1"># Shouldn't change this much!</span>
+        <span class="p">):</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">a_err</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">tau_err</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_err</span> <span class="o">=</span> <span class="n">single</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">a_err</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">tau_err</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_err</span> <span class="o">=</span> <span class="n">single</span><span class="p">()</span>
+
+    <span class="c1"># The fitted curve out to 20 times the longest time constant</span>
+    <span class="n">nf</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span>
+    <span class="k">if</span> <span class="n">nf</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">):</span>
+        <span class="n">nf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fy</span> <span class="o">=</span> <span class="p">[</span><span class="n">exp_1</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">nf</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fy</span> <span class="o">=</span> <span class="p">[</span><span class="n">exp_2</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tau</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tau</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">nf</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">GreenKuboFit</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value_err</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a_err</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">tau_err</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">nf</span><span class="p">],</span> <span class="n">fy</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="yeh_hummer_correction">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.yeh_hummer_correction">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">yeh_hummer_correction</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">viscosity</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The Yeh–Hummer finite-size correction to a diffusion constant.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \\Delta D = \\frac{\\xi k_B T}{6 \\pi \\eta L}</span>
+
+<span class="sd">    with xi = 2.837297 for a cubic cell. Add it to the diffusion constant</span>
+<span class="sd">    computed in the periodic cell.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    T : float</span>
+<span class="sd">        The temperature, in K.</span>
+<span class="sd">    L : float</span>
+<span class="sd">        The length of the cubic cell, in m.</span>
+<span class="sd">    viscosity : float</span>
+<span class="sd">        The shear viscosity, in Pa s.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        The correction, in m^2/s.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">YEH_HUMMER_XI</span> <span class="o">*</span> <span class="n">k_B</span> <span class="o">*</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">viscosity</span> <span class="o">*</span> <span class="n">L</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Paul Saxe. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.11.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

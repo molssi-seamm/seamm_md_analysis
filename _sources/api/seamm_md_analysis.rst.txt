@@ -1,0 +1,53 @@
+seamm\_md\_analysis package
+===========================
+
+Submodules
+----------
+
+seamm\_md\_analysis.correlate module
+------------------------------------
+
+.. automodule:: seamm_md_analysis.correlate
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.legacy module
+---------------------------------
+
+.. automodule:: seamm_md_analysis.legacy
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.plots module
+--------------------------------
+
+.. automodule:: seamm_md_analysis.plots
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.stats module
+--------------------------------
+
+.. automodule:: seamm_md_analysis.stats
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.transport module
+------------------------------------
+
+.. automodule:: seamm_md_analysis.transport
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: seamm_md_analysis
+   :members:
+   :show-inheritance:
+   :undoc-members:
