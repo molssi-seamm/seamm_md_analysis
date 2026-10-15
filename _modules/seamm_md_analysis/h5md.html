@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>seamm_md_analysis.h5md &#8212; SEAMM MD Analysis  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/seamm_md_analysis/h5md';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">SEAMM MD Analysis  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_guide/index.html">
+    Developer Documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../getting_started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_guide/index.html">
+    Developer Documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">seamm_md_analysis.h5md</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for seamm_md_analysis.h5md</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">"""Writing SEAMM's H5MD files.</span>
+
+<span class="sd">An MD step writes one H5MD file per run, ``md.h5md``, from its code's native</span>
+<span class="sd">output when the run ends. :class:`H5MDWriter` holds the layout, so that every MD</span>
+<span class="sd">step writes the same thing; the layout is described in the documentation</span>
+<span class="sd">("The H5MD file").</span>
+
+<span class="sd">The file is written as ``&lt;name&gt;.tmp`` and renamed when it is complete, so an</span>
+<span class="sd">interrupted conversion never leaves a damaged file under the real name.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">H5MD_VERSION</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">SEAMM_LAYOUT_VERSION</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1">#: The standard observable names and their shapes; MD steps map their output onto</span>
+<span class="c1">#: these, and analysis steps ask for them.</span>
+<span class="n">standard_observables</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"temperature"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"pressure"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"pressure_tensor"</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="s2">"total_energy"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"kinetic_energy"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"potential_energy"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"molecular_energy"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"pair_energy"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"volume"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"density"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"heat_flux"</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,),</span>
+    <span class="s2">"total_dipole"</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,),</span>
+    <span class="s2">"hbond_count"</span><span class="p">:</span> <span class="p">(),</span>
+    <span class="s2">"hbond_energy"</span><span class="p">:</span> <span class="p">(),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_attr</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Make a value storable as an HDF5 attribute."""</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">"biuf"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Appender</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Appends frames to a time-dependent H5MD element."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">compression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">compression</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"compression"</span><span class="p">:</span> <span class="s2">"gzip"</span><span class="p">,</span> <span class="s2">"shuffle"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="s2">"value"</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">chunks</span><span class="o">=</span><span class="n">chunks</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="s2">"step"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">1024</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"i8"</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+            <span class="s2">"time"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">1024</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Add one frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        step : int</span>
+<span class="sd">            The MD step.</span>
+<span class="sd">        time : float</span>
+<span class="sd">            The time, in the element's time unit.</span>
+<span class="sd">        value : array_like</span>
+<span class="sd">            The frame, with the element's shape.</span>
+<span class="sd">        """</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+
+
+<div class="viewcode-block" id="H5MDWriter">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">H5MDWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Write one MD run as a SEAMM H5MD file.</span>
+
+<span class="sd">    Use it as a context manager. The file is renamed to its final name only if the</span>
+<span class="sd">    block finishes without an exception; otherwise the temporary file is removed.</span>
+
+<span class="sd">    &gt;&gt;&gt; with H5MDWriter("md.h5md", creator="SEAMM lammps_step", version="1") as w:</span>
+<span class="sd">    ...     w.particles(ids=..., species=..., masses=..., cell=..., periodic=True)</span>
+<span class="sd">    ...     w.observable("temperature", steps, times, T, "K", "fs")</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or pathlib.Path</span>
+<span class="sd">        The final name of the file.</span>
+<span class="sd">    creator : str</span>
+<span class="sd">        The program writing the file, e.g. "SEAMM lammps_step".</span>
+<span class="sd">    version : str</span>
+<span class="sd">        Its version.</span>
+<span class="sd">    author : str = None</span>
+<span class="sd">        The user, by default from the environment.</span>
+<span class="sd">    compress_particles : bool = False</span>
+<span class="sd">        Compress positions, velocities and forces with gzip. It gains little on</span>
+<span class="sd">        coordinates, so it is off by default.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="s2">"SEAMM"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compress_particles</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmp_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">".tmp"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compress_particles</span> <span class="o">=</span> <span class="n">compress_particles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">author</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">author</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"USER"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"USERNAME"</span><span class="p">,</span> <span class="s2">"unknown"</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">libver</span><span class="o">=</span><span class="p">(</span><span class="s2">"earliest"</span><span class="p">,</span> <span class="s2">"v110"</span><span class="p">))</span>
+        <span class="n">h5md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"h5md"</span><span class="p">)</span>
+        <span class="n">h5md</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">H5MD_VERSION</span><span class="p">)</span>
+        <span class="n">h5md</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"author"</span><span class="p">)</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">author</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">h5md</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"creator"</span><span class="p">)</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">=</span> <span class="n">creator</span>
+        <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">h5md</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"modules"</span><span class="p">)</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"units"</span><span class="p">)</span>
+        <span class="n">units</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">units</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"system"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"SI"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"parameters/seamm"</span><span class="p">)</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span>
+            <span class="s2">"layout_version"</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">SEAMM_LAYOUT_VERSION</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s2">"parameters/seamm"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"written"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="H5MDWriter.close">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Finish the file and give it its final name."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_fixed_cells</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="H5MDWriter.abort">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.abort">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">abort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Discard the file."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_fixed_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Write a box that does not change as time-dependent edges.</span>
+
+<span class="sd">        MDAnalysis reads the edges frame by frame, so a fixed box is repeated for</span>
+<span class="sd">        each frame of the positions, or written once at step 0 if there are none.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="sa">f</span><span class="s2">"particles/</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"position"</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+                <span class="n">steps</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"position/step"</span><span class="p">][()]</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"position/time"</span><span class="p">][()]</span>
+                <span class="n">time_unit</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"position/time"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"i8"</span><span class="p">)</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">time_unit</span> <span class="o">=</span> <span class="s2">"fs"</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"box"</span><span class="p">]</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"edges"</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                <span class="s2">"value"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"step"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
+            <span class="n">edges</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">times</span><span class="p">)</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># The particles</span>
+
+<div class="viewcode-block" id="H5MDWriter.particles">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.particles">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">particles</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">group</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+        <span class="n">ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">species</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">masses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">charges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">periodic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">length_unit</span><span class="o">=</span><span class="s2">"Angstrom"</span><span class="p">,</span>
+        <span class="n">mass_unit</span><span class="o">=</span><span class="s2">"amu"</span><span class="p">,</span>
+        <span class="n">charge_unit</span><span class="o">=</span><span class="s2">"e"</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Describe a group of particles and its box.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        group : str = "all"</span>
+<span class="sd">            The particle group: "all" for the atoms, "molecules" for the centres of</span>
+<span class="sd">            mass of the molecules.</span>
+<span class="sd">        ids : array_like of int</span>
+<span class="sd">            The SEAMM ids of the atoms, or the indices of the molecules.</span>
+<span class="sd">        species : array_like of int = None</span>
+<span class="sd">            The atomic numbers.</span>
+<span class="sd">        masses : array_like of float = None</span>
+<span class="sd">            The masses.</span>
+<span class="sd">        charges : array_like of float = None</span>
+<span class="sd">            The charges, omitted when the model has none (MLFFs).</span>
+<span class="sd">        cell : 3×3 array_like = None</span>
+<span class="sd">            The cell vectors as rows, for a box that does not change. It is written</span>
+<span class="sd">            for each frame of the positions when the file is closed, since</span>
+<span class="sd">            MDAnalysis reads the box frame by frame. Leave it out for a</span>
+<span class="sd">            non-periodic system, or when the box changes (see</span>
+<span class="sd">            :meth:`box_appender`).</span>
+<span class="sd">        periodic : bool = True</span>
+<span class="sd">            Whether the system is periodic. A non-periodic box has no edges,</span>
+<span class="sd">            because MDAnalysis treats any box with edges as periodic.</span>
+<span class="sd">        length_unit, mass_unit, charge_unit : str</span>
+<span class="sd">            The units, in H5MD syntax.</span>
+<span class="sd">        """</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="sa">f</span><span class="s2">"particles/</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"box"</span><span class="p">)</span>
+        <span class="n">box</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"dimension"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">boundary</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">"periodic"</span> <span class="k">if</span> <span class="n">periodic</span> <span class="k">else</span> <span class="sa">b</span><span class="s2">"none"</span>
+        <span class="n">box</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"boundary"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">boundary</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">periodic</span> <span class="ow">and</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Written when the file is closed, once the frames are known</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span><span class="p">),</span> <span class="n">length_unit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"i8"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">species</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"species"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">species</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"i4"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">masses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"mass"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span><span class="p">))</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass_unit</span>
+        <span class="k">if</span> <span class="n">charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"charge"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">charges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span><span class="p">))</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">charge_unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s2">"parameters/seamm"</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"periodic"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">periodic</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span></div>
+
+
+<div class="viewcode-block" id="H5MDWriter.box_appender">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.box_appender">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">box_appender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span> <span class="n">length_unit</span><span class="o">=</span><span class="s2">"Angstrom"</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="s2">"fs"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""An appender for a box that changes with time, as in NPT.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            Call ``append(step, time, cell)`` for each frame, with the cell</span>
+<span class="sd">            vectors as the rows of a 3×3 array.</span>
+<span class="sd">        """</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="sa">f</span><span class="s2">"particles/</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">/box"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_cells</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"edges"</span> <span class="ow">in</span> <span class="n">box</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">box</span><span class="p">[</span><span class="s2">"edges"</span><span class="p">]</span>
+        <span class="n">appender</span> <span class="o">=</span> <span class="n">_Appender</span><span class="p">(</span><span class="n">box</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">"edges"</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"f8"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">appender</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">length_unit</span>
+        <span class="n">appender</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_unit</span>
+        <span class="k">return</span> <span class="n">appender</span></div>
+
+
+<div class="viewcode-block" id="H5MDWriter.particle_appender">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.particle_appender">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">particle_appender</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">n_particles</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">,</span>
+        <span class="n">time_unit</span><span class="o">=</span><span class="s2">"fs"</span><span class="p">,</span>
+        <span class="n">group</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""An appender for a per-particle property, frame by frame.</span>
+
+<span class="sd">        Positions, velocities and forces are written as float32, chunked by</span>
+<span class="sd">        frame, so a long trajectory is streamed rather than held in memory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            "position", "velocity" or "force".</span>
+<span class="sd">        n_particles : int</span>
+<span class="sd">            The number of particles in the group.</span>
+<span class="sd">        unit, time_unit : str</span>
+<span class="sd">            The units, in H5MD syntax.</span>
+<span class="sd">        group : str = "all"</span>
+<span class="sd">            The particle group.</span>
+<span class="sd">        attrs : dict = None</span>
+<span class="sd">            Extra attributes for the value dataset, e.g. {"seamm_unwrapped": 1}.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        object</span>
+<span class="sd">            Call ``append(step, time, frame)`` with an n_particles × 3 array.</span>
+<span class="sd">        """</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="sa">f</span><span class="s2">"particles/</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">appender</span> <span class="o">=</span> <span class="n">_Appender</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="p">(</span><span class="n">n_particles</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"f4"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compress_particles</span><span class="p">)</span>
+        <span class="n">appender</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="n">appender</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_unit</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="n">attrs</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">appender</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_attr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">appender</span></div>
+
+
+    <span class="c1"># The time series</span>
+
+<div class="viewcode-block" id="H5MDWriter.observable">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.observable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">observable</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">steps</span><span class="p">,</span>
+        <span class="n">times</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">,</span>
+        <span class="n">time_unit</span><span class="o">=</span><span class="s2">"fs"</span><span class="p">,</span>
+        <span class="n">average_window</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Write a time series under ``observables/``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name, a standard one (see :data:`standard_observables`) or, for the</span>
+<span class="sd">            user's extra properties, "user/&lt;name&gt;".</span>
+<span class="sd">        steps : array_like of int</span>
+<span class="sd">            The MD steps.</span>
+<span class="sd">        times : array_like of float</span>
+<span class="sd">            The times, in ``time_unit``.</span>
+<span class="sd">        values : array_like</span>
+<span class="sd">            The values, with the first index running over the samples.</span>
+<span class="sd">        unit, time_unit : str</span>
+<span class="sd">            The units, in H5MD syntax, as the code produced them.</span>
+<span class="sd">        average_window : int = 1</span>
+<span class="sd">            The number of MD steps each value averages over; 1 for instantaneous</span>
+<span class="sd">            values.</span>
+<span class="sd">        kind : str = None</span>
+<span class="sd">            "correlation" for a correlation function accumulated by the code.</span>
+<span class="sd">        attrs : dict = None</span>
+<span class="sd">            Extra attributes for the value dataset.</span>
+<span class="sd">        """</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"i8"</span><span class="p">)</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"f8"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">steps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">steps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Observable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> values, </span><span class="si">{</span><span class="n">steps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"steps and </span><span class="si">{</span><span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> times."</span>
+            <span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="s2">"observables"</span><span class="p">)</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"compression"</span><span class="p">:</span> <span class="s2">"gzip"</span><span class="p">,</span> <span class="s2">"shuffle"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"seamm_average_window"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">average_window</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"seamm_kind"</span><span class="p">]</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="n">attrs</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_attr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"step"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"unit"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_unit</span>
+        <span class="k">return</span> <span class="n">g</span></div>
+
+
+    <span class="c1"># The parameters and provenance</span>
+
+<div class="viewcode-block" id="H5MDWriter.parameters">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">"parameters"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Store the run's parameters as attributes, nesting dicts as groups.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : dict</span>
+<span class="sd">            E.g. {"ensemble": "NVT", "temperature": 298.15, "temperature_unit":</span>
+<span class="sd">            "K", "timestep": 1.0, ...}.</span>
+<span class="sd">        """</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_attr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="H5MDWriter.provenance">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.h5md.H5MDWriter.provenance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">provenance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Store SEAMM's provenance under ``parameters/seamm``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : dict</span>
+<span class="sd">            The job and step ids, configuration, model chemistry, code and its</span>
+<span class="sd">            version, package versions, hashes of model files, ...</span>
+<span class="sd">        segments : [dict] = None</span>
+<span class="sd">            One dict per segment of the run, with "first_step", "last_step",</span>
+<span class="sd">            "wall_time" (s) and "node".</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s2">"parameters/seamm"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="s2">"parameters/seamm/segments"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="p">(</span><span class="s2">"first_step"</span><span class="p">,</span> <span class="s2">"i8"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"last_step"</span><span class="p">,</span> <span class="s2">"i8"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"wall_time"</span><span class="p">,</span> <span class="s2">"f8"</span><span class="p">),</span>
+            <span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">]</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"node"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">]</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"node"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">h5py</span><span class="o">.</span><span class="n">string_dtype</span><span class="p">()))</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Paul Saxe. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.11.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

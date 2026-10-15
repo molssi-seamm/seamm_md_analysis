@@ -143,6 +143,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api.html">
     API Documentation
   </a>
@@ -243,6 +250,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api.html">
     API Documentation
   </a>
@@ -300,6 +314,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Campaigns</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">2026-10-14 MD analysis, phase 1: the shared library</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -499,6 +514,53 @@ isotropic system.</p></li>
 </ul>
 </section>
 </section>
+<section id="phase-2-h5md">
+<h1>Phase 2: H5MD<a class="headerlink" href="#phase-2-h5md" title="Link to this heading">#</a></h1>
+<p>Done on 2026-10-15, following the design (“The data contract” and “Non-periodic
+systems” in the plan).</p>
+<ul class="simple">
+<li><p><strong>The library</strong> gained <code class="docutils literal notranslate"><span class="pre">h5md</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">H5MDWriter</span></code>), <code class="docutils literal notranslate"><span class="pre">io</span></code>
+(<code class="xref py py-func docutils literal notranslate"><span class="pre">open_md()</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">MDData</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeries</span></code>) and <code class="docutils literal notranslate"><span class="pre">units</span></code> (H5MD unit strings and
+pint), and streaming readers for LAMMPS dumps and vector trajectories. The layout
+is specified in <a class="reference internal" href="../../../h5md.html#h5md-layout"><span class="std std-ref">The H5MD file</span></a>.</p></li>
+<li><p><strong>The LAMMPS step</strong> writes <code class="docutils literal notranslate"><span class="pre">md.h5md</span></code> at the end of each NVE, NVT, NPT and Heat
+Flux sub-step (<code class="docutils literal notranslate"><span class="pre">lammps_step/md_h5md.py</span></code>) and appends the run to <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>.
+The native files are kept.</p></li>
+<li><p><strong>Diffusivity and Thermal Conductivity</strong> read <code class="docutils literal notranslate"><span class="pre">md.h5md</span></code> and fall back to the
+text files of older runs. Both stop before the MD for a non-periodic system.</p></li>
+</ul>
+<p>Decisions taken while implementing:</p>
+<ul class="simple">
+<li><p><strong>A fixed box is written as time-dependent edges</strong>, repeated for each frame of
+the positions. MDAnalysis reads <code class="docutils literal notranslate"><span class="pre">box/edges/value[frame]</span></code> and fails on the fixed
+form that H5MD also allows.</p></li>
+<li><p><strong>When both atomic positions and a trajectory are sampled</strong>, the atomic positions
+(and velocities) go into <code class="docutils literal notranslate"><span class="pre">particles/all</span></code>, and the trajectory into its own group,
+<code class="docutils literal notranslate"><span class="pre">particles/trajectory</span></code>. MDAnalysis reads the first group alphabetically, “all”.</p></li>
+<li><p><strong>The off-diagonal pressure</strong> sampled for viscosity (<code class="docutils literal notranslate"><span class="pre">Pxy</span> <span class="pre">Pxz</span> <span class="pre">Pyz</span></code>) is written as
+<code class="docutils literal notranslate"><span class="pre">pressure_offdiagonal</span></code> (attribute <code class="docutils literal notranslate"><span class="pre">components</span></code> = “xy xz yz”) until phase 4
+replaces it by the full <code class="docutils literal notranslate"><span class="pre">pressure_tensor</span></code>.</p></li>
+<li><p><strong>Thermal Conductivity averages the temperature over the same samples as the heat
+flux:</strong> the whole run. Before, the temperature came from <code class="docutils literal notranslate"><span class="pre">state.json</span></code>, which drops
+the equilibration period detected by pymbar and keeps only uncorrelated samples
+(494 of 5,001 in an argon test), while the heat flux was used whole. The two were
+thus taken over different parts of the run. For that argon NVE run the temperature
+changed by 0.03 K, or 0.05% in the thermal conductivity. Dropping an equilibration
+period, if wanted later, must cut the heat flux and the temperature at the same step.</p></li>
+</ul>
+<p>Defects found on the way:</p>
+<ul class="simple">
+<li><p><strong>LAMMPS, non-periodic systems:</strong> sampling the trajectory of a molecule failed
+(“Variable name sxx … does not exist”), since the stress columns were added
+regardless of periodicity. The pressure was reported though meaningless.</p></li>
+<li><p><strong>Diffusivity:</strong> without centre-of-mass data it used the atomic positions or
+velocities with the molecules’ indices, which is wrong unless every molecule is
+one atom. It now checks the number of particles.</p></li>
+<li><p><strong>Thermal Conductivity:</strong> a missing <code class="docutils literal notranslate"><span class="pre">state.json</span></code> gave a <code class="docutils literal notranslate"><span class="pre">NameError</span></code>; the
+sampling interval was taken as fs even when the file gave ps.</p></li>
+</ul>
+</section>
 
 
                 </article>
@@ -538,9 +600,14 @@ isotropic system.</p></li>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">2026-10-14 MD analysis, phase 1: the shared library</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-1">Phase 1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changes-in-behaviour">Changes in behaviour</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-2-h5md">Phase 2: H5MD</a></li>
+</ul>
+
   </nav></div>
 
   <div class="sidebar-secondary-item">

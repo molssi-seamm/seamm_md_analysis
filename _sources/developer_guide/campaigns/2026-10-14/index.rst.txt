@@ -114,3 +114,50 @@ Defects found and corrected in the steps at the same time:
   coefficient, and they got a third of the Yeh–Hummer correction. They are now
   D_alpha = slope / 2 (MSD) or slope (Helfand moments), and equal D for an
   isotropic system.
+
+Phase 2: H5MD
+=============
+
+Done on 2026-10-15, following the design ("The data contract" and "Non-periodic
+systems" in the plan).
+
+* **The library** gained ``h5md`` (:class:`~seamm_md_analysis.H5MDWriter`), ``io``
+  (:func:`~seamm_md_analysis.open_md`, :class:`~seamm_md_analysis.MDData`,
+  :class:`~seamm_md_analysis.TimeSeries`) and ``units`` (H5MD unit strings and
+  pint), and streaming readers for LAMMPS dumps and vector trajectories. The layout
+  is specified in :ref:`h5md-layout`.
+* **The LAMMPS step** writes ``md.h5md`` at the end of each NVE, NVT, NPT and Heat
+  Flux sub-step (``lammps_step/md_h5md.py``) and appends the run to ``_md_runs``.
+  The native files are kept.
+* **Diffusivity and Thermal Conductivity** read ``md.h5md`` and fall back to the
+  text files of older runs. Both stop before the MD for a non-periodic system.
+
+Decisions taken while implementing:
+
+* **A fixed box is written as time-dependent edges**, repeated for each frame of
+  the positions. MDAnalysis reads ``box/edges/value[frame]`` and fails on the fixed
+  form that H5MD also allows.
+* **When both atomic positions and a trajectory are sampled**, the atomic positions
+  (and velocities) go into ``particles/all``, and the trajectory into its own group,
+  ``particles/trajectory``. MDAnalysis reads the first group alphabetically, "all".
+* **The off-diagonal pressure** sampled for viscosity (``Pxy Pxz Pyz``) is written as
+  ``pressure_offdiagonal`` (attribute ``components`` = "xy xz yz") until phase 4
+  replaces it by the full ``pressure_tensor``.
+* **Thermal Conductivity averages the temperature over the same samples as the heat
+  flux:** the whole run. Before, the temperature came from ``state.json``, which drops
+  the equilibration period detected by pymbar and keeps only uncorrelated samples
+  (494 of 5,001 in an argon test), while the heat flux was used whole. The two were
+  thus taken over different parts of the run. For that argon NVE run the temperature
+  changed by 0.03 K, or 0.05% in the thermal conductivity. Dropping an equilibration
+  period, if wanted later, must cut the heat flux and the temperature at the same step.
+
+Defects found on the way:
+
+* **LAMMPS, non-periodic systems:** sampling the trajectory of a molecule failed
+  ("Variable name sxx ... does not exist"), since the stress columns were added
+  regardless of periodicity. The pressure was reported though meaningless.
+* **Diffusivity:** without centre-of-mass data it used the atomic positions or
+  velocities with the molecules' indices, which is wrong unless every molecule is
+  one atom. It now checks the number of particles.
+* **Thermal Conductivity:** a missing ``state.json`` gave a ``NameError``; the
+  sampling interval was taken as fs even when the file gave ps.

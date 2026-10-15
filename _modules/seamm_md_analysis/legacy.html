@@ -141,6 +141,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API Documentation
   </a>
@@ -234,6 +241,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../getting_started.html">
     Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../h5md.html">
+    The H5MD file
   </a>
 </li>
 
@@ -520,6 +534,141 @@
                 <span class="n">frame</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]])</span>
             <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="lammps_box_to_cell">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.legacy.lammps_box_to_cell">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lammps_box_to_cell</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">tilts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The cell vectors (rows) from a LAMMPS dump's box bounds.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bounds : 3×2 array_like</span>
+<span class="sd">        The (lo, hi) pairs from the ``ITEM: BOX BOUNDS`` lines. For a triclinic</span>
+<span class="sd">        box these are LAMMPS's bounding-box values.</span>
+<span class="sd">    tilts : (xy, xz, yz) = None</span>
+<span class="sd">        The tilt factors of a triclinic box.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(3, 3)</span>
+<span class="sd">    """</span>
+    <span class="p">(</span><span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span><span class="p">),</span> <span class="p">(</span><span class="n">ylo</span><span class="p">,</span> <span class="n">yhi</span><span class="p">),</span> <span class="p">(</span><span class="n">zlo</span><span class="p">,</span> <span class="n">zhi</span><span class="p">)</span> <span class="o">=</span> <span class="n">bounds</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">xz</span> <span class="o">=</span> <span class="n">yz</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="n">tilts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">xy</span><span class="p">,</span> <span class="n">xz</span><span class="p">,</span> <span class="n">yz</span> <span class="o">=</span> <span class="n">tilts</span>
+        <span class="n">xlo</span> <span class="o">-=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">xz</span><span class="p">,</span> <span class="n">xy</span> <span class="o">+</span> <span class="n">xz</span><span class="p">)</span>
+        <span class="n">xhi</span> <span class="o">-=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">xz</span><span class="p">,</span> <span class="n">xy</span> <span class="o">+</span> <span class="n">xz</span><span class="p">)</span>
+        <span class="n">ylo</span> <span class="o">-=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">yz</span><span class="p">)</span>
+        <span class="n">yhi</span> <span class="o">-=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">yz</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">xhi</span> <span class="o">-</span> <span class="n">xlo</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">xy</span><span class="p">,</span> <span class="n">yhi</span> <span class="o">-</span> <span class="n">ylo</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">xz</span><span class="p">,</span> <span class="n">yz</span><span class="p">,</span> <span class="n">zhi</span> <span class="o">-</span> <span class="n">zlo</span><span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="iter_dump_frames">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.legacy.iter_dump_frames">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">iter_dump_frames</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stream the frames of a LAMMPS custom dump file, gzipped or not.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or pathlib.Path</span>
+<span class="sd">        The file; a name ending in ".gz" is read with gzip.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    dict</span>
+<span class="sd">        For each frame: "step"; "time" and "units" if the dump has them; "cell",</span>
+<span class="sd">        the 3×3 cell vectors as rows; "periodic", from the boundary flags; and</span>
+<span class="sd">        "columns", {name: numpy.ndarray} for each per-atom column, sorted by the</span>
+<span class="sd">        atom id. Columns that are not numbers (e.g. "element") are strings.</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+
+    <span class="n">opener</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".gz"</span><span class="p">)</span> <span class="k">else</span> <span class="nb">open</span>
+    <span class="n">frame</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">with</span> <span class="n">opener</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">"rt"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"ITEM:"</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="s2">"TIMESTEP"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">frame</span><span class="p">[</span><span class="s2">"step"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="s2">"TIME"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">frame</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="s2">"UNITS"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="s2">"NUMBER OF ATOMS"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="s2">"BOX BOUNDS"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">:]</span>
+                <span class="n">triclinic</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"xy"</span>
+                <span class="n">flags</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="k">if</span> <span class="n">triclinic</span> <span class="k">else</span> <span class="n">words</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+                <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+                <span class="n">tilts</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span> <span class="k">if</span> <span class="n">triclinic</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">frame</span><span class="p">[</span><span class="s2">"cell"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lammps_box_to_cell</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">tilts</span><span class="p">)</span>
+                <span class="n">frame</span><span class="p">[</span><span class="s2">"periodic"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="s2">"pp"</span> <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">"ATOMS"</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">:]</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)]</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+                    <span class="n">column</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">columns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="n">columns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">"id"</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+                    <span class="n">columns</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">columns</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+                    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">columns</span><span class="p">[</span><span class="s2">"id"</span><span class="p">])</span>
+                    <span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">columns</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="n">frame</span><span class="p">[</span><span class="s2">"columns"</span><span class="p">]</span> <span class="o">=</span> <span class="n">columns</span>
+                <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">frame</span><span class="p">[</span><span class="s2">"units"</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+                <span class="k">yield</span> <span class="n">frame</span>
+                <span class="n">frame</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+
+<div class="viewcode-block" id="iter_vector_frames">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.legacy.iter_vector_frames">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">iter_vector_frames</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Stream a ``!MolSSI vector_trajectory 2.0`` file, such as molecular COMs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or pathlib.Path</span>
+<span class="sd">        The file.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    dict, then (int, numpy.ndarray(n_rows, n_values)) for each frame</span>
+<span class="sd">        First the metadata ("code", "type", "dt", "tunits", "nsteps", "fields"),</span>
+<span class="sd">        then the step and the values of each frame.</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">_read_header</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="n">path</span><span class="p">,</span> <span class="s2">"vector_trajectory"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"!"</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s2">"fields"</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">yield</span> <span class="n">metadata</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">step</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">))]</span>
+            <span class="p">)</span>
+            <span class="k">yield</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">),</span> <span class="n">frame</span></div>
 
 </pre></div>
 

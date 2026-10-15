@@ -144,6 +144,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../h5md.html">
+    The H5MD file
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../api.html">
     API Documentation
@@ -240,6 +247,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../getting_started.html">
     Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../h5md.html">
+    The H5MD file
   </a>
 </li>
 
@@ -486,6 +500,476 @@ integrals in units of the sampling interval.</p>
 </dd></dl>
 
 </section>
+<section id="module-seamm_md_analysis.h5md">
+<span id="seamm-md-analysis-h5md-module"></span><h2>seamm_md_analysis.h5md module<a class="headerlink" href="#module-seamm_md_analysis.h5md" title="Link to this heading">#</a></h2>
+<p>Writing SEAMM’s H5MD files.</p>
+<p>An MD step writes one H5MD file per run, <code class="docutils literal notranslate"><span class="pre">md.h5md</span></code>, from its code’s native
+output when the run ends. <a class="reference internal" href="#seamm_md_analysis.h5md.H5MDWriter" title="seamm_md_analysis.h5md.H5MDWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">H5MDWriter</span></code></a> holds the layout, so that every MD
+step writes the same thing; the layout is described in the documentation
+(“The H5MD file”).</p>
+<p>The file is written as <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;.tmp</span></code> and renamed when it is complete, so an
+interrupted conversion never leaves a damaged file under the real name.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.h5md.</span></span><span class="sig-name descname"><span class="pre">H5MDWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SEAMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress_particles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Write one MD run as a SEAMM H5MD file.</p>
+<p>Use it as a context manager. The file is renamed to its final name only if the
+block finishes without an exception; otherwise the temporary file is removed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">H5MDWriter</span><span class="p">(</span><span class="s2">"md.h5md"</span><span class="p">,</span> <span class="n">creator</span><span class="o">=</span><span class="s2">"SEAMM lammps_step"</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">"1"</span><span class="p">)</span> <span class="k">as</span> <span class="n">w</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">w</span><span class="o">.</span><span class="n">particles</span><span class="p">(</span><span class="n">ids</span><span class="o">=...</span><span class="p">,</span> <span class="n">species</span><span class="o">=...</span><span class="p">,</span> <span class="n">masses</span><span class="o">=...</span><span class="p">,</span> <span class="n">cell</span><span class="o">=...</span><span class="p">,</span> <span class="n">periodic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">w</span><span class="o">.</span><span class="n">observable</span><span class="p">(</span><span class="s2">"temperature"</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="s2">"K"</span><span class="p">,</span> <span class="s2">"fs"</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str or pathlib.Path</em>) – The final name of the file.</p></li>
+<li><p><strong>creator</strong> (<em>str</em>) – The program writing the file, e.g. “SEAMM lammps_step”.</p></li>
+<li><p><strong>version</strong> (<em>str</em>) – Its version.</p></li>
+<li><p><strong>author</strong> (<em>str = None</em>) – The user, by default from the environment.</p></li>
+<li><p><strong>compress_particles</strong> (<em>bool = False</em>) – Compress positions, velocities and forces with gzip. It gains little on
+coordinates, so it is off by default.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.abort">
+<span class="sig-name descname"><span class="pre">abort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.abort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.abort" title="Link to this definition">#</a></dt>
+<dd><p>Discard the file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.box_appender">
+<span class="sig-name descname"><span class="pre">box_appender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Angstrom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.box_appender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.box_appender" title="Link to this definition">#</a></dt>
+<dd><p>An appender for a box that changes with time, as in NPT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Call <code class="docutils literal notranslate"><span class="pre">append(step,</span> <span class="pre">time,</span> <span class="pre">cell)</span></code> for each frame, with the cell
+vectors as the rows of a 3×3 array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.close" title="Link to this definition">#</a></dt>
+<dd><p>Finish the file and give it its final name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.observable">
+<span class="sig-name descname"><span class="pre">observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.observable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.observable" title="Link to this definition">#</a></dt>
+<dd><p>Write a time series under <code class="docutils literal notranslate"><span class="pre">observables/</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name, a standard one (see <a class="reference internal" href="#seamm_md_analysis.h5md.standard_observables" title="seamm_md_analysis.h5md.standard_observables"><code class="xref py py-data docutils literal notranslate"><span class="pre">standard_observables</span></code></a>) or, for the
+user’s extra properties, “user/&lt;name&gt;”.</p></li>
+<li><p><strong>steps</strong> (<em>array_like of int</em>) – The MD steps.</p></li>
+<li><p><strong>times</strong> (<em>array_like of float</em>) – The times, in <code class="docutils literal notranslate"><span class="pre">time_unit</span></code>.</p></li>
+<li><p><strong>values</strong> (<em>array_like</em>) – The values, with the first index running over the samples.</p></li>
+<li><p><strong>unit, time_unit</strong> (<em>str</em>) – The units, in H5MD syntax, as the code produced them.</p></li>
+<li><p><strong>average_window</strong> (<em>int = 1</em>) – The number of MD steps each value averages over; 1 for instantaneous
+values.</p></li>
+<li><p><strong>kind</strong> (<em>str = None</em>) – “correlation” for a correlation function accumulated by the code.</p></li>
+<li><p><strong>attrs</strong> (<em>dict = None</em>) – Extra attributes for the value dataset.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parameters'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.parameters" title="Link to this definition">#</a></dt>
+<dd><p>Store the run’s parameters as attributes, nesting dicts as groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>dict</em>) – E.g. {“ensemble”: “NVT”, “temperature”: 298.15, “temperature_unit”:
+“K”, “timestep”: 1.0, …}.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.particle_appender">
+<span class="sig-name descname"><span class="pre">particle_appender</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_particles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.particle_appender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.particle_appender" title="Link to this definition">#</a></dt>
+<dd><p>An appender for a per-particle property, frame by frame.</p>
+<p>Positions, velocities and forces are written as float32, chunked by
+frame, so a long trajectory is streamed rather than held in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – “position”, “velocity” or “force”.</p></li>
+<li><p><strong>n_particles</strong> (<em>int</em>) – The number of particles in the group.</p></li>
+<li><p><strong>unit, time_unit</strong> (<em>str</em>) – The units, in H5MD syntax.</p></li>
+<li><p><strong>group</strong> (<em>str = “all”</em>) – The particle group.</p></li>
+<li><p><strong>attrs</strong> (<em>dict = None</em>) – Extra attributes for the value dataset, e.g. {“seamm_unwrapped”: 1}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Call <code class="docutils literal notranslate"><span class="pre">append(step,</span> <span class="pre">time,</span> <span class="pre">frame)</span></code> with an n_particles × 3 array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.particles">
+<span class="sig-name descname"><span class="pre">particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Angstrom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'amu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'e'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.particles" title="Link to this definition">#</a></dt>
+<dd><p>Describe a group of particles and its box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> (<em>str = “all”</em>) – The particle group: “all” for the atoms, “molecules” for the centres of
+mass of the molecules.</p></li>
+<li><p><strong>ids</strong> (<em>array_like of int</em>) – The SEAMM ids of the atoms, or the indices of the molecules.</p></li>
+<li><p><strong>species</strong> (<em>array_like of int = None</em>) – The atomic numbers.</p></li>
+<li><p><strong>masses</strong> (<em>array_like of float = None</em>) – The masses.</p></li>
+<li><p><strong>charges</strong> (<em>array_like of float = None</em>) – The charges, omitted when the model has none (MLFFs).</p></li>
+<li><p><strong>cell</strong> (<em>3×3 array_like = None</em>) – The cell vectors as rows, for a box that does not change. It is written
+for each frame of the positions when the file is closed, since
+MDAnalysis reads the box frame by frame. Leave it out for a
+non-periodic system, or when the box changes (see
+<a class="reference internal" href="#seamm_md_analysis.h5md.H5MDWriter.box_appender" title="seamm_md_analysis.h5md.H5MDWriter.box_appender"><code class="xref py py-meth docutils literal notranslate"><span class="pre">box_appender()</span></code></a>).</p></li>
+<li><p><strong>periodic</strong> (<em>bool = True</em>) – Whether the system is periodic. A non-periodic box has no edges,
+because MDAnalysis treats any box with edges as periodic.</p></li>
+<li><p><strong>length_unit, mass_unit, charge_unit</strong> (<em>str</em>) – The units, in H5MD syntax.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.H5MDWriter.provenance">
+<span class="sig-name descname"><span class="pre">provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/h5md.html#H5MDWriter.provenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.h5md.H5MDWriter.provenance" title="Link to this definition">#</a></dt>
+<dd><p>Store SEAMM’s provenance under <code class="docutils literal notranslate"><span class="pre">parameters/seamm</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>dict</em>) – The job and step ids, configuration, model chemistry, code and its
+version, package versions, hashes of model files, …</p></li>
+<li><p><strong>segments</strong> (<em>[dict] = None</em>) – One dict per segment of the run, with “first_step”, “last_step”,
+“wall_time” (s) and “node”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.h5md.standard_observables">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.h5md.</span></span><span class="sig-name descname"><span class="pre">standard_observables</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'density':</span> <span class="pre">(),</span> <span class="pre">'hbond_count':</span> <span class="pre">(),</span> <span class="pre">'hbond_energy':</span> <span class="pre">(),</span> <span class="pre">'heat_flux':</span> <span class="pre">(3,),</span> <span class="pre">'kinetic_energy':</span> <span class="pre">(),</span> <span class="pre">'molecular_energy':</span> <span class="pre">(),</span> <span class="pre">'pair_energy':</span> <span class="pre">(),</span> <span class="pre">'potential_energy':</span> <span class="pre">(),</span> <span class="pre">'pressure':</span> <span class="pre">(),</span> <span class="pre">'pressure_tensor':</span> <span class="pre">(3,</span> <span class="pre">3),</span> <span class="pre">'temperature':</span> <span class="pre">(),</span> <span class="pre">'total_dipole':</span> <span class="pre">(3,),</span> <span class="pre">'total_energy':</span> <span class="pre">(),</span> <span class="pre">'volume':</span> <span class="pre">()}</span></span><a class="headerlink" href="#seamm_md_analysis.h5md.standard_observables" title="Link to this definition">#</a></dt>
+<dd><p>The standard observable names and their shapes; MD steps map their output onto
+these, and analysis steps ask for them.</p>
+</dd></dl>
+
+</section>
+<section id="module-seamm_md_analysis.io">
+<span id="seamm-md-analysis-io-module"></span><h2>seamm_md_analysis.io module<a class="headerlink" href="#module-seamm_md_analysis.io" title="Link to this heading">#</a></h2>
+<p>Reading SEAMM’s H5MD files.</p>
+<p><a class="reference internal" href="#seamm_md_analysis.io.open_md" title="seamm_md_analysis.io.open_md"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_md()</span></code></a> opens one run, given as one file or as the list of its segment
+files, and returns an <a class="reference internal" href="#seamm_md_analysis.io.MDData" title="seamm_md_analysis.io.MDData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MDData</span></code></a>. Time series are read with h5py on their
+own time axis. MDAnalysis is used only for structural analysis, through
+<a class="reference internal" href="#seamm_md_analysis.io.MDData.universe" title="seamm_md_analysis.io.MDData.universe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MDData.universe()</span></code></a>, because it attaches observables to frames by index and
+so misaligns any observable sampled more often than the frames.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">MDData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One MD run in SEAMM’s H5MD layout.</p>
+<p>Use it as a context manager, or call <a class="reference internal" href="#seamm_md_analysis.io.MDData.close" title="seamm_md_analysis.io.MDData.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>. Several segment files
+are read as one run: time series and frames are joined in order, and a sample
+repeated at the boundary between segments is used once.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.box">
+<span class="sig-name descname"><span class="pre">box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Å'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.box" title="Link to this definition">#</a></dt>
+<dd><p>The box at every recorded time, as a TimeSeries of 3×3 matrices.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.cell">
+<span class="sig-name descname"><span class="pre">cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Å'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.cell" title="Link to this definition">#</a></dt>
+<dd><p>The box of the first frame as a 3×3 array of cell vectors (rows).</p>
+<p>Returns None for a non-periodic system.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.charges">
+<span class="sig-name descname"><span class="pre">charges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.charges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.charges" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.close" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.creator">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">creator</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.creator" title="Link to this definition">#</a></dt>
+<dd><p>The program that wrote the file and its version.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.first">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">first</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.first" title="Link to this definition">#</a></dt>
+<dd><p>The first (or only) h5py file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.has_observable">
+<span class="sig-name descname"><span class="pre">has_observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.has_observable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.has_observable" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.has_particles">
+<span class="sig-name descname"><span class="pre">has_particles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.has_particles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.has_particles" title="Link to this definition">#</a></dt>
+<dd><p>Whether a per-particle property, e.g. “position”, was sampled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.ids">
+<span class="sig-name descname"><span class="pre">ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.ids" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.iter_frames">
+<span class="sig-name descname"><span class="pre">iter_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('position',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.iter_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.iter_frames" title="Link to this definition">#</a></dt>
+<dd><p>Stream frames of a trajectory in chunks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> (<em>str = “all”</em>) – The particle group.</p></li>
+<li><p><strong>fields</strong> (<em>[str]</em>) – The properties to read, e.g. (“position”, “velocity”). They must have
+been sampled at the same steps.</p></li>
+<li><p><strong>chunk</strong> (<em>int = 100</em>) – The number of frames per chunk.</p></li>
+<li><p><strong>units</strong> (<em>{str: str} = None</em>) – Units to convert each field to, e.g. {“position”: “Å”}.</p></li>
+<li><p><strong>time_units</strong> (<em>str = None</em>) – Units for the times.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>(numpy.ndarray, numpy.ndarray, {str</strong> (<em>numpy.ndarray})</em>) – The steps, the times and the values of each field, with the shape
+(n, n_particles, 3), for each chunk of frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.masses">
+<span class="sig-name descname"><span class="pre">masses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.masses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.masses" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.n_frames">
+<span class="sig-name descname"><span class="pre">n_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'position'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.n_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.n_frames" title="Link to this definition">#</a></dt>
+<dd><p>The number of frames of a per-particle property in all segments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.observable">
+<span class="sig-name descname"><span class="pre">observable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.observable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.observable" title="Link to this definition">#</a></dt>
+<dd><p>Read an observable on its own time axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – E.g. “temperature”, “pressure_tensor” or “user/&lt;name&gt;”.</p></li>
+<li><p><strong>units, time_units</strong> (<em>str or pint.Unit = None</em>) – Convert to these units; by default they are as the code wrote them.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.io.TimeSeries" title="seamm_md_analysis.io.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.observables">
+<span class="sig-name descname"><span class="pre">observables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.observables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.observables" title="Link to this definition">#</a></dt>
+<dd><p>The names of the observables, including “user/&lt;name&gt;”.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.parameters">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.parameters" title="Link to this definition">#</a></dt>
+<dd><p>The run’s parameters, without SEAMM’s provenance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.particle_groups">
+<span class="sig-name descname"><span class="pre">particle_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.particle_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.particle_groups" title="Link to this definition">#</a></dt>
+<dd><p>The particle groups, e.g. [“all”, “molecules”].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.particle_series">
+<span class="sig-name descname"><span class="pre">particle_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'molecules'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.particle_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.particle_series" title="Link to this definition">#</a></dt>
+<dd><p>Read a per-particle property whole, e.g. the molecular centres of mass.</p>
+<p>Use this only when it is small; <a class="reference internal" href="#seamm_md_analysis.io.MDData.iter_frames" title="seamm_md_analysis.io.MDData.iter_frames"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iter_frames()</span></code></a> streams large
+trajectories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>values has the shape (n_frames, n_particles, 3).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.io.TimeSeries" title="seamm_md_analysis.io.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.periodic">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">periodic</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.periodic" title="Link to this definition">#</a></dt>
+<dd><p>Whether the system is periodic, from the box of the particles.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.provenance">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">provenance</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.provenance" title="Link to this definition">#</a></dt>
+<dd><p>SEAMM’s provenance (<code class="docutils literal notranslate"><span class="pre">parameters/seamm</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.species">
+<span class="sig-name descname"><span class="pre">species</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.species"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.species" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.universe">
+<span class="sig-name descname"><span class="pre">universe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.universe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.universe" title="Link to this definition">#</a></dt>
+<dd><p>An MDAnalysis Universe for the atoms, for structural analysis.</p>
+<p>The topology comes from the file (species, masses and charges) and, if
+given, from the molsystem configuration (atom names, bonds, and molecules
+as residues). MDAnalysis is imported here only, so it is needed only by
+the steps that use it (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">seamm-md-analysis[structure]</span></code>).</p>
+<p><strong>Do not use its per-frame observables</strong> (<code class="docutils literal notranslate"><span class="pre">ts.data</span></code>): MDAnalysis attaches
+them to frames by index, ignoring their own steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>molsystem._Configuration = None</em>) – The configuration that was simulated, in the order of the atoms in the
+file.</p></li>
+<li><p><strong>names</strong> (<em>[str] = None</em>) – Atom names; by default the element symbols.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>MDAnalysis.Universe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#TimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A time series or a per-particle trajectory read from an H5MD file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The observable or property, e.g. “temperature” or “molecules/position”.</p></li>
+<li><p><strong>values</strong> (<em>numpy.ndarray</em>) – The values, with the first index running over the samples.</p></li>
+<li><p><strong>times</strong> (<em>numpy.ndarray</em>) – The times, in <code class="docutils literal notranslate"><span class="pre">time_units</span></code>.</p></li>
+<li><p><strong>steps</strong> (<em>numpy.ndarray</em>) – The MD steps.</p></li>
+<li><p><strong>units</strong> (<em>pint.Unit</em>) – The units of the values.</p></li>
+<li><p><strong>time_units</strong> (<em>pint.Unit</em>) – The units of the times.</p></li>
+<li><p><strong>average_window</strong> (<em>int</em>) – The number of MD steps each value averages over; 1 for instantaneous
+values.</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em> or </em><em>None</em>) – “correlation” for a correlation function accumulated by the code.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.attrs">
+<span class="sig-name descname"><span class="pre">attrs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.attrs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.average_window">
+<span class="sig-name descname"><span class="pre">average_window</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.average_window" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.dt">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.dt" title="Link to this definition">#</a></dt>
+<dd><p>The sampling interval as a pint quantity, or None for fewer than 2.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.kind" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.steps">
+<span class="sig-name descname"><span class="pre">steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.time_units">
+<span class="sig-name descname"><span class="pre">time_units</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.time_units" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.times">
+<span class="sig-name descname"><span class="pre">times</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.times" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.to">
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#TimeSeries.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.to" title="Link to this definition">#</a></dt>
+<dd><p>A copy in other units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> (<em>str or pint.Unit = None</em>) – The units of the values; None leaves them as they are.</p></li>
+<li><p><strong>time_units</strong> (<em>str or pint.Unit = None</em>) – The units of the times; None leaves them as they are.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.io.TimeSeries" title="seamm_md_analysis.io.TimeSeries">TimeSeries</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.units">
+<span class="sig-name descname"><span class="pre">units</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.units" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.TimeSeries.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#seamm_md_analysis.io.TimeSeries.values" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.open_md">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">open_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#open_md"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.open_md" title="Link to this definition">#</a></dt>
+<dd><p>Open an MD run’s H5MD file, or the list of its segment files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>paths</strong> (<em>str, pathlib.Path or list</em>) – One file, or the segments of one run in order.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.io.MDData" title="seamm_md_analysis.io.MDData">MDData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-seamm_md_analysis.legacy">
 <span id="seamm-md-analysis-legacy-module"></span><h2>seamm_md_analysis.legacy module<a class="headerlink" href="#module-seamm_md_analysis.legacy" title="Link to this heading">#</a></h2>
 <p>Readers for the text files the LAMMPS step has written so far.</p>
@@ -494,6 +978,56 @@ integrals in units of the sampling interval.</p>
 <code class="docutils literal notranslate"><span class="pre">!MolSSI</span> <span class="pre">vector_trajectory</span> <span class="pre">2.0</span></code> per-molecule series (<code class="docutils literal notranslate"><span class="pre">com_*.trj</span></code>) and the
 LAMMPS dump files (<code class="docutils literal notranslate"><span class="pre">*.dump_trj</span></code>). The readers remain so that older jobs can
 still be analysed.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.legacy.iter_dump_frames">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.legacy.</span></span><span class="sig-name descname"><span class="pre">iter_dump_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/legacy.html#iter_dump_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.legacy.iter_dump_frames" title="Link to this definition">#</a></dt>
+<dd><p>Stream the frames of a LAMMPS custom dump file, gzipped or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str or pathlib.Path</em>) – The file; a name ending in “.gz” is read with gzip.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – For each frame: “step”; “time” and “units” if the dump has them; “cell”,
+the 3×3 cell vectors as rows; “periodic”, from the boundary flags; and
+“columns”, {name: numpy.ndarray} for each per-atom column, sorted by the
+atom id. Columns that are not numbers (e.g. “element”) are strings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.legacy.iter_vector_frames">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.legacy.</span></span><span class="sig-name descname"><span class="pre">iter_vector_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/legacy.html#iter_vector_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.legacy.iter_vector_frames" title="Link to this definition">#</a></dt>
+<dd><p>Stream a <code class="docutils literal notranslate"><span class="pre">!MolSSI</span> <span class="pre">vector_trajectory</span> <span class="pre">2.0</span></code> file, such as molecular COMs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str or pathlib.Path</em>) – The file.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict, then (int, numpy.ndarray(n_rows, n_values)) for each frame</em> – First the metadata (“code”, “type”, “dt”, “tunits”, “nsteps”, “fields”),
+then the step and the values of each frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.legacy.lammps_box_to_cell">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.legacy.</span></span><span class="sig-name descname"><span class="pre">lammps_box_to_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tilts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/legacy.html#lammps_box_to_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.legacy.lammps_box_to_cell" title="Link to this definition">#</a></dt>
+<dd><p>The cell vectors (rows) from a LAMMPS dump’s box bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (<em>3×2 array_like</em>) – The (lo, hi) pairs from the <code class="docutils literal notranslate"><span class="pre">ITEM:</span> <span class="pre">BOX</span> <span class="pre">BOUNDS</span></code> lines. For a triclinic
+box these are LAMMPS’s bounding-box values.</p></li>
+<li><p><strong>tilts</strong> (<em>(xy, xz, yz) = None</em>) – The tilt factors of a triclinic box.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray(3, 3)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.legacy.read_dump_trajectory">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.legacy.</span></span><span class="sig-name descname"><span class="pre">read_dump_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/legacy.html#read_dump_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.legacy.read_dump_trajectory" title="Link to this definition">#</a></dt>
@@ -1227,11 +1761,65 @@ computed in the periodic cell.</p>
 </dd></dl>
 
 </section>
+<section id="module-seamm_md_analysis.units">
+<span id="seamm-md-analysis-units-module"></span><h2>seamm_md_analysis.units module<a class="headerlink" href="#module-seamm_md_analysis.units" title="Link to this heading">#</a></h2>
+<p>Unit strings in H5MD files and their translation to and from pint.</p>
+<p>H5MD writes a unit as space-separated factors, each a unit symbol with an optional
+integer power, with negative powers for the denominator: <code class="docutils literal notranslate"><span class="pre">kcal</span> <span class="pre">mol-1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Angstrom</span> <span class="pre">ps-1</span></code>, <code class="docutils literal notranslate"><span class="pre">g</span> <span class="pre">cm-3</span></code>. MDAnalysis accepts only its own spellings for
+lengths, times, velocities and forces (<code class="docutils literal notranslate"><span class="pre">Angstrom</span></code>, <code class="docutils literal notranslate"><span class="pre">Angstrom</span> <span class="pre">ps-1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kcal</span> <span class="pre">mol-1</span> <span class="pre">Angstrom-1</span></code>), so SEAMM writes those, and this module translates
+between them and pint.</p>
+<p>pint’s application registry is used unless a registry is given, so that the
+quantities mix with SEAMM’s, which sets its registry as the application registry.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.units.to_h5md">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.units.</span></span><span class="sig-name descname"><span class="pre">to_h5md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ureg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/units.html#to_h5md"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.units.to_h5md" title="Link to this definition">#</a></dt>
+<dd><p>The H5MD unit string for a pint unit or unit expression.</p>
+<p>Factors with positive powers come first, then the negative ones, with
+“mol” first among those, so that forces are written as
+“kcal mol-1 Angstrom-1” as MDAnalysis expects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<em>str, pint.Unit or pint.Quantity</em>) – The unit, e.g. “Å/fs” or ureg.kcal / ureg.mol.</p></li>
+<li><p><strong>ureg</strong> (<em>pint.UnitRegistry = None</em>) – The registry, by default pint’s application registry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unit in H5MD syntax, or “” for a dimensionless unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.units.to_pint">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.units.</span></span><span class="sig-name descname"><span class="pre">to_pint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ureg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/units.html#to_pint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.units.to_pint" title="Link to this definition">#</a></dt>
+<dd><p>The pint unit for an H5MD unit string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<em>str or None</em>) – The unit in H5MD syntax, e.g. “kcal mol-1”. None, “” and “1” are
+dimensionless.</p></li>
+<li><p><strong>ureg</strong> (<em>pint.UnitRegistry = None</em>) – The registry, by default pint’s application registry.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Unit</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-seamm_md_analysis">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-seamm_md_analysis" title="Link to this heading">#</a></h2>
 <p>Analysis of molecular dynamics output for SEAMM.</p>
 <p>Time-series statistics, correlation functions, Green–Kubo and Helfand
-transport coefficients, plots, and readers for MD output.</p>
+transport coefficients, plots, SEAMM’s H5MD files, and readers for older MD
+output.</p>
 </section>
 </section>
 
@@ -1292,7 +1880,67 @@ transport coefficients, plots, and readers for MD output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.correlate.tensor_correlation_functions"><code class="docutils literal notranslate"><span class="pre">tensor_correlation_functions()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.h5md">seamm_md_analysis.h5md module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter"><code class="docutils literal notranslate"><span class="pre">H5MDWriter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.abort"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.abort()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.box_appender"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.box_appender()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.close"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.close()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.observable"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.observable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.parameters"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.parameters()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.particle_appender"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.particle_appender()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.particles"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.particles()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.H5MDWriter.provenance"><code class="docutils literal notranslate"><span class="pre">H5MDWriter.provenance()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.h5md.standard_observables"><code class="docutils literal notranslate"><span class="pre">standard_observables</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.io">seamm_md_analysis.io module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData"><code class="docutils literal notranslate"><span class="pre">MDData</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.box"><code class="docutils literal notranslate"><span class="pre">MDData.box()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.cell"><code class="docutils literal notranslate"><span class="pre">MDData.cell()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.charges"><code class="docutils literal notranslate"><span class="pre">MDData.charges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.close"><code class="docutils literal notranslate"><span class="pre">MDData.close()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.creator"><code class="docutils literal notranslate"><span class="pre">MDData.creator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.first"><code class="docutils literal notranslate"><span class="pre">MDData.first</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.has_observable"><code class="docutils literal notranslate"><span class="pre">MDData.has_observable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.has_particles"><code class="docutils literal notranslate"><span class="pre">MDData.has_particles()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.ids"><code class="docutils literal notranslate"><span class="pre">MDData.ids()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.iter_frames"><code class="docutils literal notranslate"><span class="pre">MDData.iter_frames()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.masses"><code class="docutils literal notranslate"><span class="pre">MDData.masses()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.n_frames"><code class="docutils literal notranslate"><span class="pre">MDData.n_frames()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.observable"><code class="docutils literal notranslate"><span class="pre">MDData.observable()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.observables"><code class="docutils literal notranslate"><span class="pre">MDData.observables()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.parameters"><code class="docutils literal notranslate"><span class="pre">MDData.parameters</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.particle_groups"><code class="docutils literal notranslate"><span class="pre">MDData.particle_groups()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.particle_series"><code class="docutils literal notranslate"><span class="pre">MDData.particle_series()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.periodic"><code class="docutils literal notranslate"><span class="pre">MDData.periodic</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.provenance"><code class="docutils literal notranslate"><span class="pre">MDData.provenance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.species"><code class="docutils literal notranslate"><span class="pre">MDData.species()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.universe"><code class="docutils literal notranslate"><span class="pre">MDData.universe()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries"><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.attrs"><code class="docutils literal notranslate"><span class="pre">TimeSeries.attrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.average_window"><code class="docutils literal notranslate"><span class="pre">TimeSeries.average_window</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.dt"><code class="docutils literal notranslate"><span class="pre">TimeSeries.dt</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.kind"><code class="docutils literal notranslate"><span class="pre">TimeSeries.kind</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.name"><code class="docutils literal notranslate"><span class="pre">TimeSeries.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.steps"><code class="docutils literal notranslate"><span class="pre">TimeSeries.steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.time_units"><code class="docutils literal notranslate"><span class="pre">TimeSeries.time_units</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.times"><code class="docutils literal notranslate"><span class="pre">TimeSeries.times</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.to"><code class="docutils literal notranslate"><span class="pre">TimeSeries.to()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.units"><code class="docutils literal notranslate"><span class="pre">TimeSeries.units</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.values"><code class="docutils literal notranslate"><span class="pre">TimeSeries.values</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.open_md"><code class="docutils literal notranslate"><span class="pre">open_md()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.legacy">seamm_md_analysis.legacy module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.iter_dump_frames"><code class="docutils literal notranslate"><span class="pre">iter_dump_frames()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.iter_vector_frames"><code class="docutils literal notranslate"><span class="pre">iter_vector_frames()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.lammps_box_to_cell"><code class="docutils literal notranslate"><span class="pre">lammps_box_to_cell()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.read_dump_trajectory"><code class="docutils literal notranslate"><span class="pre">read_dump_trajectory()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.read_trajectory"><code class="docutils literal notranslate"><span class="pre">read_trajectory()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.legacy.read_vector_trajectory"><code class="docutils literal notranslate"><span class="pre">read_vector_trajectory()</span></code></a></li>
@@ -1352,6 +2000,11 @@ transport coefficients, plots, and readers for MD output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.squared_displacement_sums"><code class="docutils literal notranslate"><span class="pre">squared_displacement_sums()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.windowed_displacement_products"><code class="docutils literal notranslate"><span class="pre">windowed_displacement_products()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.yeh_hummer_correction"><code class="docutils literal notranslate"><span class="pre">yeh_hummer_correction()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.units">seamm_md_analysis.units module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.units.to_h5md"><code class="docutils literal notranslate"><span class="pre">to_h5md()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.units.to_pint"><code class="docutils literal notranslate"><span class="pre">to_pint()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis">Module contents</a></li>

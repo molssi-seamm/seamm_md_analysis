@@ -12,6 +12,22 @@ seamm\_md\_analysis.correlate module
    :show-inheritance:
    :undoc-members:
 
+seamm\_md\_analysis.h5md module
+-------------------------------
+
+.. automodule:: seamm_md_analysis.h5md
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.io module
+-----------------------------
+
+.. automodule:: seamm_md_analysis.io
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 seamm\_md\_analysis.legacy module
 ---------------------------------
 
@@ -40,6 +56,14 @@ seamm\_md\_analysis.transport module
 ------------------------------------
 
 .. automodule:: seamm_md_analysis.transport
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.units module
+--------------------------------
+
+.. automodule:: seamm_md_analysis.units
    :members:
    :show-inheritance:
    :undoc-members:
