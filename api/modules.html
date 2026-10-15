@@ -400,6 +400,7 @@
 <li class="toctree-l2"><a class="reference internal" href="seamm_md_analysis.html#module-seamm_md_analysis.correlate">seamm_md_analysis.correlate module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.TENSOR_COMPONENTS"><code class="docutils literal notranslate"><span class="pre">TENSOR_COMPONENTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.acf_err"><code class="docutils literal notranslate"><span class="pre">acf_err()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.autocorrelation_functions"><code class="docutils literal notranslate"><span class="pre">autocorrelation_functions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.ccf_err"><code class="docutils literal notranslate"><span class="pre">ccf_err()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.ccovf"><code class="docutils literal notranslate"><span class="pre">ccovf()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.correlate.moving_average"><code class="docutils literal notranslate"><span class="pre">moving_average()</span></code></a></li>
@@ -479,9 +480,11 @@
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.add_helfand_trace"><code class="docutils literal notranslate"><span class="pre">add_helfand_trace()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.add_msd_trace"><code class="docutils literal notranslate"><span class="pre">add_msd_trace()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.plot_GK_integrals"><code class="docutils literal notranslate"><span class="pre">plot_GK_integrals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.plot_components"><code class="docutils literal notranslate"><span class="pre">plot_components()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.plot_correlation_functions"><code class="docutils literal notranslate"><span class="pre">plot_correlation_functions()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.plot_helfand_moments"><code class="docutils literal notranslate"><span class="pre">plot_helfand_moments()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.plot_helfand_slopes"><code class="docutils literal notranslate"><span class="pre">plot_helfand_slopes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.shear_labels"><code class="docutils literal notranslate"><span class="pre">shear_labels</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.tensor_labels"><code class="docutils literal notranslate"><span class="pre">tensor_labels</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.plots.vector_labels"><code class="docutils literal notranslate"><span class="pre">vector_labels</span></code></a></li>
 </ul>
@@ -528,11 +531,14 @@
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.check_md_flowchart"><code class="docutils literal notranslate"><span class="pre">check_md_flowchart()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.md_inputs"><code class="docutils literal notranslate"><span class="pre">md_inputs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.md_substeps"><code class="docutils literal notranslate"><span class="pre">md_substeps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.preceding_viscosity"><code class="docutils literal notranslate"><span class="pre">preceding_viscosity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.publish_viscosity"><code class="docutils literal notranslate"><span class="pre">publish_viscosity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.read_files"><code class="docutils literal notranslate"><span class="pre">read_files</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.request_sampling"><code class="docutils literal notranslate"><span class="pre">request_sampling()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.run_own_md"><code class="docutils literal notranslate"><span class="pre">run_own_md</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.source_choices"><code class="docutils literal notranslate"><span class="pre">source_choices</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.source_parameters"><code class="docutils literal notranslate"><span class="pre">source_parameters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.step_support.viscosity_variable"><code class="docutils literal notranslate"><span class="pre">viscosity_variable</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="seamm_md_analysis.html#module-seamm_md_analysis.transport">seamm_md_analysis.transport module</a><ul>
@@ -554,9 +560,11 @@
 <li class="toctree-l4"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.LinearFit.ys"><code class="docutils literal notranslate"><span class="pre">LinearFit.ys</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.SHEAR_COMPONENTS"><code class="docutils literal notranslate"><span class="pre">SHEAR_COMPONENTS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.YEH_HUMMER_XI"><code class="docutils literal notranslate"><span class="pre">YEH_HUMMER_XI</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.axb"><code class="docutils literal notranslate"><span class="pre">axb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.collective_helfand_moments"><code class="docutils literal notranslate"><span class="pre">collective_helfand_moments()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.component_helfand_moments"><code class="docutils literal notranslate"><span class="pre">component_helfand_moments()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.exp_1"><code class="docutils literal notranslate"><span class="pre">exp_1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.exp_2"><code class="docutils literal notranslate"><span class="pre">exp_2()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.fit_green_kubo_integral"><code class="docutils literal notranslate"><span class="pre">fit_green_kubo_integral()</span></code></a></li>
@@ -564,6 +572,7 @@
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.fit_slope"><code class="docutils literal notranslate"><span class="pre">fit_slope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.helfand_slope"><code class="docutils literal notranslate"><span class="pre">helfand_slope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.msd_by_species"><code class="docutils literal notranslate"><span class="pre">msd_by_species()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.shear_stress_components"><code class="docutils literal notranslate"><span class="pre">shear_stress_components()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.species_helfand_moments"><code class="docutils literal notranslate"><span class="pre">species_helfand_moments()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.squared_displacement_sums"><code class="docutils literal notranslate"><span class="pre">squared_displacement_sums()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="seamm_md_analysis.html#seamm_md_analysis.transport.windowed_displacement_products"><code class="docutils literal notranslate"><span class="pre">windowed_displacement_products()</span></code></a></li>

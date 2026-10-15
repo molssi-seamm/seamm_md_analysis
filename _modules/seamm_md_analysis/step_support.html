@@ -631,6 +631,68 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">': there is no earlier MD run</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"path"</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">chosen</span><span class="p">]</span></div>
 
+
+
+<span class="c1">#: The workspace variable holding the result of the last Viscosity step</span>
+<span class="n">viscosity_variable</span> <span class="o">=</span> <span class="s2">"_viscosity"</span>
+
+
+<div class="viewcode-block" id="publish_viscosity">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.step_support.publish_viscosity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">publish_viscosity</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"Green-Kubo"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Record a viscosity for the steps after this one, such as Diffusivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node : seamm.Node</span>
+<span class="sd">        The step that calculated it.</span>
+<span class="sd">    value : float</span>
+<span class="sd">        The shear viscosity, in Pa s.</span>
+<span class="sd">    stderr : float = None</span>
+<span class="sd">        Its standard error, in Pa s.</span>
+<span class="sd">    T : float = None</span>
+<span class="sd">        The temperature, in K.</span>
+<span class="sd">    method : str = "Green-Kubo"</span>
+<span class="sd">        How it was calculated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        The record, also stored in the workspace variable ``_viscosity``.</span>
+<span class="sd">    """</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"value"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+        <span class="s2">"stderr"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">stderr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">stderr</span><span class="p">),</span>
+        <span class="s2">"units"</span><span class="p">:</span> <span class="s2">"Pa*s"</span><span class="p">,</span>
+        <span class="s2">"T"</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">T</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+        <span class="s2">"method"</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+        <span class="s2">"step"</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+        <span class="s2">"id"</span><span class="p">:</span> <span class="s2">"."</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">_id</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="n">viscosity_variable</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">record</span></div>
+
+
+
+<div class="viewcode-block" id="preceding_viscosity">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.step_support.preceding_viscosity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">preceding_viscosity</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The viscosity published by the last Viscosity step run, or None.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node : seamm.Node</span>
+<span class="sd">        The step asking, for the workspace variables.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict or None</span>
+<span class="sd">        The record written by :func:`publish_viscosity`.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">variable_exists</span><span class="p">(</span><span class="n">viscosity_variable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="n">viscosity_variable</span><span class="p">)</span></div>
+
 </pre></div>
 
                 </article>

@@ -394,6 +394,9 @@
 <span class="c1">#: The Yeh–Hummer constant for a cubic cell (Yeh and Hummer, 2004).</span>
 <span class="n">YEH_HUMMER_XI</span> <span class="o">=</span> <span class="mf">2.837297</span>
 
+<span class="c1">#: The five independent components of the shear stress of an isotropic fluid.</span>
+<span class="n">SHEAR_COMPONENTS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"xy"</span><span class="p">,</span> <span class="s2">"xz"</span><span class="p">,</span> <span class="s2">"yz"</span><span class="p">,</span> <span class="s2">"(xx-yy)/2"</span><span class="p">,</span> <span class="s2">"(yy-zz)/2"</span><span class="p">)</span>
+
 <span class="c1"># Columns of the arrays handed to one batch of FFTs, to bound the memory.</span>
 <span class="n">_FFT_COLUMNS</span> <span class="o">=</span> <span class="mi">256</span>
 
@@ -573,6 +576,89 @@
         <span class="n">Gb</span> <span class="o">=</span> <span class="n">Ga</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="k">else</span> <span class="n">G</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
         <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">Ga</span><span class="p">,</span> <span class="n">Gb</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">M</span> <span class="o">/</span> <span class="n">n_origins</span></div>
+
+
+
+<div class="viewcode-block" id="component_helfand_moments">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.component_helfand_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">component_helfand_moments</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">demean</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The Helfand moment of each of several independent series.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        M_i(k) = \\left\\langle \\left( \\int_0^{k} X_i \\, dt \\right)^2</span>
+<span class="sd">                 \\right\\rangle</span>
+
+<span class="sd">    averaged over n - m time origins, in units of the sampling interval squared.</span>
+<span class="sd">    For the shear stress (:func:`shear_stress_components`) this gives the</span>
+<span class="sd">    Helfand moments of the viscosity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : numpy.ndarray(k, n)</span>
+<span class="sd">        The k series, each of n samples.</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The number of lags; by default min(n // 20, 10000).</span>
+<span class="sd">    demean : bool = True</span>
+<span class="sd">        Subtract the mean of each series first. A non-zero mean adds a term</span>
+<span class="sd">        growing as the square of the time, which is not part of the transport</span>
+<span class="sd">        coefficient. When the true mean is known to be zero, as for the shear</span>
+<span class="sd">        stress of a fluid, do not: subtracting the sample mean of a finite series</span>
+<span class="sd">        biases the moments low.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(k, m)</span>
+<span class="sd">        The Helfand moments.</span>
+<span class="sd">    """</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">demean</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="n">X</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">n_origins</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">cumulative_trapezoid</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">S</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">n_origins</span></div>
+
+
+
+<div class="viewcode-block" id="shear_stress_components">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.shear_stress_components">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shear_stress_components</span><span class="p">(</span><span class="n">pressure_tensor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The five independent shear components of a pressure tensor.</span>
+
+<span class="sd">    For an isotropic fluid, Pxy, Pxz, Pyz, (Pxx - Pyy)/2 and (Pyy - Pzz)/2 all</span>
+<span class="sd">    have the same autocorrelation function, so each gives the shear viscosity by</span>
+<span class="sd">    Green–Kubo, and averaging the five improves the statistics over using only</span>
+<span class="sd">    the three off-diagonal components (Daivis and Evans, 1994). The order is that</span>
+<span class="sd">    of :data:`SHEAR_COMPONENTS`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pressure_tensor : numpy.ndarray(n, 3, 3)</span>
+<span class="sd">        The pressure tensor at each sample.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy.ndarray(5, n)</span>
+<span class="sd">        The five components.</span>
+<span class="sd">    """</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pressure_tensor</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">P</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Expected a pressure tensor of shape (n, 3, 3), not </span><span class="si">{</span><span class="n">P</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">P</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">P</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="n">P</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="p">(</span><span class="n">P</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">P</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">P</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">P</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
 
 
 

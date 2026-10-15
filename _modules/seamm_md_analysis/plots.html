@@ -381,6 +381,17 @@
     <span class="p">(</span><span class="s2">"yz"</span><span class="p">,</span> <span class="s2">"rgb(0,255,255)"</span><span class="p">,</span> <span class="s2">"rgba(0,255,255,0.1)"</span><span class="p">),</span>
 <span class="p">]</span>
 
+<span class="c1">#: Labels and colors of the five shear components used for the viscosity, in the</span>
+<span class="c1">#: order of :data:`seamm_md_analysis.transport.SHEAR_COMPONENTS`, and their average.</span>
+<span class="n">shear_labels</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">"xy"</span><span class="p">,</span> <span class="s2">"rgb(127,127,0)"</span><span class="p">,</span> <span class="s2">"rgba(127,127,0,0.1)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"xz"</span><span class="p">,</span> <span class="s2">"rgb(255,0,255)"</span><span class="p">,</span> <span class="s2">"rgba(255,0,255,0.1)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"yz"</span><span class="p">,</span> <span class="s2">"rgb(0,255,255)"</span><span class="p">,</span> <span class="s2">"rgba(0,255,255,0.1)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"(xx-yy)/2"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">,</span> <span class="s2">"rgba(255,0,0,0.1)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"(yy-zz)/2"</span><span class="p">,</span> <span class="s2">"blue"</span><span class="p">,</span> <span class="s2">"rgba(0,0,255,0.1)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"black"</span><span class="p">,</span> <span class="s2">"rgba(0,0,0,0.1)"</span><span class="p">),</span>
+<span class="p">]</span>
+
 <span class="c1">#: Labels and colors of the x, y and z components and their total.</span>
 <span class="n">vector_labels</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">,</span> <span class="s2">"rgba(255,0,0,0.1)"</span><span class="p">),</span>
@@ -501,6 +512,87 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">label</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="s1">'kappa'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="s1">'stderr'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> W/m/K"</span>
 
     <span class="k">return</span> <span class="n">hover</span>
+
+
+<div class="viewcode-block" id="plot_components">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.plots.plot_components">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_components</span><span class="p">(</span>
+    <span class="n">figure</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="n">rows</span><span class="p">,</span>
+    <span class="n">ts</span><span class="p">,</span>
+    <span class="n">trace_name</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="p">,</span>
+    <span class="n">yunits</span><span class="p">,</span>
+    <span class="n">err</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="n">shear_labels</span><span class="p">,</span>
+    <span class="n">symbol</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+    <span class="n">fit_units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fit_yunits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Plot the components of a curve, such as running Green–Kubo integrals.</span>
+
+<span class="sd">    A general form of the heat-flux plots below, for any quantity and units.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    figure : seamm_util.Figure</span>
+<span class="sd">        The figure that contains the plots.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the plot in the figure.</span>
+<span class="sd">    rows : numpy.ndarray(n_components, m)</span>
+<span class="sd">        The curves.</span>
+<span class="sd">    ts : [float]</span>
+<span class="sd">        The times, in ps.</span>
+<span class="sd">    trace_name : str</span>
+<span class="sd">        The name of the data traces, followed by the component label.</span>
+<span class="sd">    ylabel : str</span>
+<span class="sd">        The label of the y axis.</span>
+<span class="sd">    yunits : str</span>
+<span class="sd">        The units of the curves.</span>
+<span class="sd">    err : numpy.ndarray(n_components, m)</span>
+<span class="sd">        Their standard errors (optional).</span>
+<span class="sd">    fit : [{str: any}]</span>
+<span class="sd">        For each component, a dict with the fitted curve "xs" and "ys", and the</span>
+<span class="sd">        fitted "value" and its "stderr" for the hover text (optional).</span>
+<span class="sd">    labels : [(str, str, str)]</span>
+<span class="sd">        The label, line color and band color of each component.</span>
+<span class="sd">    symbol : str</span>
+<span class="sd">        The symbol of the fitted value in the hover text, e.g. "η".</span>
+<span class="sd">    fit_units : str</span>
+<span class="sd">        The units of the fitted value in the hover text; by default ``yunits``.</span>
+<span class="sd">    fit_yunits : str</span>
+<span class="sd">        The units of the fitted curves, if different from ``yunits``.</span>
+<span class="sd">    _range : [float]</span>
+<span class="sd">        The range of the time axis.</span>
+<span class="sd">    """</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="n">yunits</span> <span class="k">if</span> <span class="n">fit_units</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fit_units</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hover</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">fit</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">symbol</span><span class="si">}{</span><span class="n">label</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="n">fit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stderr"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" ± </span><span class="si">{</span><span class="n">fit</span><span class="p">[</span><span class="s1">'stderr'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">"</span>
+
+    <span class="n">plot</span><span class="p">,</span> <span class="n">x_axis</span><span class="p">,</span> <span class="n">y_axis</span> <span class="o">=</span> <span class="n">_new_plot</span><span class="p">(</span><span class="n">figure</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">"t (ps)"</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">_range</span><span class="o">=</span><span class="n">_range</span><span class="p">)</span>
+    <span class="n">add_component_traces</span><span class="p">(</span>
+        <span class="n">plot</span><span class="p">,</span>
+        <span class="n">x_axis</span><span class="p">,</span>
+        <span class="n">y_axis</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">,</span>
+        <span class="n">ts</span><span class="p">,</span>
+        <span class="n">trace_name</span><span class="p">,</span>
+        <span class="n">yunits</span><span class="p">,</span>
+        <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>
+        <span class="n">fit</span><span class="o">=</span><span class="n">fit</span><span class="p">,</span>
+        <span class="n">hover</span><span class="o">=</span><span class="n">hover</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+        <span class="n">fit_yunits</span><span class="o">=</span><span class="n">fit_yunits</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">plot</span></div>
+
 
 
 <div class="viewcode-block" id="plot_correlation_functions">

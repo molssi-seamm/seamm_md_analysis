@@ -385,7 +385,7 @@
   <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">seamm_md_analysis</span></code> is the shared library behind SEAMM’s analysis of molecular
-dynamics: the Diffusivity and Thermal Conductivity steps now, and Viscosity,
+dynamics: the Diffusivity, Thermal Conductivity and Viscosity steps now, and
 Structure and the Dielectric constant later. The steps run the MD (or read an
 earlier run), and this library does the numerical work.</p>
 <section id="installing">
@@ -406,9 +406,14 @@ to print a value with its error.</p>
 <dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.correlate" title="seamm_md_analysis.correlate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.correlate</span></code></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">ccovf</span></code>, the cross-covariance of two series by FFT (the definition of
 <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>), the errors of correlation functions, and
 <code class="docutils literal notranslate"><span class="pre">tensor_correlation_functions</span></code> for the six components of a vector flux
-with their running integrals (the Green–Kubo input).</p>
+with their running integrals (the Green–Kubo input), and
+<code class="docutils literal notranslate"><span class="pre">autocorrelation_functions</span></code> for independent series such as the components of
+the shear stress.</p>
 </dd>
 <dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.transport" title="seamm_md_analysis.transport"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.transport</span></code></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">collective_helfand_moments</span></code> for a flux such as the heat flux;
+<code class="docutils literal notranslate"><span class="pre">shear_stress_components</span></code>, the five independent shear components of a
+pressure tensor, and <code class="docutils literal notranslate"><span class="pre">component_helfand_moments</span></code> for each of them, for the
+viscosity;
 <code class="docutils literal notranslate"><span class="pre">species_helfand_moments</span></code> and <code class="docutils literal notranslate"><span class="pre">msd_by_species</span></code> for single-molecule
 diffusion; <code class="docutils literal notranslate"><span class="pre">fit_green_kubo_integral</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_helfand_moment</span></code>,
 <code class="docutils literal notranslate"><span class="pre">helfand_slope</span></code> and <code class="docutils literal notranslate"><span class="pre">fit_slope</span></code>; and <code class="docutils literal notranslate"><span class="pre">yeh_hummer_correction</span></code>.</p>
@@ -449,6 +454,21 @@ time series (<code class="docutils literal notranslate"><span class="pre">read_t
 </div>
 <p>Multiply by V / (k_B T²) and the sampling interval (Green–Kubo), or
 V dt² / (2 k_B T²) (Helfand), to get W/m/K.</p>
+<p>The shear viscosity from a pressure tensor <code class="docutils literal notranslate"><span class="pre">P</span></code> (n × 3 × 3) works the same way,
+averaging the five components:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">seamm_md_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">autocorrelation_functions</span><span class="p">,</span>
+    <span class="n">component_helfand_moments</span><span class="p">,</span>
+    <span class="n">shear_stress_components</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">shear_stress_components</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>  <span class="c1"># Pxy, Pxz, Pyz, (Pxx-Pyy)/2, (Pyy-Pzz)/2</span>
+<span class="n">acf</span><span class="p">,</span> <span class="n">integral</span> <span class="o">=</span> <span class="n">autocorrelation_functions</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">component_helfand_moments</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multiply by V / (k_B T) and the sampling interval (Green–Kubo), or
+V dt² / (2 k_B T) (Helfand), to get the viscosity.</p>
 </section>
 </section>
 

@@ -88,5 +88,16 @@ anything it cannot turn on stops the step before the MD.
 
 :mod:`seamm_md_analysis.step_support` holds the code the analysis steps share:
 the parameter definitions (``source_parameters``), finding the MD sub-steps, the
-checks, and finding the files to read (``md_inputs``). It uses only the methods of
+checks, finding the files to read (``md_inputs``), and passing results between
+steps.
+
+Results for later steps
+=======================
+
+An analysis step can publish a result that later steps use. The Viscosity step
+calls :func:`~seamm_md_analysis.step_support.publish_viscosity`, which stores the
+viscosity (in Pa s), its standard error, the temperature and the method in the
+workspace variable ``_viscosity``. Diffusivity reads it with
+:func:`~seamm_md_analysis.step_support.preceding_viscosity` for the Yeh–Hummer
+correction. A later Viscosity step replaces the record. It uses only the methods of
 SEAMM's nodes and flowcharts, so the library does not depend on SEAMM.

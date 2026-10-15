@@ -330,6 +330,7 @@
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">2026-10-14 MD analysis, phase 1: the shared library</a></li>
 
 
+
 </ul>
 </details></li>
 </ul>
@@ -622,6 +623,44 @@ apply only when it runs its own MD.</p></li>
 Helfand-moment fit (at least 1 ps), Thermal Conductivity silently dropped the Helfand
 Moments rows; it now says why.</p>
 </section>
+<section id="phase-4-the-viscosity">
+<h1>Phase 4: the viscosity<a class="headerlink" href="#phase-4-the-viscosity" title="Link to this heading">#</a></h1>
+<p>Done on 2026-10-15.</p>
+<ul class="simple">
+<li><p><strong>The library</strong> gained <code class="docutils literal notranslate"><span class="pre">shear_stress_components</span></code>, <code class="docutils literal notranslate"><span class="pre">autocorrelation_functions</span></code>,
+<code class="docutils literal notranslate"><span class="pre">component_helfand_moments</span></code>, <code class="docutils literal notranslate"><span class="pre">publish_viscosity</span></code> / <code class="docutils literal notranslate"><span class="pre">preceding_viscosity</span></code>
+(the workspace variable <code class="docutils literal notranslate"><span class="pre">_viscosity</span></code>) and <code class="docutils literal notranslate"><span class="pre">plots.plot_components</span></code>.</p></li>
+<li><p><strong>LAMMPS</strong>: the NVE, NVT and NPT sub-steps sample the full pressure tensor (“Sample
+the pressure tensor”) instead of its three off-diagonal components. The parameters
+<code class="docutils literal notranslate"><span class="pre">shear</span> <span class="pre">stress*</span></code> were renamed <code class="docutils literal notranslate"><span class="pre">pressure</span> <span class="pre">tensor*</span></code>; <code class="docutils literal notranslate"><span class="pre">NVE_Parameters</span></code> translates
+the old names when a flowchart is read (format 2.0 and 3.0), as NPT already did for
+“keep orthorhombic”. The sampled tensor is written to <code class="docutils literal notranslate"><span class="pre">md.h5md</span></code> as
+<code class="docutils literal notranslate"><span class="pre">pressure_tensor</span></code>, replacing the coarser one from the thermodynamic state, so
+<code class="docutils literal notranslate"><span class="pre">pressure_offdiagonal</span></code> is no longer written.</p></li>
+<li><p><strong>Viscosity</strong> (new, <code class="docutils literal notranslate"><span class="pre">viscosity_step</span></code>): Green-Kubo and Helfand moments of the five
+shear components and their average, in both modes; needs <code class="docutils literal notranslate"><span class="pre">pressure_tensor</span></code> at
+least every 5 fs and a periodic system. It publishes the Green-Kubo average for
+later steps and stores it as <code class="docutils literal notranslate"><span class="pre">viscosity#Green-Kubo#&lt;model&gt;</span></code>.</p></li>
+<li><p><strong>Diffusivity</strong>: “Viscosity from” chooses the preceding Viscosity step (the default)
+or a given value for the Yeh-Hummer correction, which is now on by default and
+skipped with a note when there is no viscosity. Older flowcharts, which always
+give the viscosity, keep it.</p></li>
+</ul>
+<p>Decisions taken while implementing:</p>
+<ul class="simple">
+<li><p><strong>The mean of the shear stress is not subtracted.</strong> For a fluid it is zero, and
+subtracting the sample mean of a block of length T lowers the correlation function
+by about 2 sigma^2 tau / T at every lag. With synthetic stresses of known viscosity
+(0.9 mPa s, 200 ps blocks) the Green-Kubo fit averaged 0.837 with the mean
+subtracted and 0.878 without, over eight seeds.</p></li>
+<li><p><strong>The average is fitted, not averaged.</strong> The Green-Kubo and Helfand values of the
+average are fits to the curve averaged over the five components, which is less
+noisy than any one of them; its error comes from the spread of the fits to each
+run or block.</p></li>
+<li><p><strong>The Viscosity step resets its data at the start of each run</strong>, so it gives the
+right answer inside a loop. Thermal Conductivity does not, which is worth fixing.</p></li>
+</ul>
+</section>
 
 
                 </article>
@@ -668,6 +707,7 @@ Moments rows; it now says why.</p>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-2-h5md">Phase 2: H5MD</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-3-requirements-and-analysing-earlier-md">Phase 3: requirements and analysing earlier MD</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-4-the-viscosity">Phase 4: the viscosity</a></li>
 </ul>
 
   </nav></div>

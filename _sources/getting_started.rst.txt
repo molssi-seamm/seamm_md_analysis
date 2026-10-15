@@ -2,7 +2,7 @@ Getting Started
 ===============
 
 ``seamm_md_analysis`` is the shared library behind SEAMM's analysis of molecular
-dynamics: the Diffusivity and Thermal Conductivity steps now, and Viscosity,
+dynamics: the Diffusivity, Thermal Conductivity and Viscosity steps now, and
 Structure and the Dielectric constant later. The steps run the MD (or read an
 earlier run), and this library does the numerical work.
 
@@ -28,10 +28,15 @@ What is in it
     ``ccovf``, the cross-covariance of two series by FFT (the definition of
     ``statsmodels``), the errors of correlation functions, and
     ``tensor_correlation_functions`` for the six components of a vector flux
-    with their running integrals (the Green–Kubo input).
+    with their running integrals (the Green–Kubo input), and
+    ``autocorrelation_functions`` for independent series such as the components of
+    the shear stress.
 
 :mod:`seamm_md_analysis.transport`
     ``collective_helfand_moments`` for a flux such as the heat flux;
+    ``shear_stress_components``, the five independent shear components of a
+    pressure tensor, and ``component_helfand_moments`` for each of them, for the
+    viscosity;
     ``species_helfand_moments`` and ``msd_by_species`` for single-molecule
     diffusion; ``fit_green_kubo_integral``, ``fit_helfand_moment``,
     ``helfand_slope`` and ``fit_slope``; and ``yeh_hummer_correction``.
@@ -76,3 +81,21 @@ The thermal conductivity from a heat flux sampled every ``dt``:
 
 Multiply by V / (k_B T²) and the sampling interval (Green–Kubo), or
 V dt² / (2 k_B T²) (Helfand), to get W/m/K.
+
+The shear viscosity from a pressure tensor ``P`` (n × 3 × 3) works the same way,
+averaging the five components:
+
+.. code-block:: python
+
+    from seamm_md_analysis import (
+        autocorrelation_functions,
+        component_helfand_moments,
+        shear_stress_components,
+    )
+
+    X = shear_stress_components(P)  # Pxy, Pxz, Pyz, (Pxx-Pyy)/2, (Pyy-Pzz)/2
+    acf, integral = autocorrelation_functions(X, m=m)
+    M = component_helfand_moments(X, m=m)
+
+Multiply by V / (k_B T) and the sampling interval (Green–Kubo), or
+V dt² / (2 k_B T) (Helfand), to get the viscosity.
