@@ -1,3 +1,7 @@
 include CODE_OF_CONDUCT.md
+include HISTORY.rst
+recursive-include tests/data *
+graft docs
+prune docs/_build
 
 global-exclude *.py[cod] __pycache__ *.so
