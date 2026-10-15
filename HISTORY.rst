@@ -1,6 +1,17 @@
 =======
 History
 =======
+2026.10.15.1 -- What analyses need from the MD
+    * Analysis steps and MD steps can say, before anything runs, what an analysis
+      needs (``Requirements``, ``Need``) and what an MD run will sample (``Provides``),
+      and ``requirements.check`` reports anything missing or sampled too coarsely.
+    * ``select_md_runs`` chooses the earlier MD runs an analysis reads from
+      ``_md_runs``: the last run, or the last run of each iteration of a loop.
+    * ``step_support`` holds what the analysis steps share to analyze MD run earlier
+      in the flowchart, or to run their own: the parameters for the source of the MD,
+      the checks of the flowchart, turning sampling on, and finding the files.
+    * A new page, "MD steps and analysis steps", describes how they work together.
+
 2026.10.15 -- SEAMM's H5MD files
     * Writes and reads the H5MD files (``md.h5md``) in which the MD steps store each
       run: the time series, the trajectory, the box, the run's parameters and SEAMM's

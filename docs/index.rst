@@ -9,6 +9,7 @@ Welcome to SEAMM MD Analysis's documentation!
 
    getting_started
    h5md
+   analysis_steps
    api
    developer_guide/index
 

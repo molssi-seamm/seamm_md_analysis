@@ -7,10 +7,28 @@ transport coefficients, plots, SEAMM's H5MD files, and readers for older MD
 output.
 """
 
-from . import correlate, h5md, io, legacy, plots, stats, transport, units  # noqa: F401
+from . import (  # noqa: F401
+    correlate,
+    h5md,
+    io,
+    legacy,
+    plots,
+    requirements,
+    stats,
+    step_support,
+    transport,
+    units,
+)
 from .correlate import ccovf, tensor_correlation_functions  # noqa: F401
 from .h5md import H5MDWriter, standard_observables  # noqa: F401
-from .io import MDData, TimeSeries, open_md  # noqa: F401
+from .io import (  # noqa: F401
+    MDData,
+    TimeSeries,
+    md_run_sources,
+    open_md,
+    select_md_runs,
+)
+from .requirements import Interval, Need, Provides, Requirements  # noqa: F401
 from .legacy import (  # noqa: F401
     iter_dump_frames,
     iter_vector_frames,
