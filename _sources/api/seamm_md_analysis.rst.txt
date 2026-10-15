@@ -44,10 +44,26 @@ seamm\_md\_analysis.plots module
    :show-inheritance:
    :undoc-members:
 
+seamm\_md\_analysis.requirements module
+---------------------------------------
+
+.. automodule:: seamm_md_analysis.requirements
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 seamm\_md\_analysis.stats module
 --------------------------------
 
 .. automodule:: seamm_md_analysis.stats
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+seamm\_md\_analysis.step\_support module
+----------------------------------------
+
+.. automodule:: seamm_md_analysis.step_support
    :members:
    :show-inheritance:
    :undoc-members:

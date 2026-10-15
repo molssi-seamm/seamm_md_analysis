@@ -150,6 +150,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../analysis_steps.html">
+    MD steps and analysis steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api.html">
     API Documentation
   </a>
@@ -257,6 +264,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../analysis_steps.html">
+    MD steps and analysis steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../api.html">
     API Documentation
   </a>
@@ -314,6 +328,7 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Campaigns</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">2026-10-14 MD analysis, phase 1: the shared library</a></li>
+
 
 </ul>
 </details></li>
@@ -561,6 +576,52 @@ one atom. It now checks the number of particles.</p></li>
 sampling interval was taken as fs even when the file gave ps.</p></li>
 </ul>
 </section>
+<section id="phase-3-requirements-and-analysing-earlier-md">
+<h1>Phase 3: requirements and analysing earlier MD<a class="headerlink" href="#phase-3-requirements-and-analysing-earlier-md" title="Link to this heading">#</a></h1>
+<p>Done on 2026-10-15.</p>
+<ul class="simple">
+<li><p><strong>The library</strong> gained <code class="docutils literal notranslate"><span class="pre">requirements</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Need</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Requirements</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Provides</span></code>,
+<code class="docutils literal notranslate"><span class="pre">check</span></code>), <code class="docutils literal notranslate"><span class="pre">select_md_runs</span></code>, and <code class="docutils literal notranslate"><span class="pre">step_support</span></code>, the code the analysis steps
+share. The protocol is described in <a class="reference internal" href="../../../analysis_steps.html#analysis-steps"><span class="std std-ref">MD steps and analysis steps</span></a>.</p></li>
+<li><p><strong>seamm</strong>: <code class="docutils literal notranslate"><span class="pre">builder.validate</span></code> calls each step’s <code class="docutils literal notranslate"><span class="pre">check_flowchart(preceding)</span></code>;
+the editor validates before submitting. <strong>seamm_exec</strong>: <code class="docutils literal notranslate"><span class="pre">run_flowchart</span></code> validates
+before running any step, except in an iteration of a parallel loop, which its
+parent job checked. A failing check is logged, never reported, so a bug in a step
+cannot stop every job.</p></li>
+<li><p><strong>LAMMPS</strong>: <code class="docutils literal notranslate"><span class="pre">md_provides</span></code> and <code class="docutils literal notranslate"><span class="pre">request_sampling</span></code> on NVE, NVT, NPT and Heat Flux
+(<code class="docutils literal notranslate"><span class="pre">md_provides.py</span></code>); before running, the LAMMPS step calls <code class="docutils literal notranslate"><span class="pre">check_configuration</span></code>
+on the steps after it up to the next LAMMPS step, following the flowchart’s edges
+without calling <code class="docutils literal notranslate"><span class="pre">next()</span></code>, which a Loop may override.</p></li>
+<li><p><strong>Diffusivity and Thermal Conductivity</strong>: the <code class="docutils literal notranslate"><span class="pre">md</span> <span class="pre">source</span></code>, <code class="docutils literal notranslate"><span class="pre">md</span> <span class="pre">files</span></code> and
+<code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span> <span class="pre">blocks</span></code> parameters, both modes, automatic sampling in mode A, and the
+dialogs hide what does not apply, including the sub-flowchart tab in mode B.</p></li>
+</ul>
+<p>Decisions taken while implementing:</p>
+<ul class="simple">
+<li><p><strong>Mode B reads the last run that samples the first need</strong>, not simply the last
+run, both when checking the flowchart and when running. A LAMMPS step with an NVT
+run sampling centres of mass followed by a Heat Flux run then feeds both
+Diffusivity (the NVT run) and Thermal Conductivity (the Heat Flux run).</p></li>
+<li><p><strong>A single run is divided into blocks</strong> (5 by default) analyzed as independent runs
+for the errors. Thermal Conductivity requires at least 2000 heat-flux samples per
+block; Diffusivity at least 10 frames.</p></li>
+<li><p><strong>Sources:</strong> “the last MD run”, “the last MD run of each loop iteration” (runs by
+the same step, i.e. the iterations of a Loop), and files. “All runs of the last MD
+step”, for production split over several sub-steps, waits for the segments of
+phase 8.</p></li>
+<li><p><strong>Diffusivity’s requirements:</strong> positions of the molecules (or atoms, for monatomic
+systems) at least every 1 ps, turned on at 100 fs; velocities at least every 20 fs,
+turned on at 10 fs. Thermal Conductivity: the heat flux every two steps. Mode A
+turns on what is missing in the last MD sub-step of the sub-flowchart and says so.</p></li>
+<li><p><strong>Thermal Conductivity in mode B</strong> uses the Green–Kubo approach only (the only one
+implemented) at the temperature of the MD; the approach and temperature parameters
+apply only when it runs its own MD.</p></li>
+</ul>
+<p>Found on the way: when the correlation window is shorter than the start of the
+Helfand-moment fit (at least 1 ps), Thermal Conductivity silently dropped the Helfand
+Moments rows; it now says why.</p>
+</section>
 
 
                 </article>
@@ -606,6 +667,7 @@ sampling interval was taken as fs even when the file gave ps.</p></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-2-h5md">Phase 2: H5MD</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#phase-3-requirements-and-analysing-earlier-md">Phase 3: requirements and analysing earlier MD</a></li>
 </ul>
 
   </nav></div>

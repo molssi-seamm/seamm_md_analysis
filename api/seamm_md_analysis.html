@@ -151,6 +151,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analysis_steps.html">
+    MD steps and analysis steps
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../api.html">
     API Documentation
@@ -254,6 +261,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../h5md.html">
     The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analysis_steps.html">
+    MD steps and analysis steps
   </a>
 </li>
 
@@ -955,6 +969,12 @@ values.</p></li>
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.md_run_sources">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">md_run_sources</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration')</span></span><a class="headerlink" href="#seamm_md_analysis.io.md_run_sources" title="Link to this definition">#</a></dt>
+<dd><p>The choices for which earlier MD runs an analysis reads</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.io.open_md">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">open_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#open_md"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.open_md" title="Link to this definition">#</a></dt>
@@ -965,6 +985,30 @@ values.</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.io.MDData" title="seamm_md_analysis.io.MDData">MDData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.select_md_runs">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.io.</span></span><span class="sig-name descname"><span class="pre">select_md_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#select_md_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.select_md_runs" title="Link to this definition">#</a></dt>
+<dd><p>Choose the MD runs an analysis reads from the records in <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>records</strong> (<em>[dict]</em>) – The records MD steps added to <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>, oldest first.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – “the last MD run”, or “the last MD run of each loop iteration”: every run by
+the same MD step as the last one, which in a loop are the runs of the
+iterations, treated as independent replicas.</p></li>
+<li><p><strong>name</strong> (<em>str = None</em>) – Only consider runs that sampled this observable or per-particle property,
+e.g. “heat_flux” or “molecules/position”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The chosen records, oldest first; empty if there are none.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[dict]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1258,6 +1302,174 @@ mean square displacements, for seamm_util Figures (written as .graph files).</p>
 </dd></dl>
 
 </section>
+<section id="module-seamm_md_analysis.requirements">
+<span id="seamm-md-analysis-requirements-module"></span><h2>seamm_md_analysis.requirements module<a class="headerlink" href="#module-seamm_md_analysis.requirements" title="Link to this heading">#</a></h2>
+<p>What an analysis needs from the MD, and what an MD step will provide.</p>
+<p>An MD step describes what a run will write to its H5MD file with
+<a class="reference internal" href="#seamm_md_analysis.requirements.Provides" title="seamm_md_analysis.requirements.Provides"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provides</span></code></a>, from its parameters, before anything runs. An analysis step
+describes what it needs with <a class="reference internal" href="#seamm_md_analysis.requirements.Requirements" title="seamm_md_analysis.requirements.Requirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">Requirements</span></code></a>. <a class="reference internal" href="#seamm_md_analysis.requirements.check" title="seamm_md_analysis.requirements.check"><code class="xref py py-func docutils literal notranslate"><span class="pre">check()</span></code></a> compares the two,
+so that a missing or too coarse sampling is caught before the MD runs rather than
+after it.</p>
+<p>The names are those of the H5MD file: an observable such as “heat_flux” or
+“pressure_tensor”, or a per-particle property as “&lt;group&gt;/&lt;name&gt;”, e.g.
+“molecules/position” or “all/velocity”.</p>
+<p>Intervals are given in time, in MD steps, or both, since an MD step may know only
+one of them before it runs (the timestep may depend on the structure).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Interval">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Interval" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A sampling interval, in time and/or in MD steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<em>pint.Quantity</em><em> or </em><em>None</em>) – The interval in time, if known.</p></li>
+<li><p><strong>steps</strong> (<em>int</em><em> or </em><em>None</em>) – The interval in MD steps, if known.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Interval.steps">
+<span class="sig-name descname"><span class="pre">steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Interval.steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Interval.time">
+<span class="sig-name descname"><span class="pre">time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Interval.time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Need</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">why</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Need"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Need" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One thing an analysis needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>names</strong> (<em>[</em><em>str</em><em>]</em>) – The acceptable names, in order of preference, e.g.
+[“molecules/position”, “all/position”].</p></li>
+<li><p><strong>max_time</strong> (<em>pint.Quantity</em><em> or </em><em>str</em><em> or </em><em>None</em>) – The longest acceptable sampling interval in time.</p></li>
+<li><p><strong>max_steps</strong> (<em>int</em><em> or </em><em>None</em>) – The longest acceptable sampling interval in MD steps.</p></li>
+<li><p><strong>why</strong> (<em>str</em>) – What it is needed for, for messages.</p></li>
+<li><p><strong>sample_time</strong> (<em>pint.Quantity</em><em> or </em><em>str</em><em> or </em><em>None</em>) – The interval to use when an analysis turns the sampling on, if finer than
+the longest acceptable one; by default <code class="docutils literal notranslate"><span class="pre">max_time</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need.max_steps">
+<span class="sig-name descname"><span class="pre">max_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Need.max_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need.max_time">
+<span class="sig-name descname"><span class="pre">max_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Need.max_time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need.names">
+<span class="sig-name descname"><span class="pre">names</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Need.names" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need.sample_time">
+<span class="sig-name descname"><span class="pre">sample_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Need.sample_time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Need.why">
+<span class="sig-name descname"><span class="pre">why</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Need.why" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Provides">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Provides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Provides"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Provides" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>What an MD run will write to its H5MD file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>{str: Interval}</em>) – Each observable and per-particle property, with its sampling interval.</p></li>
+<li><p><strong>timestep</strong> (<em>pint.Quantity</em><em> or </em><em>None</em>) – The timestep, if known before the run.</p></li>
+<li><p><strong>step</strong> (<em>str</em>) – The MD step, for messages, e.g. “LAMMPS / NVT dynamics”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Provides.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Provides.data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Provides.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Provides.interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Provides.interval" title="Link to this definition">#</a></dt>
+<dd><p>The interval of a name, completed from the timestep if possible.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Provides.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Provides.step" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Provides.timestep">
+<span class="sig-name descname"><span class="pre">timestep</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Provides.timestep" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>What an analysis needs from the MD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>needs</strong> (<em>[</em><a class="reference internal" href="#seamm_md_analysis.requirements.Need" title="seamm_md_analysis.requirements.Need"><em>Need</em></a><em>]</em>) – The data, each with its acceptable sampling.</p></li>
+<li><p><strong>periodic</strong> (<em>bool</em>) – Whether the system must be periodic.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements.needs">
+<span class="sig-name descname"><span class="pre">needs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements.needs" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements.periodic">
+<span class="sig-name descname"><span class="pre">periodic</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements.periodic" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.check">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provides</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.check" title="Link to this definition">#</a></dt>
+<dd><p>What the MD will not provide that the analysis needs.</p>
+<p>A sampling interval that cannot be compared before the run (e.g. one given in
+steps when the timestep is not yet known) is not reported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>requirements</strong> (<em>Requirements</em>) – What the analysis needs.</p></li>
+<li><p><strong>provides</strong> (<em>Provides</em>) – What the MD run will write.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A description of each gap; empty if there are none.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-seamm_md_analysis.stats">
 <span id="seamm-md-analysis-stats-module"></span><h2>seamm_md_analysis.stats module<a class="headerlink" href="#module-seamm_md_analysis.stats" title="Link to this heading">#</a></h2>
 <p>Statistics of time series and of replicas.</p>
@@ -1386,6 +1598,131 @@ inefficiency, sqrt(g * var / n).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-seamm_md_analysis.step_support">
+<span id="seamm-md-analysis-step-support-module"></span><h2>seamm_md_analysis.step_support module<a class="headerlink" href="#module-seamm_md_analysis.step_support" title="Link to this heading">#</a></h2>
+<p>Support for SEAMM analysis steps that read MD runs.</p>
+<p>An analysis step either runs its own MD, in a sub-flowchart, as replicas (“mode A”),
+or analyses MD that ran earlier in the flowchart (“mode B”), found through the
+workspace variable <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>. These functions hold what both modes need and that
+every analysis step shares: finding the MD sub-steps in a flowchart, checking that
+they will sample what the analysis needs, turning sampling on, and finding the
+files to read.</p>
+<p>They use only the methods of SEAMM’s nodes and flowcharts, so this library does not
+depend on SEAMM. An MD sub-step is any node with an <code class="docutils literal notranslate"><span class="pre">md_provides()</span></code> method.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.check_md_flowchart">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">check_md_flowchart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preceding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requirements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#check_md_flowchart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.check_md_flowchart" title="Link to this definition">#</a></dt>
+<dd><p>Check, before anything runs, that the MD will provide what an analysis needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>seamm.Node</em>) – The analysis step.</p></li>
+<li><p><strong>preceding</strong> (<em>[seamm.Node]</em>) – The steps that run before it, in order.</p></li>
+<li><p><strong>requirements</strong> (<em>seamm_md_analysis.Requirements</em>) – What the analysis needs.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – The value of its “md source” parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A description of each problem; empty if none.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.md_inputs">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">md_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#md_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.md_inputs" title="Link to this definition">#</a></dt>
+<dd><p>The H5MD files an analysis in mode B reads, one per independent run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>seamm.Node</em>) – The analysis step, for the workspace variables and paths.</p></li>
+<li><p><strong>P</strong> (<em>dict</em>) – Its parameters, as values.</p></li>
+<li><p><strong>name</strong> (<em>str = None</em>) – For runs from <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>, only those that sampled this observable or
+per-particle property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>[pathlib.Path]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.md_substeps">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">md_substeps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#md_substeps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.md_substeps" title="Link to this definition">#</a></dt>
+<dd><p>The MD sub-steps among nodes and inside their sub-flowcharts, in order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>[seamm.Node] or seamm.Flowchart</em>) – The nodes to search, or a flowchart to search in execution order.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The nodes that have <code class="docutils literal notranslate"><span class="pre">md_provides</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[seamm.Node]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.read_files">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">read_files</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'files'</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.read_files" title="Link to this definition">#</a></dt>
+<dd><p>The choice that reads the files given by the user</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.request_sampling">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">request_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requirements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#request_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.request_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Turn on, in the last MD sub-step of a flowchart, what an analysis needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flowchart</strong> (<em>seamm.Flowchart</em>) – The analysis step’s sub-flowchart.</p></li>
+<li><p><strong>requirements</strong> (<em>seamm_md_analysis.Requirements</em>) – What the analysis needs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>What was turned on, and what is still missing.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>([str], [str])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.run_own_md">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">run_own_md</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'run</span> <span class="pre">the</span> <span class="pre">MD</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sub-flowchart'</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.run_own_md" title="Link to this definition">#</a></dt>
+<dd><p>The choice of the analysis step’s source parameter that runs its own MD</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.source_choices">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">source_choices</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('run</span> <span class="pre">the</span> <span class="pre">MD</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sub-flowchart',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration',</span> <span class="pre">'files')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.source_choices" title="Link to this definition">#</a></dt>
+<dd><p>All choices of the source parameter</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.source_parameters">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">source_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analysis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'analysis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#source_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.source_parameters" title="Link to this definition">#</a></dt>
+<dd><p>The parameter definitions an analysis step adds for its source of MD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>analysis</strong> (<em>str</em>) – What the step calculates, for the help text, e.g. “the diffusivity”.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>{str</strong> – “md source”, “md files” and “number of blocks”.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict}</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1934,7 +2271,9 @@ output.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.TimeSeries.values"><code class="docutils literal notranslate"><span class="pre">TimeSeries.values</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.md_run_sources"><code class="docutils literal notranslate"><span class="pre">md_run_sources</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.open_md"><code class="docutils literal notranslate"><span class="pre">open_md()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.select_md_runs"><code class="docutils literal notranslate"><span class="pre">select_md_runs()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.legacy">seamm_md_analysis.legacy module</a><ul class="nav section-nav flex-column">
@@ -1958,6 +2297,35 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.plots.vector_labels"><code class="docutils literal notranslate"><span class="pre">vector_labels</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.requirements">seamm_md_analysis.requirements module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Interval"><code class="docutils literal notranslate"><span class="pre">Interval</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Interval.steps"><code class="docutils literal notranslate"><span class="pre">Interval.steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Interval.time"><code class="docutils literal notranslate"><span class="pre">Interval.time</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need"><code class="docutils literal notranslate"><span class="pre">Need</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need.max_steps"><code class="docutils literal notranslate"><span class="pre">Need.max_steps</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need.max_time"><code class="docutils literal notranslate"><span class="pre">Need.max_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need.names"><code class="docutils literal notranslate"><span class="pre">Need.names</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need.sample_time"><code class="docutils literal notranslate"><span class="pre">Need.sample_time</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Need.why"><code class="docutils literal notranslate"><span class="pre">Need.why</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Provides"><code class="docutils literal notranslate"><span class="pre">Provides</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Provides.data"><code class="docutils literal notranslate"><span class="pre">Provides.data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Provides.interval"><code class="docutils literal notranslate"><span class="pre">Provides.interval()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Provides.step"><code class="docutils literal notranslate"><span class="pre">Provides.step</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Provides.timestep"><code class="docutils literal notranslate"><span class="pre">Provides.timestep</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements"><code class="docutils literal notranslate"><span class="pre">Requirements</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements.needs"><code class="docutils literal notranslate"><span class="pre">Requirements.needs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements.periodic"><code class="docutils literal notranslate"><span class="pre">Requirements.periodic</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.check"><code class="docutils literal notranslate"><span class="pre">check()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.stats">seamm_md_analysis.stats module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.block_average"><code class="docutils literal notranslate"><span class="pre">block_average()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.detect_equilibration"><code class="docutils literal notranslate"><span class="pre">detect_equilibration()</span></code></a></li>
@@ -1965,6 +2333,17 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.mean_and_stderr"><code class="docutils literal notranslate"><span class="pre">mean_and_stderr()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.mean_and_stderr_correlated"><code class="docutils literal notranslate"><span class="pre">mean_and_stderr_correlated()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.statistical_inefficiency"><code class="docutils literal notranslate"><span class="pre">statistical_inefficiency()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.step_support">seamm_md_analysis.step_support module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.check_md_flowchart"><code class="docutils literal notranslate"><span class="pre">check_md_flowchart()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_inputs"><code class="docutils literal notranslate"><span class="pre">md_inputs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_substeps"><code class="docutils literal notranslate"><span class="pre">md_substeps()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.read_files"><code class="docutils literal notranslate"><span class="pre">read_files</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.request_sampling"><code class="docutils literal notranslate"><span class="pre">request_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.run_own_md"><code class="docutils literal notranslate"><span class="pre">run_own_md</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_choices"><code class="docutils literal notranslate"><span class="pre">source_choices</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_parameters"><code class="docutils literal notranslate"><span class="pre">source_parameters()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.transport">seamm_md_analysis.transport module</a><ul class="nav section-nav flex-column">

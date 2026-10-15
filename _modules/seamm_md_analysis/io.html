@@ -148,6 +148,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../analysis_steps.html">
+    MD steps and analysis steps
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API Documentation
   </a>
@@ -248,6 +255,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../h5md.html">
     The H5MD file
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../analysis_steps.html">
+    MD steps and analysis steps
   </a>
 </li>
 
@@ -914,6 +928,53 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">u</span></div>
 </div>
+
+
+
+<span class="c1">#: The choices for which earlier MD runs an analysis reads</span>
+<span class="n">md_run_sources</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"the last MD run"</span><span class="p">,</span>
+    <span class="s2">"the last MD run of each loop iteration"</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="select_md_runs">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.io.select_md_runs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">select_md_runs</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">"the last MD run"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Choose the MD runs an analysis reads from the records in ``_md_runs``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    records : [dict]</span>
+<span class="sd">        The records MD steps added to ``_md_runs``, oldest first.</span>
+<span class="sd">    source : str</span>
+<span class="sd">        "the last MD run", or "the last MD run of each loop iteration": every run by</span>
+<span class="sd">        the same MD step as the last one, which in a loop are the runs of the</span>
+<span class="sd">        iterations, treated as independent replicas.</span>
+<span class="sd">    name : str = None</span>
+<span class="sd">        Only consider runs that sampled this observable or per-particle property,</span>
+<span class="sd">        e.g. "heat_flux" or "molecules/position".</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [dict]</span>
+<span class="sd">        The chosen records, oldest first; empty if there are none.</span>
+<span class="sd">    """</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">records</span> <span class="ow">or</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">records</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">r</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"observables"</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"particles"</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="n">records</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">"the last MD run"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">last</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">"the last MD run of each loop iteration"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">)</span> <span class="o">==</span> <span class="n">last</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">)]</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown source of MD runs: '</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span></div>
 
 </pre></div>
 
