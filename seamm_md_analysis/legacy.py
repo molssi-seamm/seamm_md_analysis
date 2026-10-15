@@ -174,3 +174,129 @@ def read_vector_trajectory(path):
                 frame.append([float(v) for v in next(lines).split()[1:]])
             data.append(frame)
     return metadata, np.array(data)
+
+
+def lammps_box_to_cell(bounds, tilts=None):
+    """The cell vectors (rows) from a LAMMPS dump's box bounds.
+
+    Parameters
+    ----------
+    bounds : 3×2 array_like
+        The (lo, hi) pairs from the ``ITEM: BOX BOUNDS`` lines. For a triclinic
+        box these are LAMMPS's bounding-box values.
+    tilts : (xy, xz, yz) = None
+        The tilt factors of a triclinic box.
+
+    Returns
+    -------
+    numpy.ndarray(3, 3)
+    """
+    (xlo, xhi), (ylo, yhi), (zlo, zhi) = bounds
+    xy = xz = yz = 0.0
+    if tilts is not None:
+        xy, xz, yz = tilts
+        xlo -= min(0.0, xy, xz, xy + xz)
+        xhi -= max(0.0, xy, xz, xy + xz)
+        ylo -= min(0.0, yz)
+        yhi -= max(0.0, yz)
+    return np.array(
+        [
+            [xhi - xlo, 0.0, 0.0],
+            [xy, yhi - ylo, 0.0],
+            [xz, yz, zhi - zlo],
+        ]
+    )
+
+
+def iter_dump_frames(path):
+    """Stream the frames of a LAMMPS custom dump file, gzipped or not.
+
+    Parameters
+    ----------
+    path : str or pathlib.Path
+        The file; a name ending in ".gz" is read with gzip.
+
+    Yields
+    ------
+    dict
+        For each frame: "step"; "time" and "units" if the dump has them; "cell",
+        the 3×3 cell vectors as rows; "periodic", from the boundary flags; and
+        "columns", {name: numpy.ndarray} for each per-atom column, sorted by the
+        atom id. Columns that are not numbers (e.g. "element") are strings.
+    """
+    import gzip
+
+    opener = gzip.open if str(path).endswith(".gz") else open
+    frame = {}
+    units = None
+    with opener(path, "rt") as fd:
+        lines = iter(fd)
+        for line in lines:
+            if not line.startswith("ITEM:"):
+                continue
+            if "TIMESTEP" in line:
+                frame["step"] = int(next(lines))
+            elif "TIME" in line:
+                frame["time"] = float(next(lines))
+            elif "UNITS" in line:
+                units = next(lines).strip()
+            elif "NUMBER OF ATOMS" in line:
+                n_atoms = int(next(lines))
+            elif "BOX BOUNDS" in line:
+                words = line.split()[3:]
+                triclinic = len(words) > 0 and words[0] == "xy"
+                flags = words[3:] if triclinic else words
+                values = [[float(v) for v in next(lines).split()] for _ in range(3)]
+                bounds = [v[0:2] for v in values]
+                tilts = [v[2] for v in values] if triclinic else None
+                frame["cell"] = lammps_box_to_cell(bounds, tilts)
+                frame["periodic"] = all(flag == "pp" for flag in flags)
+            elif "ATOMS" in line:
+                names = line.split()[2:]
+                rows = [next(lines).split() for _ in range(n_atoms)]
+                columns = {}
+                for i, name in enumerate(names):
+                    column = [row[i] for row in rows]
+                    try:
+                        columns[name] = np.array(column, dtype=float)
+                    except ValueError:
+                        columns[name] = np.array(column)
+                if "id" in columns:
+                    columns["id"] = columns["id"].astype(int)
+                    order = np.argsort(columns["id"])
+                    columns = {k: v[order] for k, v in columns.items()}
+                frame["columns"] = columns
+                if units is not None:
+                    frame["units"] = units
+                yield frame
+                frame = {}
+
+
+def iter_vector_frames(path):
+    """Stream a ``!MolSSI vector_trajectory 2.0`` file, such as molecular COMs.
+
+    Parameters
+    ----------
+    path : str or pathlib.Path
+        The file.
+
+    Yields
+    ------
+    dict, then (int, numpy.ndarray(n_rows, n_values)) for each frame
+        First the metadata ("code", "type", "dt", "tunits", "nsteps", "fields"),
+        then the step and the values of each frame.
+    """
+    with open(path) as fd:
+        lines = iter(fd)
+        metadata = _read_header(next(lines), path, "vector_trajectory")
+        for line in lines:
+            if line[0] != "!":
+                break
+        metadata["fields"] = line.split()[1:]
+        yield metadata
+        for line in lines:
+            step, n = line.split()
+            frame = np.array(
+                [[float(v) for v in next(lines).split()[1:]] for _ in range(int(n))]
+            )
+            yield int(step), frame

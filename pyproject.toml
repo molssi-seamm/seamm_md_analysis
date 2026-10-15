@@ -22,9 +22,11 @@ requires-python = ">=3.12"
 # Pure Python. pymbar only for equilibration detection and statistical
 # inefficiency, imported when used.
 dependencies = [
+    "h5py",
     "numpy",
-    "scipy",
+    "pint",
     "pymbar",
+    "scipy",
 ]
 
 [project.urls]
@@ -32,7 +34,12 @@ dependencies = [
 "Documentation" = "https://molssi-seamm.github.io/seamm_md_analysis/"
 
 [project.optional-dependencies]
+# MDAnalysis, for the structural analysis through MDData.universe()
+structure = [
+    "MDAnalysis",
+]
 test = [
+    "MDAnalysis",
     "pytest>=6.1.2",
     "pytest-cov",
 ]

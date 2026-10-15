@@ -3,12 +3,18 @@
 """Analysis of molecular dynamics output for SEAMM.
 
 Time-series statistics, correlation functions, Green–Kubo and Helfand
-transport coefficients, plots, and readers for MD output.
+transport coefficients, plots, SEAMM's H5MD files, and readers for older MD
+output.
 """
 
-from . import correlate, legacy, plots, stats, transport  # noqa: F401
+from . import correlate, h5md, io, legacy, plots, stats, transport, units  # noqa: F401
 from .correlate import ccovf, tensor_correlation_functions  # noqa: F401
+from .h5md import H5MDWriter, standard_observables  # noqa: F401
+from .io import MDData, TimeSeries, open_md  # noqa: F401
 from .legacy import (  # noqa: F401
+    iter_dump_frames,
+    iter_vector_frames,
+    lammps_box_to_cell,
     read_dump_trajectory,
     read_trajectory,
     read_vector_trajectory,
