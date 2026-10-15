@@ -1,6 +1,18 @@
 =======
 History
 =======
+2026.10.15 -- SEAMM's H5MD files
+    * Writes and reads the H5MD files (``md.h5md``) in which the MD steps store each
+      run: the time series, the trajectory, the box, the run's parameters and SEAMM's
+      provenance. The layout is described in the new page "The H5MD file".
+    * ``open_md`` reads a run, or the list of its segments, and returns the time series
+      on their own time axes with their units, streams the frames of a trajectory, and
+      builds an MDAnalysis Universe for structural analysis (``seamm-md-analysis[structure]``).
+    * Translates H5MD unit strings to and from pint.
+    * Streams LAMMPS dump files (gzipped or not, with triclinic boxes) and the LAMMPS
+      step's per-molecule files.
+    * Needs h5py and pint, which every SEAMM installation already has.
+
 2026.10.14 -- Initial release: the shared MD analysis library
     * Statistics (mean ± error over replicas, block averages, statistical
       inefficiency and equilibration detection with pymbar, formatting values with

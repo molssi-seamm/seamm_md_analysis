@@ -80,3 +80,63 @@ def test_read_dump_single_frame(tmp_path):
     metadata, data = legacy.read_dump_trajectory(path)
     assert data.shape == (1, 1, 3)
     assert "dt" not in metadata and metadata["tunits"] == "fs"
+
+
+def test_iter_dump_frames_matches_reader():
+    from seamm_md_analysis import iter_dump_frames, read_dump_trajectory
+
+    path = DATA / "atomic_velocities.dump_trj"
+    metadata, values = read_dump_trajectory(path)
+    frames = list(iter_dump_frames(path))
+    assert [f["step"] for f in frames] == metadata["timesteps"]
+    assert frames[0]["units"] == "metal"
+    assert frames[0]["periodic"]
+    assert np.allclose(np.diag(frames[0]["cell"]), 12.688539597631690)
+    stacked = np.stack(
+        [np.column_stack([f["columns"][c] for c in ("vx", "vy", "vz")]) for f in frames]
+    )
+    # read_dump_trajectory keeps the file's order; the dump is sorted by id
+    assert np.allclose(stacked, values)
+
+
+def test_iter_dump_frames_triclinic_gzip(tmp_path):
+    import gzip
+
+    from seamm_md_analysis import iter_dump_frames
+
+    lx, ly, lz, xy, xz, yz = 10.0, 11.0, 12.0, 1.5, -0.5, 0.75
+    xlo, ylo, zlo = 1.0, 2.0, 3.0
+    # LAMMPS writes the bounding box of the triclinic cell
+    xlo_b = xlo + min(0.0, xy, xz, xy + xz)
+    xhi_b = xlo + lx + max(0.0, xy, xz, xy + xz)
+    ylo_b = ylo + min(0.0, yz)
+    yhi_b = ylo + ly + max(0.0, yz)
+    text = (
+        "ITEM: TIMESTEP\n10\nITEM: NUMBER OF ATOMS\n2\n"
+        "ITEM: BOX BOUNDS xy xz yz pp pp pp\n"
+        f"{xlo_b} {xhi_b} {xy}\n{ylo_b} {yhi_b} {xz}\n{zlo} {zlo + lz} {yz}\n"
+        "ITEM: ATOMS id element q xu yu zu\n"
+        "2 H 0.4 1 2 3\n1 O -0.8 4 5 6\n"
+    )
+    path = tmp_path / "t.dump_trj.gz"
+    with gzip.open(path, "wt") as fd:
+        fd.write(text)
+    (frame,) = list(iter_dump_frames(path))
+    assert frame["step"] == 10
+    assert np.allclose(frame["cell"], [[lx, 0, 0], [xy, ly, 0], [xz, yz, lz]])
+    assert list(frame["columns"]["id"]) == [1, 2]
+    assert list(frame["columns"]["element"]) == ["O", "H"]
+    assert np.allclose(frame["columns"]["xu"], [4, 1])
+
+
+def test_iter_vector_frames_matches_reader():
+    from seamm_md_analysis import iter_vector_frames, read_vector_trajectory
+
+    path = DATA / "com_positions.trj"
+    metadata, values = read_vector_trajectory(path)
+    frames = iter_vector_frames(path)
+    header = next(frames)
+    assert header["fields"] == metadata["fields"]
+    steps, arrays = zip(*frames)
+    assert steps[0] == 0
+    assert np.allclose(np.stack(arrays), values)
