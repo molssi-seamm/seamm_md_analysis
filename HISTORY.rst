@@ -1,7 +1,7 @@
 =======
 History
 =======
-2026.10.15.3 -- Bugfix: fitting a short Green-Kubo integral
+2026.10.16 -- Bugfix: fitting a short Green-Kubo integral
     * ``fit_green_kubo_integral`` raised an IndexError for an integral shorter than
       about twice the 0.4 ps window of its moving average. It now raises a ValueError
       saying how many points are needed.
