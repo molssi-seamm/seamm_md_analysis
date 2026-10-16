@@ -559,9 +559,14 @@ def fit_green_kubo_integral(y, xs, sigma=None):
     ma = moving_average(y, width)
 
     # Find the initial, steep rise. Ignore the first couple of points.
-    if len(ma) // 2 <= 2:
-        raise ValueError("Too few points to fit the Green–Kubo integral.")
-    for i in range(2, len(ma) // 2):
+    last = min(len(ma) // 2, len(ma) - width)
+    if last <= 2:
+        raise ValueError(
+            f"Too few points to fit the Green–Kubo integral: {y.size} points over "
+            f"{xs[-1] - xs[0]:.3g}, but at least {2 * width + 2} are needed, a little "
+            "over twice the 0.4 window of the moving average."
+        )
+    for i in range(2, last):
         if ma[i] > 0.9 * ma[i + width]:
             break
     npts = i + width

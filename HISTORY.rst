@@ -1,6 +1,11 @@
 =======
 History
 =======
+2026.10.16 -- Bugfix: fitting a short Green-Kubo integral
+    * ``fit_green_kubo_integral`` raised an IndexError for an integral shorter than
+      about twice the 0.4 ps window of its moving average. It now raises a ValueError
+      saying how many points are needed.
+
 2026.10.15.2 -- Functions for the viscosity
     * ``shear_stress_components`` gives the five independent shear components of a
       pressure tensor, Pxy, Pxz, Pyz, (Pxx-Pyy)/2 and (Pyy-Pzz)/2, which all give the
