@@ -12,6 +12,14 @@ seamm\_md\_analysis.correlate module
    :show-inheritance:
    :undoc-members:
 
+seamm\_md\_analysis.electric module
+-----------------------------------
+
+.. automodule:: seamm_md_analysis.electric
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 seamm\_md\_analysis.h5md module
 -------------------------------
 

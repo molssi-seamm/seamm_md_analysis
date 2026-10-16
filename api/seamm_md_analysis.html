@@ -543,6 +543,179 @@ integrals in units of the sampling interval.</p>
 </dd></dl>
 
 </section>
+<section id="module-seamm_md_analysis.electric">
+<span id="seamm-md-analysis-electric-module"></span><h2>seamm_md_analysis.electric module<a class="headerlink" href="#module-seamm_md_analysis.electric" title="Link to this heading">#</a></h2>
+<p>Electrical properties from equilibrium MD: the static dielectric constant and the
+ionic conductivity.</p>
+<p>Both are computed from the trajectory – unwrapped positions, so molecules stay
+whole, and fixed (forcefield) charges:</p>
+<ul class="simple">
+<li><p>the dielectric constant from the fluctuations of the dipole of the cell, for
+Ewald or PPPM electrostatics with conducting (“tin-foil”) boundary conditions:
+ε = 1 + (⟨M²⟩ − ⟨M⟩²) / (3 V ε0 kB T). For an electrolyte, M is the dipole of
+the neutral molecules only: the ions carry a current, not a bounded dipole.</p></li>
+<li><p>the ionic conductivity from the collective displacement of the ions’ charges
+(Einstein–Helfand), σ = lim ⟨‖P(t) − P(0)‖²⟩ / (6 V kB t), P = Σ qᵢ rᵢ over the
+ions; and the Nernst–Einstein estimate from the ions’ self-diffusion,
+σ_NE = e² / (V kB T) Σ N_s z_s² D_s. Their ratio is the ionicity.</p></li>
+</ul>
+<p>Positions are in Å, charges in e, volumes in Å³, temperatures in K and times in
+ps; results are in SI units (S/m for conductivities, m²/s for diffusion
+coefficients).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.E">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">E</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.602176634e-19</span></span><a class="headerlink" href="#seamm_md_analysis.electric.E" title="Link to this definition">#</a></dt>
+<dd><p>The elementary charge, C</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.EPS0">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">EPS0</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8.8541878128e-12</span></span><a class="headerlink" href="#seamm_md_analysis.electric.EPS0" title="Link to this definition">#</a></dt>
+<dd><p>The vacuum permittivity, F/m</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.KB">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">KB</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.380649e-23</span></span><a class="headerlink" href="#seamm_md_analysis.electric.KB" title="Link to this definition">#</a></dt>
+<dd><p>The Boltzmann constant, J/K</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.cell_dipole">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">cell_dipole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#cell_dipole"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.cell_dipole" title="Link to this definition">#</a></dt>
+<dd><p>The dipole Σ qᵢ rᵢ of a set of atoms, e·Å.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>positions</strong> (<em>numpy.ndarray(n_atoms, 3)</em>) – All the (unwrapped) positions of one frame, Å.</p></li>
+<li><p><strong>atoms</strong> (<em>numpy.ndarray of int</em>) – The atoms to include – whole molecules, so that the dipole of neutral
+molecules does not depend on the origin.</p></li>
+<li><p><strong>charges</strong> (<em>numpy.ndarray</em>) – The charges of those atoms, e.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.classify_molecules">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">classify_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#classify_molecules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.classify_molecules" title="Link to this definition">#</a></dt>
+<dd><p>Sort the molecules into neutral ones, ions, and others by their total charge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>charges</strong> (<em>array_like</em>) – The charge of each atom, e.</p></li>
+<li><p><strong>molecules</strong> (<em>[[int]]</em>) – The atoms of each molecule.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – How far from an integer a total charge may be.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">neutral</span></code>, <code class="docutils literal notranslate"><span class="pre">ions</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code>: lists of molecule indices;
+<code class="docutils literal notranslate"><span class="pre">charge</span></code>: the total charge of each molecule; <code class="docutils literal notranslate"><span class="pre">z</span></code>: the nearest
+integer charge of each.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.collective_msd">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">collective_msd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">P</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#collective_msd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.collective_msd" title="Link to this definition">#</a></dt>
+<dd><p>The mean square displacement of the collective charge displacement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>P</strong> (<em>numpy.ndarray(n, 3)</em>) – Σ qᵢ rᵢ over the ions in each frame, e·Å (unwrapped positions).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>⟨‖P(t) − P(0)‖²⟩ over time origins, e² Å², for lags 0 .. n-1.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray(n)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.conductivity_from_msd">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">conductivity_from_msd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#conductivity_from_msd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.conductivity_from_msd" title="Link to this definition">#</a></dt>
+<dd><p>The Einstein–Helfand conductivity from the collective MSD.</p>
+<p>The slope is fitted between <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> of the curve (fractions):
+the late part has few time origins and is noisy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> (S/m, the error of the fit), <code class="docutils literal notranslate"><span class="pre">slope</span></code>
+(e² Å² / ps) and the fitted line (<code class="docutils literal notranslate"><span class="pre">xs</span></code>, <code class="docutils literal notranslate"><span class="pre">ys</span></code>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.dielectric_constant">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">dielectric_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_running</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#dielectric_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.dielectric_constant" title="Link to this definition">#</a></dt>
+<dd><p>The static dielectric constant from the dipole of the cell over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>M</strong> (<em>numpy.ndarray(n, 3)</em>) – The dipole of the cell in each frame, e·Å.</p></li>
+<li><p><strong>volume</strong> (<em>float</em>) – The (mean) volume of the cell, Å³.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The mean temperature, K.</p></li>
+<li><p><strong>n_blocks</strong> (<em>int</em>) – Consecutive blocks for the standard error; with fewer than 2, none.</p></li>
+<li><p><strong>n_running</strong> (<em>int</em>) – The number of points of the running estimate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">epsilon</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> (None without blocks), <code class="docutils literal notranslate"><span class="pre">variance</span></code> (e² Å²),
+<code class="docutils literal notranslate"><span class="pre">mean_dipole</span></code> (e·Å), <code class="docutils literal notranslate"><span class="pre">running</span></code> – the estimate from the first k
+frames, as <code class="docutils literal notranslate"><span class="pre">(frame</span> <span class="pre">counts,</span> <span class="pre">values)</span></code> – and <code class="docutils literal notranslate"><span class="pre">n_blocks</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.dipole_correlation">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">dipole_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#dipole_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.dipole_correlation" title="Link to this definition">#</a></dt>
+<dd><p>The normalized autocorrelation of the dipole of the cell and its time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>M</strong> (<em>numpy.ndarray(n, 3)</em>) – The dipole in each frame.</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – The time between frames, ps.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The lags to keep; a quarter of the frames by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">times</span></code> (ps), <code class="docutils literal notranslate"><span class="pre">acf</span></code> (the average over x, y and z, normalized) and
+<code class="docutils literal notranslate"><span class="pre">tau</span></code>, its integral up to the first zero (ps).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.electric.nernst_einstein">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">nernst_einstein</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diffusion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#nernst_einstein"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.nernst_einstein" title="Link to this definition">#</a></dt>
+<dd><p>The Nernst–Einstein conductivity, S/m.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>diffusion</strong> (<em>{str: float}</em>) – The self-diffusion coefficient of each ionic species, m²/s.</p></li>
+<li><p><strong>counts</strong> (<em>{str: int}</em>) – The number of each.</p></li>
+<li><p><strong>charges</strong> (<em>{str: int}</em>) – The charge of each, in e.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-seamm_md_analysis.h5md">
 <span id="seamm-md-analysis-h5md-module"></span><h2>seamm_md_analysis.h5md module<a class="headerlink" href="#module-seamm_md_analysis.h5md" title="Link to this heading">#</a></h2>
 <p>Writing SEAMM’s H5MD files.</p>
@@ -2385,6 +2558,19 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.correlate.ccovf"><code class="docutils literal notranslate"><span class="pre">ccovf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.correlate.moving_average"><code class="docutils literal notranslate"><span class="pre">moving_average()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.correlate.tensor_correlation_functions"><code class="docutils literal notranslate"><span class="pre">tensor_correlation_functions()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.electric">seamm_md_analysis.electric module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.E"><code class="docutils literal notranslate"><span class="pre">E</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.EPS0"><code class="docutils literal notranslate"><span class="pre">EPS0</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.KB"><code class="docutils literal notranslate"><span class="pre">KB</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.cell_dipole"><code class="docutils literal notranslate"><span class="pre">cell_dipole()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.classify_molecules"><code class="docutils literal notranslate"><span class="pre">classify_molecules()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.collective_msd"><code class="docutils literal notranslate"><span class="pre">collective_msd()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.conductivity_from_msd"><code class="docutils literal notranslate"><span class="pre">conductivity_from_msd()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.dielectric_constant"><code class="docutils literal notranslate"><span class="pre">dielectric_constant()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.dipole_correlation"><code class="docutils literal notranslate"><span class="pre">dipole_correlation()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.electric.nernst_einstein"><code class="docutils literal notranslate"><span class="pre">nernst_einstein()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.h5md">seamm_md_analysis.h5md module</a><ul class="nav section-nav flex-column">

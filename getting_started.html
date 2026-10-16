@@ -421,6 +421,17 @@ diffusion; <code class="docutils literal notranslate"><span class="pre">fit_gree
 sums over time origins to rounding, but take O(n log n) rather than O(n m)
 time.</p>
 </dd>
+<dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.electric" title="seamm_md_analysis.electric"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.electric</span></code></a></dt><dd><p>The static dielectric constant and the ionic conductivity from the trajectory
+and fixed charges: <code class="docutils literal notranslate"><span class="pre">classify_molecules</span></code> (neutral molecules, ions, and
+molecules with a non-integer charge), <code class="docutils literal notranslate"><span class="pre">cell_dipole</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dielectric_constant</span></code> (the fluctuation formula for Ewald or PPPM
+electrostatics with conducting boundaries, with errors from blocks and the
+running estimate) and <code class="docutils literal notranslate"><span class="pre">dipole_correlation</span></code>; <code class="docutils literal notranslate"><span class="pre">collective_msd</span></code> and
+<code class="docutils literal notranslate"><span class="pre">conductivity_from_msd</span></code> (Einstein–Helfand, from the collective displacement
+of the ions’ charges) and <code class="docutils literal notranslate"><span class="pre">nernst_einstein</span></code>. For an electrolyte the dielectric
+constant uses the dipole of the neutral molecules: the ions carry a current,
+not a bounded dipole.</p>
+</dd>
 <dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.plots" title="seamm_md_analysis.plots"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.plots</span></code></a></dt><dd><p>Plots of correlation functions, Green–Kubo integrals, Helfand moments and
 MSDs, for <code class="docutils literal notranslate"><span class="pre">seamm_util</span></code> figures.</p>
 </dd>
