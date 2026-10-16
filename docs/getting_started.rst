@@ -45,6 +45,18 @@ What is in it
     sums over time origins to rounding, but take O(n log n) rather than O(n m)
     time.
 
+:mod:`seamm_md_analysis.electric`
+    The static dielectric constant and the ionic conductivity from the trajectory
+    and fixed charges: ``classify_molecules`` (neutral molecules, ions, and
+    molecules with a non-integer charge), ``cell_dipole``,
+    ``dielectric_constant`` (the fluctuation formula for Ewald or PPPM
+    electrostatics with conducting boundaries, with errors from blocks and the
+    running estimate) and ``dipole_correlation``; ``collective_msd`` and
+    ``conductivity_from_msd`` (Einstein–Helfand, from the collective displacement
+    of the ions' charges) and ``nernst_einstein``. For an electrolyte the dielectric
+    constant uses the dipole of the neutral molecules: the ions carry a current,
+    not a bounded dipole.
+
 :mod:`seamm_md_analysis.plots`
     Plots of correlation functions, Green–Kubo integrals, Helfand moments and
     MSDs, for ``seamm_util`` figures.
