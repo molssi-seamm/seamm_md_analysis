@@ -303,3 +303,15 @@ def test_shear_components_of_isotropic_stress_agree(rng):
     X = transport.shear_stress_components(S)
     var = X.var(axis=1)
     assert var == pytest.approx(np.full(5, 0.5), rel=0.05)
+
+
+def test_green_kubo_shorter_than_the_window():
+    """Too short for the moving average: a clear error, not an IndexError."""
+    ts = np.arange(251) * 0.002
+    y = 1.0 - np.exp(-ts / 0.1)
+    with pytest.raises(ValueError, match="Too few points"):
+        transport.fit_green_kubo_integral(y, ts)
+    # Just long enough
+    ts = np.arange(2 * 200 + 2) * 0.002
+    fit = transport.fit_green_kubo_integral(1.0 - np.exp(-ts / 0.1), ts)
+    assert fit.value == pytest.approx(1.0, rel=0.05)
