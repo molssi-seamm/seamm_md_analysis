@@ -9,6 +9,7 @@ output.
 
 from . import (  # noqa: F401
     correlate,
+    electric,
     h5md,
     io,
     legacy,

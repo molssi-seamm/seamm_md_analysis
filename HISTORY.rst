@@ -1,6 +1,15 @@
 =======
 History
 =======
+2026.10.16.1 -- The dielectric constant and the ionic conductivity
+    * A new module, ``seamm_md_analysis.electric``, for the static dielectric constant
+      from the fluctuations of the dipole of the cell (with errors from blocks, the
+      running estimate and the dipole's correlation time), and for the ionic
+      conductivity from the collective displacement of the ions' charges
+      (Einstein-Helfand) and from their self-diffusion (Nernst-Einstein). It sorts
+      the molecules into neutral ones and ions by their charges, so that for an
+      electrolyte the dielectric constant is that of the solvent.
+
 2026.10.16 -- Bugfix: fitting a short Green-Kubo integral
     * ``fit_green_kubo_integral`` raised an IndexError for an integral shorter than
       about twice the 0.4 ps window of its moving average. It now raises a ValueError
