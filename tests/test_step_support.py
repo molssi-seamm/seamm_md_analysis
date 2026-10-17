@@ -397,9 +397,9 @@ def test_size_warnings():
 def test_print_details_goes_to_step_out_only(tmp_path):
     import logging
 
-    printer = logging.getLogger("test details step")
+    printer = logging.getLogger("testdetails.step")
     printer.setLevel(1)
-    job = logging.getLogger("test details")
+    job = logging.getLogger("testdetails")
     step_out = logging.FileHandler(tmp_path / "step.out")
     step_out.setLevel(20)
     job_out = logging.FileHandler(tmp_path / "job.out")
