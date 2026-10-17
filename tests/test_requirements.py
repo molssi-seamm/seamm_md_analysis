@@ -86,6 +86,24 @@ def test_select_loop_iterations():
     assert [r["path"] for r in chosen] == ["b", "d"]
 
 
+def test_select_runs_in_loop_iterations():
+    # The step's id includes each loop iteration's directory (job 4021, 2026-10-16)
+    loop = []
+    for i in (1, 2, 3):
+        loop.append({"step": f"4.iter_{i}.0.3 NVT dynamics", "path": f"e{i}"})
+        loop.append({"step": f"4.iter_{i}.0.4 NVT dynamics", "path": f"p{i}"})
+    chosen = select_md_runs(loop, "the last MD run of each loop iteration")
+    assert [r["path"] for r in chosen] == ["p1", "p2", "p3"]
+    # Iterations named by system, and a run outside the loop by the same step title
+    named = [
+        {"step": "2 NVT dynamics", "path": "x"},
+        {"step": "4.water.0.4 NVT dynamics", "path": "w"},
+        {"step": "4.NaCl.0.4 NVT dynamics", "path": "n"},
+    ]
+    chosen = select_md_runs(named, "the last MD run of each loop iteration")
+    assert [r["path"] for r in chosen] == ["w", "n"]
+
+
 def test_select_unknown_source():
     with pytest.raises(ValueError):
         select_md_runs(records, "everything")

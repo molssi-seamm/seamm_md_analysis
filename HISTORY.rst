@@ -1,6 +1,14 @@
 =======
 History
 =======
+2026.10.17 -- Bugfix: only the last loop iteration was analyzed
+    * With "the last MD run of each loop iteration", the analysis steps (Viscosity,
+      Diffusivity, Liquid Structure, Dielectric Constant, Ionic Conductivity) used only
+      the run of the last iteration, because a step's name includes the iteration's
+      directory (e.g. 4.iter_2.0.4). The runs of every iteration are now analyzed, as
+      independent runs. Results from this choice in earlier versions came from a
+      single run.
+
 2026.10.16.1 -- The dielectric constant and the ionic conductivity
     * A new module, ``seamm_md_analysis.electric``, for the static dielectric constant
       from the fluctuations of the dipole of the cell (with errors from blocks, the
