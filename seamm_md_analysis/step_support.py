@@ -799,3 +799,27 @@ def _wrap(text, indent, width=80):
     return textwrap.fill(
         text, width=width, initial_indent=indent, subsequent_indent=indent
     )
+
+
+def cell_widths(cell):
+    """The perpendicular widths of a periodic cell, Å.
+
+    Parameters
+    ----------
+    cell : array_like(3, 3)
+        The cell vectors as rows.
+    """
+    return _widths(cell)
+
+
+def molecule_extents(configuration):
+    """The length of each molecule -- the largest distance between two of its atoms,
+    made whole across the cell by following its bonds -- in Å, in the order of
+    ``configuration.find_molecules()``. The configuration is not changed."""
+    molecules = configuration.find_molecules(as_indices=True)
+    xyz = np.asarray(configuration.atoms.get_coordinates(fractionals=False))
+    cell = None
+    if configuration.periodicity == 3:
+        cell = np.asarray(configuration.cell.vectors(), dtype=float)
+    neighbors = configuration.bonded_neighbors(as_indices=True)
+    return [_molecule_extent(xyz, m, neighbors, cell) for m in molecules]
