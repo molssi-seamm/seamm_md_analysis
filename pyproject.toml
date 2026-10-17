@@ -27,6 +27,7 @@ dependencies = [
     "pint",
     "pymbar",
     "scipy",
+    "tabulate",
 ]
 
 [project.urls]

@@ -101,3 +101,34 @@ workspace variable ``_viscosity``. Diffusivity reads it with
 :func:`~seamm_md_analysis.step_support.preceding_viscosity` for the Yeh–Hummer
 correction. A later Viscosity step replaces the record. It uses only the methods of
 SEAMM's nodes and flowcharts, so the library does not depend on SEAMM.
+
+How the results are reported
+============================
+
+The analysis steps report their results in one way, with the functions of
+:mod:`seamm_md_analysis.stats` and :mod:`seamm_md_analysis.state`.
+
+**Errors.** A result's error comes from its spread over independent runs, or over
+blocks of a single run. Tables show the 95% confidence interval, Student's t for the
+number of runs or blocks times the standard error (2.78 for 5 runs, not 2), and say
+so under the table. The results stored for later steps, such as the viscosity a
+Diffusivity step uses for the box-size correction, carry the standard error.
+
+**One value for an isotropic system.** For a fluid, a property with components -- the
+five shear components of the viscosity, the three diagonal components of the
+diffusion coefficient or the thermal conductivity, the trace of the dipole
+fluctuations for the dielectric constant -- is reported as one value: the components
+are averaged within each run, and the error is that of these averages. The spread of
+the components is a check, given as one line ("the components agree: χ²/dof = 0.8"),
+not the error. A run is treated as isotropic only when its cell is cubic and nothing
+in it is directional (walls, fields, deformation, flow); otherwise the components
+are reported. The tables of each component and each run are in the detailed output.
+
+**The state.** Every analysis step reports the state its results belong to: the
+temperature, pressure, volume and density, with their errors over the runs. For
+NPT runs the density is the equilibrium density at their pressure. For runs at
+constant volume the pressure is what the density gives; if an NPT run comes before
+them in the flowchart (an equilibration, say), its volume fluctuations give the bulk
+modulus K, and the equilibrium density at its pressure is estimated as
+ρ (1 + (P_target − P) / K).
+

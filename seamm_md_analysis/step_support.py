@@ -341,3 +341,77 @@ def preceding_viscosity(node):
     if not node.variable_exists(viscosity_variable):
         return None
     return node.get_variable(viscosity_variable)
+
+
+def npt_reference(node, paths):
+    """The bulk modulus and target pressure from an NPT run before the analysed runs.
+
+    The last NPT run recorded in ``_md_runs`` before the first of the analysed
+    runs -- typically the equilibration before the production runs -- gives the
+    bulk modulus from its volume fluctuations, and the pressure it was run at.
+
+    Parameters
+    ----------
+    node : seamm.Node
+        The analysis step, for the workspace variables.
+    paths : [str or pathlib.Path]
+        The md.h5md files of the analysed runs.
+
+    Returns
+    -------
+    (float, float) or (None, None)
+        The bulk modulus and the target pressure, in atm.
+    """
+    from .io import open_md
+    from .state import bulk_modulus, run_state
+
+    if not node.variable_exists("_md_runs"):
+        return None, None
+    records = list(node.get_variable("_md_runs"))
+    analysed = {str(Path(p).resolve()) for p in paths}
+    first = next(
+        (
+            i
+            for i, r in enumerate(records)
+            if str(Path(r["path"]).resolve()) in analysed
+        ),
+        len(records),
+    )
+    for record in reversed(records[:first]):
+        if record.get("ensemble") != "NPT" or not Path(record["path"]).exists():
+            continue
+        try:
+            with open_md(record["path"]) as md:
+                K = bulk_modulus(md)
+                target = run_state(md).target_pressure
+        except Exception:
+            continue
+        if K is not None:
+            return K, target
+    return None, None
+
+
+def state_of_runs(node, paths):
+    """The state of the analysed runs: T, P, V and ρ with their errors, and the
+    equilibrium density where an NPT run before them gives the bulk modulus.
+
+    Parameters
+    ----------
+    node : seamm.Node
+        The analysis step.
+    paths : [str or pathlib.Path]
+        The md.h5md files of the analysed runs.
+
+    Returns
+    -------
+    seamm_md_analysis.State
+    """
+    from .io import open_md
+    from .state import run_state, summarize_state
+
+    runs = []
+    for path in paths:
+        with open_md(path) as md:
+            runs.append(run_state(md))
+    K, target = npt_reference(node, paths)
+    return summarize_state(runs, target_pressure=target, bulk_modulus=K)
