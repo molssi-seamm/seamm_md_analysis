@@ -133,6 +133,18 @@ class RunState:
     target_pressure: float = None
 
 
+def _series(md, name, units):
+    """An observable's values without a step-0 sample: LAMMPS's setup step, whose
+    virial is not valid with constraints (files written before lammps-step
+    2026.10.17.2 have it)."""
+    series = md.observable(name, units=units)
+    values = np.asarray(series.values, dtype=float)
+    steps = np.asarray(series.steps)
+    if len(steps) == len(values) and len(values) > 1 and steps[0] == 0:
+        values = values[1:]
+    return values
+
+
 def run_state(md):
     """The mean temperature, pressure, volume and density of a run.
 
@@ -142,25 +154,19 @@ def run_state(md):
     P = md.parameters
     state = RunState(ensemble=str(P.get("ensemble", "")))
     if md.has_observable("temperature"):
-        state.temperature = _equilibrated_mean(
-            md.observable("temperature", units="K").values
-        )
+        state.temperature = _equilibrated_mean(_series(md, "temperature", "K"))
     if md.has_observable("pressure"):
-        state.pressure = _equilibrated_mean(
-            md.observable("pressure", units="atm").values
-        )
+        state.pressure = _equilibrated_mean(_series(md, "pressure", "atm"))
     mass = None
     masses = md.masses()
     if masses is not None:
         mass = float(np.sum(masses))
     if md.has_observable("volume"):
-        state.volume = _equilibrated_mean(md.observable("volume", units="Å^3").values)
+        state.volume = _equilibrated_mean(_series(md, "volume", "Å^3"))
     elif md.periodic and md.cell() is not None:
         state.volume = float(abs(np.linalg.det(md.cell(units="Å"))))
     if md.has_observable("density"):
-        state.density = _equilibrated_mean(
-            md.observable("density", units="g/mL").values
-        )
+        state.density = _equilibrated_mean(_series(md, "density", "g/mL"))
     elif mass is not None and state.volume:
         state.density = mass / state.volume * AMU_PER_A3_IN_G_PER_ML
     if state.ensemble == "NPT" and "pressure" in P:
@@ -186,7 +192,7 @@ def bulk_modulus(md):
     """
     if not md.has_observable("volume"):
         return None
-    volume = np.asarray(md.observable("volume", units="Å^3").values, dtype=float)
+    volume = np.asarray(_series(md, "volume", "Å^3"), dtype=float)
     if volume.size < 10:
         return None
     try:
