@@ -556,7 +556,9 @@ def _same_step(a, b):
     A run's step is labelled by the step's id and title, e.g. "4.iter_2.0.4 NVT
     dynamics". The numbers in the id are the positions of the steps; anything else is
     the directory of a loop iteration (``iter_2``, or a system or configuration name),
-    which differs from one iteration to the next.
+    which differs from one iteration to the next. Only the innermost loop's may
+    differ: in "3.ethanol.2.iter_2.0.4" the replicas of ethanol are the same step,
+    but not those of water in an earlier iteration of the outer loop.
     """
     if a is None or b is None:
         return False
@@ -570,6 +572,14 @@ def _same_step(a, b):
     parts_b = id_b.split(".")
     if len(parts_a) != len(parts_b):
         return False
-    return all(
-        x == y or not (x.isdigit() or y.isdigit()) for x, y in zip(parts_a, parts_b)
-    )
+    # Only the innermost loop's iteration may differ: with a loop over systems
+    # around a loop over replicas, the runs of the other systems are not the same
+    # step's replicas
+    loops = [i for i, x in enumerate(parts_a) if not x.isdigit()]
+    innermost = loops[-1] if loops else None
+    for i, (x, y) in enumerate(zip(parts_a, parts_b)):
+        if x == y:
+            continue
+        if i != innermost or y.isdigit():
+            return False
+    return True

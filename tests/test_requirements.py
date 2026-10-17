@@ -104,6 +104,25 @@ def test_select_runs_in_loop_iterations():
     assert [r["path"] for r in chosen] == ["w", "n"]
 
 
+def test_select_runs_in_nested_loops():
+    """A loop over systems around a loop over replicas: the analysis of a system
+    takes only its own replicas (2026-10-17)."""
+    runs = []
+    for system in ("water", "ethanol"):
+        for i in (1, 2, 3):
+            runs.append(
+                {
+                    "step": f"3.{system}.2.iter_{i}.0.4 NVT dynamics",
+                    "path": system + str(i),
+                }
+            )
+    chosen = select_md_runs(runs, "the last MD run of each loop iteration")
+    assert [r["path"] for r in chosen] == ["ethanol1", "ethanol2", "ethanol3"]
+    # And during the first system, before the second has run
+    chosen = select_md_runs(runs[:3], "the last MD run of each loop iteration")
+    assert [r["path"] for r in chosen] == ["water1", "water2", "water3"]
+
+
 def test_select_unknown_source():
     with pytest.raises(ValueError):
         select_md_runs(records, "everything")
