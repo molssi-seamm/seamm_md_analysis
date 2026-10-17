@@ -17,6 +17,11 @@ from pathlib import Path
 import re
 
 from .io import md_run_sources, select_md_runs
+
+try:
+    from seamm.problems import Edit, Fix, Problem
+except ImportError:  # seamm before 2026.10.17: problems without fixes
+    Edit = Fix = Problem = None
 from .requirements import check
 
 #: The choice of the analysis step's source parameter that runs its own MD
@@ -180,7 +185,37 @@ def check_md_flowchart(node, preceding, requirements, source):
         ]
         if len(candidates) > 0:
             target = candidates[-1]
-    return [f"'{title}': {p}" for p in check(requirements, target.md_provides())]
+    return _sampling_problems(title, requirements, target)
+
+
+def _sampling_problems(title, requirements, target):
+    """What the MD step will not sample, each with a fix where the step can give one.
+
+    The fix sets the MD step's sampling parameters as ``request_sampling`` would
+    when the analysis runs its own MD.
+    """
+    if Problem is None:  # seamm before 2026.10.17
+        return [f"'{title}': {p}" for p in check(requirements, target.md_provides())]
+
+    problems = []
+    provides = target.md_provides()
+    for need in requirements.needs:
+        gaps = check(type(requirements)(needs=[need]), provides)
+        if len(gaps) == 0:
+            continue
+        fixes = []
+        if hasattr(target, "sampling_edits"):
+            result = target.sampling_edits(need)
+            if result is not None:
+                edits, description = result
+                fixes.append(
+                    Fix(
+                        f"Turn on {description}",
+                        [Edit(target, p, value, units) for p, value, units in edits],
+                    )
+                )
+        problems.extend(Problem(f"'{title}': {gap}", fixes=fixes) for gap in gaps)
+    return problems
 
 
 def request_sampling(flowchart, requirements):

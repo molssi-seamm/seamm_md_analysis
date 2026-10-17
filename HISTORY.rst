@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.17.1 -- Fixes offered when the MD does not sample what an analysis needs
+    * When the MD before an analysis step does not sample what it needs, or not often
+      enough, the problem found before the job runs now comes with a fix that turns
+      the sampling on in the MD step, for MD steps that can give one (LAMMPS
+      2026.10.17). The editor offers it as a button; ``seamm-flowchart validate
+      --fix`` applies it.
+
 2026.10.17 -- Bugfix: only the last loop iteration was analyzed
     * With "the last MD run of each loop iteration", the analysis steps (Viscosity,
       Diffusivity, Liquid Structure, Dielectric Constant, Ionic Conductivity) used only
