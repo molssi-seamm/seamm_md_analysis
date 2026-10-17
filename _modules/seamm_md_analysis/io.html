@@ -985,7 +985,9 @@
 <span class="sd">    A run's step is labelled by the step's id and title, e.g. "4.iter_2.0.4 NVT</span>
 <span class="sd">    dynamics". The numbers in the id are the positions of the steps; anything else is</span>
 <span class="sd">    the directory of a loop iteration (``iter_2``, or a system or configuration name),</span>
-<span class="sd">    which differs from one iteration to the next.</span>
+<span class="sd">    which differs from one iteration to the next. Only the innermost loop's may</span>
+<span class="sd">    differ: in "3.ethanol.2.iter_2.0.4" the replicas of ethanol are the same step,</span>
+<span class="sd">    but not those of water in an earlier iteration of the outer loop.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -999,9 +1001,17 @@
     <span class="n">parts_b</span> <span class="o">=</span> <span class="n">id_b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts_a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts_b</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">y</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts_a</span><span class="p">,</span> <span class="n">parts_b</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="c1"># Only the innermost loop's iteration may differ: with a loop over systems</span>
+    <span class="c1"># around a loop over replicas, the runs of the other systems are not the same</span>
+    <span class="c1"># step's replicas</span>
+    <span class="n">loops</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parts_a</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()]</span>
+    <span class="n">innermost</span> <span class="o">=</span> <span class="n">loops</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">loops</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">parts_a</span><span class="p">,</span> <span class="n">parts_b</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">innermost</span> <span class="ow">or</span> <span class="n">y</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span>
 </pre></div>
 
                 </article>
