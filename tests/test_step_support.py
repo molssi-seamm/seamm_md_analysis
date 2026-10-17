@@ -392,3 +392,28 @@ def test_size_warnings():
     )
     assert ss.size_warnings(long, min_molecules=20, widths_per_molecule=1.5) == []
     db.close()
+
+
+def test_print_details_goes_to_step_out_only(tmp_path):
+    import logging
+
+    printer = logging.getLogger("test details step")
+    printer.setLevel(1)
+    job = logging.getLogger("test details")
+    step_out = logging.FileHandler(tmp_path / "step.out")
+    step_out.setLevel(20)
+    job_out = logging.FileHandler(tmp_path / "job.out")
+    printer.addHandler(step_out)
+    job.addHandler(job_out)
+    assert ss.print_details(printer, "The values of each run")
+    printer.info("The headline")
+    for h in (step_out, job_out):
+        h.close()
+    assert (tmp_path / "step.out").read_text().splitlines() == [
+        "The values of each run",
+        "The headline",
+    ]
+    assert (tmp_path / "job.out").read_text().splitlines() == ["The headline"]
+    printer.removeHandler(step_out)
+    job.removeHandler(job_out)
+    assert not ss.print_details(printer, "nowhere")

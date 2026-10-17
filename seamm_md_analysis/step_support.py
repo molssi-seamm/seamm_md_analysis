@@ -823,3 +823,36 @@ def molecule_extents(configuration):
         cell = np.asarray(configuration.cell.vectors(), dtype=float)
     neighbors = configuration.bonded_neighbors(as_indices=True)
     return [_molecule_extent(xyz, m, neighbors, cell) for m in molecules]
+
+
+def print_details(printer, text):
+    """Write detailed output -- the tables of each run, block or component -- to the
+    step's own output (step.out) only, not to the job's.
+
+    The step's printer writes to step.out and, through the job's printer, to job.out;
+    this sends the text to the step.out handler alone.
+
+    Parameters
+    ----------
+    printer : logging.Logger
+        The step's printer.
+    text : str
+        The text, already formatted.
+
+    Returns
+    -------
+    bool
+        Whether it was written (False if the step has no step.out handler).
+    """
+    import logging
+
+    for handler in printer.handlers:
+        if isinstance(handler, logging.FileHandler) and handler.baseFilename.endswith(
+            "step.out"
+        ):
+            record = logging.LogRecord(
+                printer.name, logging.INFO, "", 0, str(text), None, None
+            )
+            handler.handle(record)
+            return True
+    return False
