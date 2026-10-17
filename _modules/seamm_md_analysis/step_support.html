@@ -383,6 +383,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">md_run_sources</span><span class="p">,</span> <span class="n">select_md_runs</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">seamm.problems</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edit</span><span class="p">,</span> <span class="n">Fix</span><span class="p">,</span> <span class="n">Problem</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># seamm before 2026.10.17: problems without fixes</span>
+    <span class="n">Edit</span> <span class="o">=</span> <span class="n">Fix</span> <span class="o">=</span> <span class="n">Problem</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.requirements</span><span class="w"> </span><span class="kn">import</span> <span class="n">check</span>
 
 <span class="c1">#: The choice of the analysis step's source parameter that runs its own MD</span>
@@ -554,8 +559,38 @@
         <span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">check</span><span class="p">(</span><span class="n">requirements</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">md_provides</span><span class="p">())]</span></div>
+    <span class="k">return</span> <span class="n">_sampling_problems</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">requirements</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sampling_problems</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">requirements</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""What the MD step will not sample, each with a fix where the step can give one.</span>
+
+<span class="sd">    The fix sets the MD step's sampling parameters as ``request_sampling`` would</span>
+<span class="sd">    when the analysis runs its own MD.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">Problem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># seamm before 2026.10.17</span>
+        <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">check</span><span class="p">(</span><span class="n">requirements</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">md_provides</span><span class="p">())]</span>
+
+    <span class="n">problems</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">provides</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">md_provides</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">need</span> <span class="ow">in</span> <span class="n">requirements</span><span class="o">.</span><span class="n">needs</span><span class="p">:</span>
+        <span class="n">gaps</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">requirements</span><span class="p">)(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="n">need</span><span class="p">]),</span> <span class="n">provides</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">fixes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">"sampling_edits"</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sampling_edits</span><span class="p">(</span><span class="n">need</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">edits</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">fixes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Fix</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"Turn on </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="p">[</span><span class="n">Edit</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">units</span> <span class="ow">in</span> <span class="n">edits</span><span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="n">problems</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Problem</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">gap</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">fixes</span><span class="o">=</span><span class="n">fixes</span><span class="p">)</span> <span class="k">for</span> <span class="n">gap</span> <span class="ow">in</span> <span class="n">gaps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">problems</span>
 
 
 <div class="viewcode-block" id="request_sampling">
