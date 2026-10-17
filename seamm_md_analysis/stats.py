@@ -3,6 +3,7 @@
 """Statistics of time series and of replicas."""
 
 import contextlib
+from dataclasses import dataclass
 import io
 import logging
 from math import ceil, log10
@@ -206,3 +207,170 @@ def mean_and_stderr_correlated(series):
     g = statistical_inefficiency(series)
     n = series.shape[0]
     return float(series.mean()), float(np.sqrt(g * series.var(ddof=1) / n))
+
+
+# ----------------------------------------------------------------------
+# Estimates and their errors, as the analysis steps report them
+# ----------------------------------------------------------------------
+def t_factor(n, level=0.95):
+    """The factor turning a standard error from ``n`` samples into a confidence
+    interval: Student's t with n - 1 degrees of freedom (2.78 for 5 samples at 95%,
+    1.96 for many). NaN for fewer than two samples."""
+    if n is None or n < 2:
+        return float("nan")
+    from scipy import stats
+
+    return float(stats.t.ppf(0.5 + level / 2, n - 1))
+
+
+@dataclass
+class Estimate:
+    """A value with its standard error, from ``n`` independent samples.
+
+    The samples are independent runs or blocks (``source``). Results stored for
+    later steps carry the standard error; tables show the 95% confidence
+    interval, from Student's t, and say so.
+
+    Attributes
+    ----------
+    value : float
+    stderr : float or None
+        The standard error of the value; None if it cannot be estimated (one
+        sample).
+    n : int
+        The number of independent samples.
+    units : str
+    source : str
+        What the samples are: "runs" or "blocks".
+    """
+
+    value: float
+    stderr: float = None
+    n: int = 1
+    units: str = ""
+    source: str = "runs"
+
+    @classmethod
+    def from_samples(cls, values, units="", source="runs"):
+        """The mean of independent samples and its standard error."""
+        values = np.asarray(values, dtype=float)
+        values = values[np.isfinite(values)]
+        if values.size == 0:
+            return cls(float("nan"), None, 0, units, source)
+        mean, stderr = mean_and_stderr(values)
+        stderr = float(stderr) if values.size > 1 else None
+        return cls(float(mean), stderr, int(values.size), units, source)
+
+    @property
+    def ci95(self):
+        """The half-width of the 95% confidence interval, or None."""
+        if self.stderr is None or self.n < 2:
+            return None
+        return t_factor(self.n) * self.stderr
+
+    def formatted(self, precision=2):
+        """The value and its 95% interval as text, e.g. ("0.72", "0.19").
+
+        A value without an error, or the same in every sample (e.g. the volume of
+        runs at constant volume), is given to six significant figures, without ±.
+        """
+        if self.ci95 is None or not self.ci95 > 0:
+            return f"{self.value:.6g}", ""
+        return fmt_err(self.value, self.ci95, precision=precision)
+
+    def describe_error(self):
+        """What the ± in a table means, for a note under it."""
+        if self.stderr is None or self.n < 2:
+            return f"There is no error estimate: it needs at least two {self.source}."
+        t = t_factor(self.n)
+        return (
+            f"± is the 95% confidence interval: Student's t ({t:.2f} for {self.n} "
+            f"{self.source}) times the standard error over the {self.source}."
+        )
+
+
+def isotropic_average(per_sample):
+    """One value for an isotropic property from its components.
+
+    The components are averaged within each run (or block), and the error is that
+    of these averages over the runs: the components are correlated (e.g. the
+    normal-stress differences of the viscosity), so their own spread would
+    overstate the precision.
+
+    Parameters
+    ----------
+    per_sample : array_like(n_samples, n_components)
+        The value of each component in each run or block.
+
+    Returns
+    -------
+    Estimate
+    """
+    per_sample = np.asarray(per_sample, dtype=float)
+    return Estimate.from_samples(per_sample.mean(axis=1))
+
+
+@dataclass
+class ComponentCheck:
+    """Whether the components of a property agree within their errors.
+
+    Attributes
+    ----------
+    chi2 : float or None
+        χ² of the component means about their average, weighted by their
+        standard errors; None without errors.
+    dof : int
+        The degrees of freedom, the number of components less one.
+    p : float or None
+        The probability of a χ² at least this large if the components agree.
+    agree : bool or None
+        Whether they agree, at p ≥ 0.01.
+    text : str
+        One line for the output.
+    """
+
+    chi2: float = None
+    dof: int = 0
+    p: float = None
+    agree: bool = None
+    text: str = ""
+
+
+def component_check(per_sample, names=None):
+    """Compare the components of a property, for a one-line diagnostic.
+
+    Parameters
+    ----------
+    per_sample : array_like(n_samples, n_components)
+        The value of each component in each run or block.
+    names : [str]
+        The components' names, for the text.
+
+    Returns
+    -------
+    ComponentCheck
+    """
+    per_sample = np.asarray(per_sample, dtype=float)
+    n, k = per_sample.shape
+    if n < 2 or k < 2:
+        return ComponentCheck(text="The components cannot be compared: too few runs.")
+    means, stderrs = mean_and_stderr(per_sample)
+    if not np.all(np.isfinite(stderrs)) or np.any(stderrs <= 0):
+        return ComponentCheck(text="The components cannot be compared: no errors.")
+    average = np.average(means, weights=1 / stderrs**2)
+    chi2 = float(np.sum(((means - average) / stderrs) ** 2))
+    dof = k - 1
+    from scipy import stats
+
+    p = float(stats.chi2.sf(chi2, dof))
+    agree = p >= 0.01
+    what = "the components agree" if agree else "the components differ"
+    text = f"Isotropy: {what} (χ²/dof = {chi2 / dof:.2f}, p = {p:.2g})."
+    if not agree:
+        worst = int(np.argmax(np.abs(means - average) / stderrs))
+        name = names[worst] if names is not None else f"component {worst + 1}"
+        text += (
+            f" {name} is furthest from the average. The system may not be isotropic, "
+            "or the runs too short."
+        )
+    return ComponentCheck(chi2, dof, p, agree, text)

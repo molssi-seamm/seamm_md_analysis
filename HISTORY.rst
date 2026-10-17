@@ -1,6 +1,22 @@
 =======
 History
 =======
+2026.10.17.2 -- Results reported one way: labelled errors, isotropic values, the state
+    * ``Estimate``: a value with its standard error over independent runs or blocks;
+      its 95% confidence interval uses Student's t for the number of samples (2.78
+      for 5 runs, not 2), and it says what its ± is, for a note under a table.
+    * ``isotropic_average`` gives one value for a property from its components,
+      averaged within each run, with the error of those averages; ``component_check``
+      tells whether the components agree (χ²), as a one-line diagnostic.
+    * A new module, ``state``: the temperature, pressure, volume and density of runs
+      after their equilibration, with errors; for runs at constant volume the
+      equilibrium density estimated from the bulk modulus of an NPT run before them
+      (``bulk_modulus``, from its volume fluctuations); ``state_table`` for the
+      output; and ``isotropy``, whether a run can be treated as isotropic (a cubic
+      cell and nothing directional in it).
+    * ``step_support.state_of_runs``: the state of the runs an analysis step read,
+      using the NPT run before them in the flowchart for the bulk modulus.
+
 2026.10.17.1 -- Fixes offered when the MD does not sample what an analysis needs
     * When the MD before an analysis step does not sample what it needs, or not often
       enough, the problem found before the job runs now comes with a fix that turns

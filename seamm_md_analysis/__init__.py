@@ -15,6 +15,7 @@ from . import (  # noqa: F401
     legacy,
     plots,
     requirements,
+    state,
     stats,
     step_support,
     transport,
@@ -42,13 +43,28 @@ from .legacy import (  # noqa: F401
     read_trajectory,
     read_vector_trajectory,
 )
+from .state import (  # noqa: F401
+    RunState,
+    State,
+    bulk_modulus,
+    is_cubic,
+    isotropy,
+    run_state,
+    summarize_state,
+    state_table,
+)
 from .stats import (  # noqa: F401
+    ComponentCheck,
+    Estimate,
     block_average,
+    component_check,
     detect_equilibration,
     fmt_err,
+    isotropic_average,
     mean_and_stderr,
     mean_and_stderr_correlated,
     statistical_inefficiency,
+    t_factor,
 )
 from .transport import (  # noqa: F401
     SHEAR_COMPONENTS,

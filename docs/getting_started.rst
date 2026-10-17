@@ -22,7 +22,19 @@ What is in it
     ``mean_and_stderr`` over replicas, ``block_average``,
     ``statistical_inefficiency`` and ``detect_equilibration`` (pymbar, imported
     quietly when first used), ``mean_and_stderr_correlated``, and ``fmt_err``
-    to print a value with its error.
+    to print a value with its error. ``Estimate``, a value with its standard error
+    over independent runs or blocks, which gives the 95% confidence interval with
+    Student's t (``t_factor``) and says what its ± is; ``isotropic_average``, one
+    value from the components of a property, averaged within each run; and
+    ``component_check``, whether the components agree (χ²).
+
+:mod:`seamm_md_analysis.state`
+    The state the runs sampled: ``run_state`` (temperature, pressure, volume and
+    density of a run, after its equilibration), ``summarize_state`` over runs, with
+    the equilibrium density of runs at constant volume estimated from a bulk
+    modulus (``bulk_modulus``, from an NPT run's volume fluctuations), and
+    ``state_table`` for the output. ``isotropy`` says whether a run can be treated
+    as isotropic.
 
 :mod:`seamm_md_analysis.correlate`
     ``ccovf``, the cross-covariance of two series by FFT (the definition of
