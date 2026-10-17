@@ -1,6 +1,12 @@
 =======
 History
 =======
+2026.10.17.3 -- Bugfix: nested loops mixed the runs of different systems
+    * With a loop over systems around a loop over replicas, "the last MD run of each
+      loop iteration" also took the replicas of the systems before: the directories
+      of all loops' iterations were treated as the same step. Only the innermost
+      loop's iterations are now, so each system's analysis takes its own replicas.
+
 2026.10.17.2 -- Results reported one way: labelled errors, isotropic values, the state
     * ``Estimate``: a value with its standard error over independent runs or blocks;
       its 95% confidence interval uses Student's t for the number of samples (2.78
