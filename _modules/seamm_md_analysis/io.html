@@ -973,9 +973,35 @@
     <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">"the last MD run"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">last</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">"the last MD run of each loop iteration"</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">)</span> <span class="o">==</span> <span class="n">last</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">records</span> <span class="k">if</span> <span class="n">_same_step</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">),</span> <span class="n">last</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"step"</span><span class="p">))]</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unknown source of MD runs: '</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_same_step</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Whether two runs were made by the same MD step, perhaps in different loop</span>
+<span class="sd">    iterations.</span>
+
+<span class="sd">    A run's step is labelled by the step's id and title, e.g. "4.iter_2.0.4 NVT</span>
+<span class="sd">    dynamics". The numbers in the id are the positions of the steps; anything else is</span>
+<span class="sd">    the directory of a loop iteration (``iter_2``, or a system or configuration name),</span>
+<span class="sd">    which differs from one iteration to the next.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="n">id_a</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">title_a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span>
+    <span class="n">id_b</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">title_b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title_a</span> <span class="o">!=</span> <span class="n">title_b</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">parts_a</span> <span class="o">=</span> <span class="n">id_a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+    <span class="n">parts_b</span> <span class="o">=</span> <span class="n">id_b</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts_a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts_b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="n">y</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts_a</span><span class="p">,</span> <span class="n">parts_b</span><span class="p">)</span>
+    <span class="p">)</span>
 </pre></div>
 
                 </article>
