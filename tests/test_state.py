@@ -251,3 +251,39 @@ def test_state_of_runs_uses_the_npt_run_before_them(tmp_path):
     alone = _Node({"_md_runs": records[1:]})
     assert npt_reference(alone, nvt) == (None, None)
     assert state_of_runs(alone, nvt).equilibrium_density is None
+
+
+class _Printer:
+    def __init__(self):
+        self.lines = []
+
+    def normal(self, text):
+        self.lines.append(str(text))
+
+
+class _Step(_Node):
+    def __init__(self, variables, step_id):
+        super().__init__(variables)
+        self._id = step_id
+
+    def set_variable(self, name, value):
+        self.variables[name] = value
+
+
+def test_the_state_is_printed_once_for_the_same_runs(tmp_path):
+    from seamm_md_analysis.step_support import report_state
+
+    runs = [write_run(tmp_path / f"r{i}.h5md", seed=i) for i in range(2)]
+    variables = {}
+    first, second = _Printer(), _Printer()
+    s1 = report_state(_Step(variables, ("9",)), first, runs)
+    s2 = report_state(_Step(variables, ("10",)), second, runs)
+    assert any("The state (NVT)" in line for line in first.lines)
+    assert (
+        second.lines[0].strip() == "The state of these runs is given by step 9 above."
+    )
+    assert s1.pressure.value == s2.pressure.value
+    # Other runs get their own table
+    third = _Printer()
+    report_state(_Step(variables, ("11",)), third, runs[:1])
+    assert any("The state (NVT)" in line for line in third.lines)

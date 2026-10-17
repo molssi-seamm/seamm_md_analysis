@@ -765,6 +765,10 @@ def state_data(state):
     return data
 
 
+#: The workspace variable recording the runs whose state was last printed
+STATE_REPORTED = "_md_state_reported"
+
+
 def report_state(node, printer, paths, indent=8 * " "):
     """Print the state of the analysed runs and return it.
 
@@ -791,6 +795,31 @@ def report_state(node, printer, paths, indent=8 * " "):
     except Exception as e:
         printer.normal(f"{indent}The state of the runs could not be determined: {e}")
         return None
+
+    # Printed once for a set of runs: later analyses of the same runs refer to it
+    runs = sorted(str(Path(p).resolve()) for p in paths)
+    where = ".".join(str(i) for i in getattr(node, "_id", ()) or ())
+    try:
+        reported = (
+            node.get_variable(STATE_REPORTED)
+            if node.variable_exists(STATE_REPORTED)
+            else None
+        )
+    except Exception:
+        reported = None
+    if reported is not None and reported.get("runs") == runs:
+        printer.normal(
+            _wrap(
+                f"The state of these runs is given by step {reported['step']} above.",
+                indent,
+            )
+        )
+        printer.normal("")
+        return state
+    try:
+        node.set_variable(STATE_REPORTED, {"runs": runs, "step": where})
+    except Exception:
+        pass
     text = state_table(state)
     lines = text.splitlines()
     # The table, then its notes wrapped at the step's width
