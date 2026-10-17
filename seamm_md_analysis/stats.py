@@ -271,10 +271,15 @@ class Estimate:
     def formatted(self, precision=2):
         """The value and its 95% interval as text, e.g. ("0.72", "0.19").
 
-        A value without an error, or the same in every sample (e.g. the volume of
-        runs at constant volume), is given to six significant figures, without ±.
+        A value without an error, or one whose error is negligible -- the same in
+        every sample, like the volume of runs at constant volume or the dipole of a
+        rigid molecule -- is given to six significant figures, without ±.
         """
-        if self.ci95 is None or not self.ci95 > 0:
+        if (
+            self.ci95 is None
+            or not self.ci95 > 0
+            or self.ci95 < 1.0e-4 * abs(self.value)
+        ):
             return f"{self.value:.6g}", ""
         return fmt_err(self.value, self.ci95, precision=precision)
 

@@ -16,30 +16,35 @@ The names are those of the H5MD file (see :ref:`h5md-layout`): an observable suc
 ``heat_flux`` or ``pressure_tensor``, or a per-particle property as
 ``<group>/<name>``, e.g. ``molecules/position``.
 
-Two ways to get the MD
-======================
+Where the MD comes from
+=======================
 
-An analysis step's **MD to analyze** parameter (``md source``) chooses where the MD
-comes from:
+An analysis step analyzes MD that ran before it in the flowchart. Its **MD to
+analyze** parameter (``md source``) chooses which:
 
-``run the MD in the sub-flowchart``
-    The step runs the MD in its own sub-flowchart a number of times, as independent
-    runs, and takes the errors from their spread. This is how the steps have always
-    worked.
+``the last MD run of each loop iteration`` (the default)
+    Every run by the same MD step as the last one, which in a Loop are the runs of its
+    iterations, analyzed as independent runs. Only the innermost loop around the MD
+    counts, so in a loop over temperatures around a loop over replicas, an analysis
+    inside the temperature loop takes that temperature's replicas. Without a loop it
+    is the one run.
 ``the last MD run``
-    The step analyzes the last MD run earlier in the flowchart that sampled what it
-    needs, found in the workspace variable ``_md_runs``. One production run can then
-    feed several analyses.
-``the last MD run of each loop iteration``
-    Every run by the same MD step as the last one, which in a Loop are the runs of the
-    iterations, analyzed as independent runs.
+    The last MD run earlier in the flowchart that sampled what the step needs, found
+    in the workspace variable ``_md_runs``.
 ``files``
     The ``md.h5md`` files given, each an independent run; ``job://<n>/<path>`` reads
     another job's file.
 
-When a single run is analyzed, it is divided into consecutive blocks (``number of
-blocks``, 5 by default), which are analyzed separately to estimate the errors. Each
-block must be much longer than the correlation time of what is analyzed.
+For independent runs, put the MD in a Loop -- in parallel, each run starting from the
+same structure ("Discard the structure" in the MD sub-steps) with new velocities --
+and put the analysis after the loop. One set of runs can feed several analyses. When
+a single run is analyzed, it is divided into consecutive blocks (``number of
+blocks``, 5 by default) for the errors; each block must be much longer than the
+correlation time of what is analyzed.
+
+The steps used to run their own MD in a sub-flowchart. That route is gone: a
+flowchart still asking for it fails the check before the job runs, with a message
+saying what replaces it.
 
 The methods
 ===========
@@ -79,12 +84,13 @@ Analysis steps
     the next MD step. An analysis that will read this MD and cannot use the structure,
     such as one needing a periodic system, raises an exception, so the job stops
     before the MD. Periodicity is known only once the structure exists, so the
-    flowchart check cannot catch it.
+    flowchart check cannot catch it. It may also return warnings, e.g. from
+    :func:`~seamm_md_analysis.step_support.size_warnings`, which the MD step prints.
 
-When an analysis runs its own MD, it calls
-:func:`~seamm_md_analysis.step_support.request_sampling` on its sub-flowchart first,
-which turns on in the last MD sub-step whatever is missing and reports the changes;
-anything it cannot turn on stops the step before the MD.
+What the MD does not sample is reported by the flowchart check with a fix: the MD
+step's ``sampling_edits(need)`` gives the parameter changes that turn the sampling
+on, which the editor offers as a button and ``seamm-flowchart validate --fix``
+applies.
 
 :mod:`seamm_md_analysis.step_support` holds the code the analysis steps share:
 the parameter definitions (``source_parameters``), finding the MD sub-steps, the
