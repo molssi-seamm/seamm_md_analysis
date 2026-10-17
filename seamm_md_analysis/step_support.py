@@ -244,7 +244,18 @@ def _static_value(node, key):
 
 
 #: The parameters of MD sub-steps that set the temperature or pressure
-STATE_PARAMETERS = ("T", "T0", "T1", "P", "P0", "P1", "temperature", "pressure")
+STATE_PARAMETERS = (
+    "T",
+    "T0",
+    "T1",
+    "P",
+    "P0",
+    "P1",
+    "Pinitial",
+    "Pfinal",
+    "temperature",
+    "pressure",
+)
 
 
 def _loop_changes_state(loop, md_nodes):
