@@ -80,6 +80,42 @@ def test_check_mode_b_reports_gaps():
     assert problem.startswith("'Diffusivity': molecules/velocity is not sampled")
 
 
+class EditableMD(MD):
+    """An MD step that gives its sampling changes as parameter edits."""
+
+    def __init__(self, title, data):
+        super().__init__(title, data)
+        self.parameters = {
+            "velocities": SimpleNamespace(value="never", units=None),
+            "velocities rate": SimpleNamespace(value="", units=None),
+        }
+
+    def sampling_edits(self, need):
+        if need.names[0] != "molecules/velocity":
+            return None
+        return (
+            [("velocities", "by time interval", None), ("velocities rate", "20", "fs")],
+            f"sampling of molecules/velocity every 20 fs in {self.title}",
+        )
+
+
+def test_check_mode_b_offers_a_fix():
+    pytest.importorskip("seamm.problems")
+    nvt = EditableMD("LAMMPS / NVT", {"molecules/position": Interval("50 fs")})
+    lammps = SimpleNamespace(title="LAMMPS", subflowchart=Flowchart(nvt))
+    node = SimpleNamespace(title="Diffusivity")
+    (problem,) = ss.check_md_flowchart(node, [lammps], needs, "the last MD run")
+    assert problem.severity == "error"
+    (fix,) = problem.fixes
+    assert fix.label == (
+        "Turn on sampling of molecules/velocity every 20 fs in LAMMPS / NVT"
+    )
+    fix.apply()
+    assert nvt.parameters["velocities"].value == "by time interval"
+    assert nvt.parameters["velocities rate"].value == "20"
+    assert nvt.parameters["velocities rate"].units == "fs"
+
+
 def test_check_mode_b_without_md():
     node = SimpleNamespace(title="Diffusivity")
     (problem,) = ss.check_md_flowchart(node, [], needs, "the last MD run")
