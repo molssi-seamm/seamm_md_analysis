@@ -698,3 +698,104 @@ def size_warnings(configuration, min_molecules=200, widths_per_molecule=3.0):
                 "with their own images."
             )
     return result
+
+
+# ----------------------------------------------------------------------
+# The state, as every analysis step reports and stores it
+# ----------------------------------------------------------------------
+def _result(description, units=""):
+    return {
+        "description": description,
+        "dimensionality": "scalar",
+        "type": "float",
+        "units": units,
+    }
+
+
+#: The results describing the state of the runs, for each analysis step's metadata
+state_results = {
+    "T": _result("The mean temperature", "K"),
+    "T,stderr": _result("The standard error of the temperature", "K"),
+    "P": _result("The mean pressure", "atm"),
+    "P,stderr": _result("The standard error of the pressure", "atm"),
+    "V": _result("The mean volume", "Å^3"),
+    "density": _result("The mean density", "g/mL"),
+    "density,stderr": _result("The standard error of the density", "g/mL"),
+    "equilibrium density": _result(
+        "The estimated density at the target pressure of runs at constant volume",
+        "g/mL",
+    ),
+    "equilibrium density,stderr": _result(
+        "The standard error of the estimated equilibrium density", "g/mL"
+    ),
+    "bulk modulus": _result(
+        "The bulk modulus used for the equilibrium density, from an NPT run", "atm"
+    ),
+}
+
+
+def state_data(state):
+    """The state as results for ``store_results``, keyed as in ``state_results``."""
+    data = {}
+    for key, estimate in (
+        ("T", state.temperature),
+        ("P", state.pressure),
+        ("V", state.volume),
+        ("density", state.density),
+        ("equilibrium density", state.equilibrium_density),
+    ):
+        if estimate is None:
+            continue
+        data[key] = estimate.value
+        if estimate.stderr is not None and key != "V":
+            data[f"{key},stderr"] = estimate.stderr
+    if state.bulk_modulus is not None:
+        data["bulk modulus"] = state.bulk_modulus
+    return data
+
+
+def report_state(node, printer, paths, indent=8 * " "):
+    """Print the state of the analysed runs and return it.
+
+    Parameters
+    ----------
+    node : seamm.Node
+        The analysis step.
+    printer : logging.Logger
+        The step's printer.
+    paths : [str or pathlib.Path]
+        The md.h5md files of the runs.
+    indent : str
+        The indentation of the table.
+
+    Returns
+    -------
+    seamm_md_analysis.State or None
+        None if the state could not be determined (it is noted, not raised).
+    """
+    from .state import state_table
+
+    try:
+        state = state_of_runs(node, paths)
+    except Exception as e:
+        printer.normal(f"{indent}The state of the runs could not be determined: {e}")
+        return None
+    text = state_table(state)
+    lines = text.splitlines()
+    # The table, then its notes wrapped at the step's width
+    table = [line for line in lines if line[:1] in "╭│├╰" or line.strip() == ""]
+    title = lines[0]
+    notes = [line for line in lines[1:] if line not in table]
+    printer.normal("\n".join(indent + line for line in [title, *table]))
+    for note in notes:
+        printer.normal(_wrap(note, indent))
+    printer.normal("")
+    return state
+
+
+def _wrap(text, indent, width=80):
+    import textwrap
+
+    return textwrap.fill(
+        text, width=width, initial_indent=indent, subsequent_indent=indent
+    )
