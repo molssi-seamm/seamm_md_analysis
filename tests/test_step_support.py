@@ -122,12 +122,10 @@ def test_check_mode_b_without_md():
     assert "no MD step comes before it" in problem
 
 
-def test_check_mode_a_needs_an_md_step():
+def test_own_md_is_no_longer_supported():
     node = SimpleNamespace(title="Diffusivity", subflowchart=Flowchart())
     (problem,) = ss.check_md_flowchart(node, [], needs, ss.run_own_md)
-    assert "has no MD step" in problem
-    node.subflowchart = Flowchart(MD("NVT", {}))
-    assert ss.check_md_flowchart(node, [], needs, ss.run_own_md) == []
+    assert "no longer runs its own MD" in problem
 
 
 def test_files_are_not_checked():
@@ -198,7 +196,8 @@ def test_md_inputs_from_files():
 
 def test_source_parameters():
     params = ss.source_parameters("the diffusivity")
-    assert params["md source"]["default"] == ss.run_own_md
+    assert params["md source"]["default"] == ss.each_iteration
+    assert ss.run_own_md not in params["md source"]["enumeration"]
     assert "the diffusivity" in params["md source"]["help_text"]
     assert params["md files"]["applies_when"] == {"md source": "files"}
 
@@ -242,3 +241,154 @@ def test_publish_and_read_viscosity():
     assert record["units"] == "Pa*s"
     assert record["step"] == "Viscosity" and record["id"] == "3"
     assert ss.preceding_viscosity(node) == record
+
+
+# ----------------------------------------------------------------------
+# Where the analysis is, and the thermostat
+# ----------------------------------------------------------------------
+class Graph:
+    """A flowchart of nodes joined by typed edges, for the placement checks."""
+
+    def __init__(self):
+        self.start = SimpleNamespace(title="Start")
+        self.out = {}
+        self.parent = None
+
+    def get_node(self, uuid):
+        return self.start
+
+    def connect(self, a, b, subtype="next"):
+        self.out.setdefault(id(a), []).append(
+            Edge(edge_type="execution", edge_subtype=subtype, node2=b)
+        )
+
+    def edges(self, node, direction="out"):
+        return self.out.get(id(node), [])
+
+
+class Parameter(SimpleNamespace):
+    pass
+
+
+def parameters(**values):
+    return {k.replace("_", " "): Parameter(value=v) for k, v in values.items()}
+
+
+def loop_flowchart(inside=False, T0="298.15", variable="i", thermostat="Nose-Hoover"):
+    """Start -> Loop {LAMMPS (NVT)} -> analysis, or the analysis inside the loop."""
+    main = Graph()
+    loop = SimpleNamespace(title="Loop", parameters=parameters(variable=variable))
+    nvt = MD("NVT dynamics", {"all/position": Interval("100 fs")})
+    nvt.parameters = parameters(T0=T0, T1=T0, thermostat=thermostat)
+    sub = Flowchart(nvt)
+    lammps = SimpleNamespace(title="LAMMPS", subflowchart=sub, flowchart=main)
+    sub.parent = lammps
+    nvt.flowchart = sub
+    analysis = SimpleNamespace(
+        title="Dielectric Constant",
+        flowchart=main,
+        parameters=parameters(md_source=ss.each_iteration),
+    )
+    for node in (loop, analysis):
+        node.flowchart = main
+    main.connect(main.start, loop)
+    main.connect(loop, lammps, "loop")
+    if inside:
+        main.connect(lammps, analysis)
+        main.connect(analysis, loop)
+    else:
+        main.connect(lammps, loop)
+        main.connect(loop, analysis, "exit")
+    return analysis, lammps, nvt
+
+
+positions = Requirements(needs=[Need("all/position", "500 fs")], periodic=True)
+
+
+def test_analysis_after_the_loop_of_replicas_is_right():
+    analysis, lammps, _ = loop_flowchart()
+    assert ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration) == []
+
+
+def test_analysis_inside_the_loop_holding_its_md():
+    pytest.importorskip("seamm.problems")
+    analysis, lammps, _ = loop_flowchart(inside=True)
+    (problem,) = ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration)
+    assert problem.severity == "warning"
+    assert "inside the loop 'Loop' that holds its MD" in problem
+    (fix,) = problem.fixes
+    fix.apply()
+    assert analysis.parameters["md source"].value == "the last MD run"
+    assert ss.check_md_flowchart(analysis, [lammps], positions, "the last MD run") == []
+
+
+def test_a_loop_over_temperatures_is_not_replicas():
+    pytest.importorskip("seamm.problems")
+    analysis, lammps, _ = loop_flowchart(T0="$T", variable="T")
+    (problem,) = ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration)
+    assert "changes the temperature or pressure" in problem
+    # A variable that is not the loop's does not count
+    analysis, lammps, _ = loop_flowchart(T0="$T", variable="i")
+    assert ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration) == []
+
+
+def test_only_the_last_run_of_a_loop():
+    pytest.importorskip("seamm.problems")
+    analysis, lammps, _ = loop_flowchart()
+    (problem,) = ss.check_md_flowchart(analysis, [lammps], positions, "the last MD run")
+    assert "analyzes only the last iteration's run" in problem
+    problem.fixes[0].apply()
+    assert analysis.parameters["md source"].value == ss.each_iteration
+
+
+def test_the_thermostat():
+    pytest.importorskip("seamm.problems")
+    dynamics = Requirements(needs=positions.needs, periodic=True, dynamics=True)
+    analysis, lammps, nvt = loop_flowchart(thermostat="Berendsen")
+    (problem,) = ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration)
+    assert "does not give the canonical fluctuations" in problem
+    problem.fixes[0].apply()
+    assert nvt.parameters["thermostat"].value == "Nose-Hoover"
+
+    analysis, lammps, nvt = loop_flowchart(thermostat="Langevin")
+    assert ss.check_md_flowchart(analysis, [lammps], positions, ss.each_iteration) == []
+    (problem,) = ss.check_md_flowchart(analysis, [lammps], dynamics, ss.each_iteration)
+    assert "perturbs the motion" in problem
+
+
+def _box(n_molecules, length, spacing, cell):
+    """Linear molecules of ``length`` carbons, ``spacing`` apart, in a cubic cell."""
+    molsystem = pytest.importorskip("molsystem")
+    db = molsystem.SystemDB(filename="file:size?mode=memory&cache=shared")
+    system = db.create_system()
+    configuration = system.create_configuration(periodicity=3)
+    configuration.cell.parameters = (cell, cell, cell, 90.0, 90.0, 90.0)
+    configuration.coordinate_system = "Cartesian"
+    x, y, z, symbols, i, j = [], [], [], [], [], []
+    for m in range(n_molecules):
+        first = len(x)
+        for k in range(length):
+            x.append(1.0 + k * spacing)
+            y.append(1.0 + 3.0 * (m % 5))
+            z.append(1.0 + 3.0 * (m // 5))
+            symbols.append("C")
+            if k > 0:
+                i.append(first + k)
+                j.append(first + k + 1)
+    ids = configuration.atoms.append(x=x, y=y, z=z, symbol=symbols)
+    configuration.bonds.append(i=[ids[a - 1] for a in i], j=[ids[b - 1] for b in j])
+    return db, configuration
+
+
+def test_size_warnings():
+    db, small = _box(10, 3, 1.5, 30.0)
+    (warning,) = ss.size_warnings(small)
+    assert "only 10 molecules" in warning
+    db.close()
+    db, long = _box(25, 12, 1.5, 30.0)
+    warnings = ss.size_warnings(long, min_molecules=20)
+    assert (
+        len(warnings) == 1 and "less than 3 times the longest molecule" in warnings[0]
+    )
+    assert ss.size_warnings(long, min_molecules=20, widths_per_molecule=1.5) == []
+    db.close()

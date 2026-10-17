@@ -99,10 +99,15 @@ class Requirements:
         The data, each with its acceptable sampling.
     periodic : bool
         Whether the system must be periodic.
+    dynamics : bool
+        Whether the analysis uses the dynamics -- transport properties such as the
+        viscosity, diffusion and conductivities -- so that a thermostat that
+        perturbs the motion (Langevin) or none (NVE) should not be used.
     """
 
     needs: list = field(default_factory=list)
     periodic: bool = False
+    dynamics: bool = False
 
 
 @dataclass
