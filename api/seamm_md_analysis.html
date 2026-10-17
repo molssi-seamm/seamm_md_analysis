@@ -422,7 +422,7 @@
 <dd class="field-even"><p>The standard error at each lag.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(n)</p>
+<dd class="field-odd"><p>numpy.ndarray(<a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -468,7 +468,7 @@ underestimated.</p></li>
 <dd class="field-even"><p>The standard error at each lag.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(n)</p>
+<dd class="field-odd"><p>numpy.ndarray(<a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -492,7 +492,7 @@ underestimated.</p></li>
 <dd class="field-even"><p>The cross-covariance for lags 0 .. n-1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(n)</p>
+<dd class="field-odd"><p>numpy.ndarray(<a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -631,7 +631,7 @@ integer charge of each.</p>
 <dd class="field-even"><p>⟨‖P(t) − P(0)‖²⟩ over time origins, e² Å², for lags 0 .. n-1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(n)</p>
+<dd class="field-odd"><p>numpy.ndarray(<a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1707,9 +1707,345 @@ steps when the timestep is not yet known) is not reported.</p>
 </dd></dl>
 
 </section>
+<section id="module-seamm_md_analysis.state">
+<span id="seamm-md-analysis-state-module"></span><h2>seamm_md_analysis.state module<a class="headerlink" href="#module-seamm_md_analysis.state" title="Link to this heading">#</a></h2>
+<p>The state the MD runs sampled, and whether they can be treated as isotropic.</p>
+<p>Every analysis step reports the state its results belong to – temperature,
+pressure, volume and density, each with its error over the runs – because a
+property measured at the wrong pressure or density belongs to that state, not the
+one intended:</p>
+<ul class="simple">
+<li><p>an NPT run’s mean density is the equilibrium density at its pressure;</p></li>
+<li><p>an NVT run’s pressure is what it is; where the bulk modulus K is known (from the
+volume fluctuations of an NPT run, such as the equilibration before), the
+equilibrium density at the target pressure is estimated as
+ρ_eq ≈ ρ (1 + (P_target − P) / K).</p></li>
+</ul>
+<p>A run is treated as isotropic – one value per property from the average of its
+components – only when its cell is cubic and no fix makes it anisotropic (walls,
+fields, deformation, flow, added forces).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.AMU_PER_A3_IN_G_PER_ML">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">AMU_PER_A3_IN_G_PER_ML</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.6605390666</span></span><a class="headerlink" href="#seamm_md_analysis.state.AMU_PER_A3_IN_G_PER_ML" title="Link to this definition">#</a></dt>
+<dd><p>amu/Å³ in g/mL</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.ANISOTROPIC_FIXES">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">ANISOTROPIC_FIXES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('wall',</span> <span class="pre">'efield',</span> <span class="pre">'deform',</span> <span class="pre">'flow',</span> <span class="pre">'addforce',</span> <span class="pre">'aveforce',</span> <span class="pre">'setforce',</span> <span class="pre">'spring',</span> <span class="pre">'smd',</span> <span class="pre">'indent',</span> <span class="pre">'gravity',</span> <span class="pre">'move',</span> <span class="pre">'oneway')</span></span><a class="headerlink" href="#seamm_md_analysis.state.ANISOTROPIC_FIXES" title="Link to this definition">#</a></dt>
+<dd><p>The fix styles (or their beginnings) that make a run anisotropic</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.KB_ATM_A3">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">KB_ATM_A3</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">136.25946212681964</span></span><a class="headerlink" href="#seamm_md_analysis.state.KB_ATM_A3" title="Link to this definition">#</a></dt>
+<dd><p>Boltzmann’s constant in atm·Å³/K</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">RunState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#RunState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.RunState" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The mean state of one run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<em>str</em>) – “NVT”, “NPT”, “NVE”, …</p></li>
+<li><p><strong>density</strong> (<a class="reference internal" href="#seamm_md_analysis.state.RunState.temperature" title="seamm_md_analysis.state.RunState.temperature"><em>temperature</em></a><em>, </em><a class="reference internal" href="#seamm_md_analysis.state.RunState.pressure" title="seamm_md_analysis.state.RunState.pressure"><em>pressure</em></a><em>, </em><a class="reference internal" href="#seamm_md_analysis.state.RunState.volume" title="seamm_md_analysis.state.RunState.volume"><em>volume</em></a><em>,</em>) – K, atm, Å³ and g/mL; None if not known.</p></li>
+<li><p><strong>target_pressure</strong> (<em>float</em>) – The barostat’s pressure for NPT, atm; None otherwise.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.density">
+<span class="sig-name descname"><span class="pre">density</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.density" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.ensemble">
+<span class="sig-name descname"><span class="pre">ensemble</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.ensemble" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.pressure">
+<span class="sig-name descname"><span class="pre">pressure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.pressure" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.target_pressure">
+<span class="sig-name descname"><span class="pre">target_pressure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.target_pressure" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.temperature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.RunState.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.RunState.volume" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_modulus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equilibrium_density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#State"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.State" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The state of a set of runs, each quantity with its error over the runs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ensemble</strong> (<em>str</em>)</p></li>
+<li><p><strong>density</strong> (<a class="reference internal" href="#seamm_md_analysis.state.State.temperature" title="seamm_md_analysis.state.State.temperature"><em>temperature</em></a><em>, </em><a class="reference internal" href="#seamm_md_analysis.state.State.pressure" title="seamm_md_analysis.state.State.pressure"><em>pressure</em></a><em>, </em><a class="reference internal" href="#seamm_md_analysis.state.State.volume" title="seamm_md_analysis.state.State.volume"><em>volume</em></a><em>,</em>) – K, atm, Å³, g/mL.</p></li>
+<li><p><strong>target_pressure</strong> (<em>float</em>) – The pressure aimed at, atm, if known.</p></li>
+<li><p><strong>bulk_modulus</strong> (<em>float</em>) – K, atm, if known.</p></li>
+<li><p><strong>equilibrium_density</strong> (<a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><em>Estimate</em></a><em> or </em><em>None</em>) – For runs at constant volume, the estimated density at the target pressure.</p></li>
+<li><p><strong>notes</strong> (<em>[</em><em>str</em><em>]</em>) – What the output should say about the state.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.bulk_modulus">
+<span class="sig-name descname"><span class="pre">bulk_modulus</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.bulk_modulus" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.density">
+<span class="sig-name descname"><span class="pre">density</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.density" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.ensemble">
+<span class="sig-name descname"><span class="pre">ensemble</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.ensemble" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.equilibrium_density">
+<span class="sig-name descname"><span class="pre">equilibrium_density</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.equilibrium_density" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.notes">
+<span class="sig-name descname"><span class="pre">notes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.notes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.pressure">
+<span class="sig-name descname"><span class="pre">pressure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.pressure" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.target_pressure">
+<span class="sig-name descname"><span class="pre">target_pressure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.target_pressure" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.temperature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.State.volume">
+<span class="sig-name descname"><span class="pre">volume</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate"><span class="pre">Estimate</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.state.State.volume" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.bulk_modulus">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">bulk_modulus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#bulk_modulus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.bulk_modulus" title="Link to this definition">#</a></dt>
+<dd><p>The bulk modulus from the volume fluctuations of an NPT run, in atm.</p>
+<p>K = k_B T ⟨V⟩ / (⟨V²⟩ − ⟨V⟩²), over the run after its equilibration. Returns
+None for a run without a volume series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.is_cubic">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">is_cubic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#is_cubic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.is_cubic" title="Link to this definition">#</a></dt>
+<dd><p>Whether a cell (3×3, vectors as rows) is cubic.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.isotropy">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">isotropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#isotropy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.isotropy" title="Link to this definition">#</a></dt>
+<dd><p>Whether a run can be treated as isotropic, and why.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md</strong> (<em>seamm_md_analysis.MDData</em>) – The run.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether it is isotropic, and the reason, for the output.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(bool, str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.run_state">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">run_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">md</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#run_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.run_state" title="Link to this definition">#</a></dt>
+<dd><p>The mean temperature, pressure, volume and density of a run.</p>
+<p>The means are over the run after its equilibration. The volume and density of
+a run at constant volume come from its cell and masses.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.state_table">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">state_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#state_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.state_table" title="Link to this definition">#</a></dt>
+<dd><p>The state as a table and notes, for the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The table, with a line saying what the errors are, and the notes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.state.summarize_state">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.state.</span></span><span class="sig-name descname"><span class="pre">summarize_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bulk_modulus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/state.html#summarize_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.state.summarize_state" title="Link to this definition">#</a></dt>
+<dd><p>The state over runs, with the equilibrium density where it can be estimated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>runs</strong> (<em>[RunState]</em>) – The state of each run, from <a class="reference internal" href="#seamm_md_analysis.state.run_state" title="seamm_md_analysis.state.run_state"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_state()</span></code></a>.</p></li>
+<li><p><strong>target_pressure</strong> (<em>float</em>) – The pressure aimed at, atm: by default that of NPT runs, else 1 atm when a
+bulk modulus is given.</p></li>
+<li><p><strong>bulk_modulus</strong> (<em>float</em>) – K, atm, for the equilibrium density of runs at constant volume, e.g. from
+<a class="reference internal" href="#seamm_md_analysis.state.bulk_modulus" title="seamm_md_analysis.state.bulk_modulus"><code class="xref py py-func docutils literal notranslate"><span class="pre">bulk_modulus()</span></code></a> of an NPT equilibration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.state.State" title="seamm_md_analysis.state.State">State</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-seamm_md_analysis.stats">
 <span id="seamm-md-analysis-stats-module"></span><h2>seamm_md_analysis.stats module<a class="headerlink" href="#module-seamm_md_analysis.stats" title="Link to this heading">#</a></h2>
 <p>Statistics of time series and of replicas.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">ComponentCheck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chi2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#ComponentCheck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Whether the components of a property agree within their errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chi2</strong> (<em>float</em><em> or </em><em>None</em>) – χ² of the component means about their average, weighted by their
+standard errors; None without errors.</p></li>
+<li><p><strong>dof</strong> (<em>int</em>) – The degrees of freedom, the number of components less one.</p></li>
+<li><p><strong>p</strong> (<em>float</em><em> or </em><em>None</em>) – The probability of a χ² at least this large if the components agree.</p></li>
+<li><p><strong>agree</strong> (<em>bool</em><em> or </em><em>None</em>) – Whether they agree, at p ≥ 0.01.</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – One line for the output.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck.agree">
+<span class="sig-name descname"><span class="pre">agree</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck.agree" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck.chi2">
+<span class="sig-name descname"><span class="pre">chi2</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck.chi2" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck.dof">
+<span class="sig-name descname"><span class="pre">dof</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck.dof" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck.p">
+<span class="sig-name descname"><span class="pre">p</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck.p" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.ComponentCheck.text">
+<span class="sig-name descname"><span class="pre">text</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.stats.ComponentCheck.text" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">Estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'runs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#Estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.Estimate" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A value with its standard error, from <code class="docutils literal notranslate"><span class="pre">n</span></code> independent samples.</p>
+<p>The samples are independent runs or blocks (<code class="docutils literal notranslate"><span class="pre">source</span></code>). Results stored for
+later steps carry the standard error; tables show the 95% confidence
+interval, from Student’s t, and say so.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>float</em>)</p></li>
+<li><p><strong>stderr</strong> (<em>float</em><em> or </em><em>None</em>) – The standard error of the value; None if it cannot be estimated (one
+sample).</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of independent samples.</p></li>
+<li><p><strong>units</strong> (<em>str</em>)</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – What the samples are: “runs” or “blocks”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.ci95">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ci95</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.ci95" title="Link to this definition">#</a></dt>
+<dd><p>The half-width of the 95% confidence interval, or None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.describe_error">
+<span class="sig-name descname"><span class="pre">describe_error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#Estimate.describe_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.describe_error" title="Link to this definition">#</a></dt>
+<dd><p>What the ± in a table means, for a note under it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.formatted">
+<span class="sig-name descname"><span class="pre">formatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#Estimate.formatted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.formatted" title="Link to this definition">#</a></dt>
+<dd><p>The value and its 95% interval as text, e.g. (“0.72”, “0.19”).</p>
+<p>A value without an error, or the same in every sample (e.g. the volume of
+runs at constant volume), is given to six significant figures, without ±.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.from_samples">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#Estimate.from_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.from_samples" title="Link to this definition">#</a></dt>
+<dd><p>The mean of independent samples and its standard error.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.n">
+<span class="sig-name descname"><span class="pre">n</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.n" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.source">
+<span class="sig-name descname"><span class="pre">source</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'runs'</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.source" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.stderr">
+<span class="sig-name descname"><span class="pre">stderr</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.stderr" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.units">
+<span class="sig-name descname"><span class="pre">units</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.units" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.stats.block_average">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">block_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#block_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.block_average" title="Link to this definition">#</a></dt>
@@ -1730,6 +2066,23 @@ time of the series for the error to be reliable.</p>
 <li><p><em>numpy.ndarray(n_blocks, …)</em> – The block means.</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.component_check">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">component_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">per_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#component_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.component_check" title="Link to this definition">#</a></dt>
+<dd><p>Compare the components of a property, for a one-line diagnostic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>per_sample</strong> (<em>array_like(n_samples, n_components)</em>) – The value of each component in each run or block.</p></li>
+<li><p><strong>names</strong> (<em>[str]</em>) – The components’ names, for the text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.stats.ComponentCheck" title="seamm_md_analysis.stats.ComponentCheck">ComponentCheck</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1776,6 +2129,24 @@ or not a number). The error is then “–“.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(str, str) or (float, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.isotropic_average">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">isotropic_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">per_sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#isotropic_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.isotropic_average" title="Link to this definition">#</a></dt>
+<dd><p>One value for an isotropic property from its components.</p>
+<p>The components are averaged within each run (or block), and the error is that
+of these averages over the runs: the components are correlated (e.g. the
+normal-stress differences of the viscosity), so their own spread would
+overstate the precision.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>per_sample</strong> (<em>array_like(n_samples, n_components)</em>) – The value of each component in each run or block.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#seamm_md_analysis.stats.Estimate" title="seamm_md_analysis.stats.Estimate">Estimate</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1837,6 +2208,14 @@ inefficiency, sqrt(g * var / n).</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.stats.t_factor">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.stats.</span></span><span class="sig-name descname"><span class="pre">t_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#t_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.t_factor" title="Link to this definition">#</a></dt>
+<dd><p>The factor turning a standard error from <code class="docutils literal notranslate"><span class="pre">n</span></code> samples into a confidence
+interval: Student’s t with n - 1 degrees of freedom (2.78 for 5 samples at 95%,
+1.96 for many). NaN for fewer than two samples.</p>
 </dd></dl>
 
 </section>
@@ -1905,6 +2284,29 @@ per-particle property.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[seamm.Node]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.npt_reference">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">npt_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#npt_reference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.npt_reference" title="Link to this definition">#</a></dt>
+<dd><p>The bulk modulus and target pressure from an NPT run before the analysed runs.</p>
+<p>The last NPT run recorded in <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code> before the first of the analysed
+runs – typically the equilibration before the production runs – gives the
+bulk modulus from its volume fluctuations, and the pressure it was run at.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>seamm.Node</em>) – The analysis step, for the workspace variables.</p></li>
+<li><p><strong>paths</strong> (<em>[str or pathlib.Path]</em>) – The md.h5md files of the analysed runs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bulk modulus and the target pressure, in atm.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(float, float) or (None, None)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2000,6 +2402,24 @@ per-particle property.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.state_of_runs">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">state_of_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#state_of_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.state_of_runs" title="Link to this definition">#</a></dt>
+<dd><p>The state of the analysed runs: T, P, V and ρ with their errors, and the
+equilibrium density where an NPT run before them gives the bulk modulus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>seamm.Node</em>) – The analysis step.</p></li>
+<li><p><strong>paths</strong> (<em>[str or pathlib.Path]</em>) – The md.h5md files of the analysed runs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>seamm_md_analysis.State</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2333,7 +2753,7 @@ of <a class="reference internal" href="#seamm_md_analysis.transport.SHEAR_COMPON
 <dd class="field-even"><p>The five components.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(5, n)</p>
+<dd class="field-odd"><p>numpy.ndarray(5, <a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2380,7 +2800,7 @@ sampling interval, squared.</p></li>
 <dd class="field-even"><p>S for lags 0 .. n-1; divide by n - k for the mean square displacement.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray(n, …)</p>
+<dd class="field-odd"><p>numpy.ndarray(<a class="reference internal" href="#seamm_md_analysis.stats.Estimate.n" title="seamm_md_analysis.stats.Estimate.n">n</a>, …)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2684,19 +3104,76 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.check"><code class="docutils literal notranslate"><span class="pre">check()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.state">seamm_md_analysis.state module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.AMU_PER_A3_IN_G_PER_ML"><code class="docutils literal notranslate"><span class="pre">AMU_PER_A3_IN_G_PER_ML</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.ANISOTROPIC_FIXES"><code class="docutils literal notranslate"><span class="pre">ANISOTROPIC_FIXES</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.KB_ATM_A3"><code class="docutils literal notranslate"><span class="pre">KB_ATM_A3</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState"><code class="docutils literal notranslate"><span class="pre">RunState</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.density"><code class="docutils literal notranslate"><span class="pre">RunState.density</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.ensemble"><code class="docutils literal notranslate"><span class="pre">RunState.ensemble</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.pressure"><code class="docutils literal notranslate"><span class="pre">RunState.pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.target_pressure"><code class="docutils literal notranslate"><span class="pre">RunState.target_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.temperature"><code class="docutils literal notranslate"><span class="pre">RunState.temperature</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.RunState.volume"><code class="docutils literal notranslate"><span class="pre">RunState.volume</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.bulk_modulus"><code class="docutils literal notranslate"><span class="pre">State.bulk_modulus</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.density"><code class="docutils literal notranslate"><span class="pre">State.density</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.ensemble"><code class="docutils literal notranslate"><span class="pre">State.ensemble</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.equilibrium_density"><code class="docutils literal notranslate"><span class="pre">State.equilibrium_density</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.notes"><code class="docutils literal notranslate"><span class="pre">State.notes</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.pressure"><code class="docutils literal notranslate"><span class="pre">State.pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.target_pressure"><code class="docutils literal notranslate"><span class="pre">State.target_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.temperature"><code class="docutils literal notranslate"><span class="pre">State.temperature</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.State.volume"><code class="docutils literal notranslate"><span class="pre">State.volume</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.bulk_modulus"><code class="docutils literal notranslate"><span class="pre">bulk_modulus()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.is_cubic"><code class="docutils literal notranslate"><span class="pre">is_cubic()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.isotropy"><code class="docutils literal notranslate"><span class="pre">isotropy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.run_state"><code class="docutils literal notranslate"><span class="pre">run_state()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.state_table"><code class="docutils literal notranslate"><span class="pre">state_table()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.state.summarize_state"><code class="docutils literal notranslate"><span class="pre">summarize_state()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.stats">seamm_md_analysis.stats module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck"><code class="docutils literal notranslate"><span class="pre">ComponentCheck</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck.agree"><code class="docutils literal notranslate"><span class="pre">ComponentCheck.agree</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck.chi2"><code class="docutils literal notranslate"><span class="pre">ComponentCheck.chi2</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck.dof"><code class="docutils literal notranslate"><span class="pre">ComponentCheck.dof</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck.p"><code class="docutils literal notranslate"><span class="pre">ComponentCheck.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.ComponentCheck.text"><code class="docutils literal notranslate"><span class="pre">ComponentCheck.text</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate"><code class="docutils literal notranslate"><span class="pre">Estimate</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.ci95"><code class="docutils literal notranslate"><span class="pre">Estimate.ci95</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.describe_error"><code class="docutils literal notranslate"><span class="pre">Estimate.describe_error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.formatted"><code class="docutils literal notranslate"><span class="pre">Estimate.formatted()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.from_samples"><code class="docutils literal notranslate"><span class="pre">Estimate.from_samples()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.n"><code class="docutils literal notranslate"><span class="pre">Estimate.n</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.source"><code class="docutils literal notranslate"><span class="pre">Estimate.source</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.stderr"><code class="docutils literal notranslate"><span class="pre">Estimate.stderr</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.units"><code class="docutils literal notranslate"><span class="pre">Estimate.units</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.Estimate.value"><code class="docutils literal notranslate"><span class="pre">Estimate.value</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.block_average"><code class="docutils literal notranslate"><span class="pre">block_average()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.component_check"><code class="docutils literal notranslate"><span class="pre">component_check()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.detect_equilibration"><code class="docutils literal notranslate"><span class="pre">detect_equilibration()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.fmt_err"><code class="docutils literal notranslate"><span class="pre">fmt_err()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.isotropic_average"><code class="docutils literal notranslate"><span class="pre">isotropic_average()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.mean_and_stderr"><code class="docutils literal notranslate"><span class="pre">mean_and_stderr()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.mean_and_stderr_correlated"><code class="docutils literal notranslate"><span class="pre">mean_and_stderr_correlated()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.statistical_inefficiency"><code class="docutils literal notranslate"><span class="pre">statistical_inefficiency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.stats.t_factor"><code class="docutils literal notranslate"><span class="pre">t_factor()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.step_support">seamm_md_analysis.step_support module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.check_md_flowchart"><code class="docutils literal notranslate"><span class="pre">check_md_flowchart()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_inputs"><code class="docutils literal notranslate"><span class="pre">md_inputs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_substeps"><code class="docutils literal notranslate"><span class="pre">md_substeps()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.npt_reference"><code class="docutils literal notranslate"><span class="pre">npt_reference()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.preceding_viscosity"><code class="docutils literal notranslate"><span class="pre">preceding_viscosity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.publish_viscosity"><code class="docutils literal notranslate"><span class="pre">publish_viscosity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.read_files"><code class="docutils literal notranslate"><span class="pre">read_files</span></code></a></li>
@@ -2704,6 +3181,7 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.run_own_md"><code class="docutils literal notranslate"><span class="pre">run_own_md</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_choices"><code class="docutils literal notranslate"><span class="pre">source_choices</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_parameters"><code class="docutils literal notranslate"><span class="pre">source_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.state_of_runs"><code class="docutils literal notranslate"><span class="pre">state_of_runs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.viscosity_variable"><code class="docutils literal notranslate"><span class="pre">viscosity_variable</span></code></a></li>
 </ul>
 </li>

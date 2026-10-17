@@ -369,6 +369,7 @@
 <span class="sd">"""Statistics of time series and of replicas."""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">log10</span>
@@ -589,6 +590,197 @@
     <span class="n">g</span> <span class="o">=</span> <span class="n">statistical_inefficiency</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">g</span> <span class="o">*</span> <span class="n">series</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># ----------------------------------------------------------------------</span>
+<span class="c1"># Estimates and their errors, as the analysis steps report them</span>
+<span class="c1"># ----------------------------------------------------------------------</span>
+<div class="viewcode-block" id="t_factor">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.t_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">t_factor</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The factor turning a standard error from ``n`` samples into a confidence</span>
+<span class="sd">    interval: Student's t with n - 1 degrees of freedom (2.78 for 5 samples at 95%,</span>
+<span class="sd">    1.96 for many). NaN for fewer than two samples."""</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="n">level</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Estimate">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.Estimate">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Estimate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A value with its standard error, from ``n`` independent samples.</span>
+
+<span class="sd">    The samples are independent runs or blocks (``source``). Results stored for</span>
+<span class="sd">    later steps carry the standard error; tables show the 95% confidence</span>
+<span class="sd">    interval, from Student's t, and say so.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : float</span>
+<span class="sd">    stderr : float or None</span>
+<span class="sd">        The standard error of the value; None if it cannot be estimated (one</span>
+<span class="sd">        sample).</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The number of independent samples.</span>
+<span class="sd">    units : str</span>
+<span class="sd">    source : str</span>
+<span class="sd">        What the samples are: "runs" or "blocks".</span>
+<span class="sd">    """</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">stderr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"runs"</span>
+
+<div class="viewcode-block" id="Estimate.from_samples">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.Estimate.from_samples">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_samples</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">"runs"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The mean of independent samples and its standard error."""</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">values</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="n">mean</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">mean_and_stderr</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">stderr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span> <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mean</span><span class="p">),</span> <span class="n">stderr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">units</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ci95</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The half-width of the 95% confidence interval, or None."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">t_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span>
+
+<div class="viewcode-block" id="Estimate.formatted">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.Estimate.formatted">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">formatted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The value and its 95% interval as text, e.g. ("0.72", "0.19").</span>
+
+<span class="sd">        A value without an error, or the same in every sample (e.g. the volume of</span>
+<span class="sd">        runs at constant volume), is given to six significant figures, without ±.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span>
+        <span class="k">return</span> <span class="n">fmt_err</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Estimate.describe_error">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.Estimate.describe_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">describe_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""What the ± in a table means, for a note under it."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"There is no error estimate: it needs at least two </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">."</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">t_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"± is the 95% confidence interval: Student's t (</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">) times the standard error over the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="isotropic_average">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.isotropic_average">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isotropic_average</span><span class="p">(</span><span class="n">per_sample</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""One value for an isotropic property from its components.</span>
+
+<span class="sd">    The components are averaged within each run (or block), and the error is that</span>
+<span class="sd">    of these averages over the runs: the components are correlated (e.g. the</span>
+<span class="sd">    normal-stress differences of the viscosity), so their own spread would</span>
+<span class="sd">    overstate the precision.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    per_sample : array_like(n_samples, n_components)</span>
+<span class="sd">        The value of each component in each run or block.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Estimate</span>
+<span class="sd">    """</span>
+    <span class="n">per_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">per_sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Estimate</span><span class="o">.</span><span class="n">from_samples</span><span class="p">(</span><span class="n">per_sample</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="ComponentCheck">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.ComponentCheck">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentCheck</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether the components of a property agree within their errors.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    chi2 : float or None</span>
+<span class="sd">        χ² of the component means about their average, weighted by their</span>
+<span class="sd">        standard errors; None without errors.</span>
+<span class="sd">    dof : int</span>
+<span class="sd">        The degrees of freedom, the number of components less one.</span>
+<span class="sd">    p : float or None</span>
+<span class="sd">        The probability of a χ² at least this large if the components agree.</span>
+<span class="sd">    agree : bool or None</span>
+<span class="sd">        Whether they agree, at p ≥ 0.01.</span>
+<span class="sd">    text : str</span>
+<span class="sd">        One line for the output.</span>
+<span class="sd">    """</span>
+
+    <span class="n">chi2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dof</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">agree</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span></div>
+
+
+
+<div class="viewcode-block" id="component_check">
+<a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.stats.component_check">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">component_check</span><span class="p">(</span><span class="n">per_sample</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Compare the components of a property, for a one-line diagnostic.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    per_sample : array_like(n_samples, n_components)</span>
+<span class="sd">        The value of each component in each run or block.</span>
+<span class="sd">    names : [str]</span>
+<span class="sd">        The components' names, for the text.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ComponentCheck</span>
+<span class="sd">    """</span>
+    <span class="n">per_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">per_sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">per_sample</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ComponentCheck</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">"The components cannot be compared: too few runs."</span><span class="p">)</span>
+    <span class="n">means</span><span class="p">,</span> <span class="n">stderrs</span> <span class="o">=</span> <span class="n">mean_and_stderr</span><span class="p">(</span><span class="n">per_sample</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">stderrs</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">stderrs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ComponentCheck</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">"The components cannot be compared: no errors."</span><span class="p">)</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">stderrs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">chi2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">means</span> <span class="o">-</span> <span class="n">average</span><span class="p">)</span> <span class="o">/</span> <span class="n">stderrs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">dof</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">chi2</span><span class="p">,</span> <span class="n">dof</span><span class="p">))</span>
+    <span class="n">agree</span> <span class="o">=</span> <span class="n">p</span> <span class="o">&gt;=</span> <span class="mf">0.01</span>
+    <span class="n">what</span> <span class="o">=</span> <span class="s2">"the components agree"</span> <span class="k">if</span> <span class="n">agree</span> <span class="k">else</span> <span class="s2">"the components differ"</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Isotropy: </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> (χ²/dof = </span><span class="si">{</span><span class="n">chi2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dof</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, p = </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2">)."</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">agree</span><span class="p">:</span>
+        <span class="n">worst</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">means</span> <span class="o">-</span> <span class="n">average</span><span class="p">)</span> <span class="o">/</span> <span class="n">stderrs</span><span class="p">))</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">worst</span><span class="p">]</span> <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"component </span><span class="si">{</span><span class="n">worst</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is furthest from the average. The system may not be isotropic, "</span>
+            <span class="s2">"or the runs too short."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ComponentCheck</span><span class="p">(</span><span class="n">chi2</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">agree</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -401,7 +401,18 @@ earlier run), and this library does the numerical work.</p>
 <dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.stats" title="seamm_md_analysis.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.stats</span></code></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">mean_and_stderr</span></code> over replicas, <code class="docutils literal notranslate"><span class="pre">block_average</span></code>,
 <code class="docutils literal notranslate"><span class="pre">statistical_inefficiency</span></code> and <code class="docutils literal notranslate"><span class="pre">detect_equilibration</span></code> (pymbar, imported
 quietly when first used), <code class="docutils literal notranslate"><span class="pre">mean_and_stderr_correlated</span></code>, and <code class="docutils literal notranslate"><span class="pre">fmt_err</span></code>
-to print a value with its error.</p>
+to print a value with its error. <code class="docutils literal notranslate"><span class="pre">Estimate</span></code>, a value with its standard error
+over independent runs or blocks, which gives the 95% confidence interval with
+Student’s t (<code class="docutils literal notranslate"><span class="pre">t_factor</span></code>) and says what its ± is; <code class="docutils literal notranslate"><span class="pre">isotropic_average</span></code>, one
+value from the components of a property, averaged within each run; and
+<code class="docutils literal notranslate"><span class="pre">component_check</span></code>, whether the components agree (χ²).</p>
+</dd>
+<dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.state" title="seamm_md_analysis.state"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.state</span></code></a></dt><dd><p>The state the runs sampled: <code class="docutils literal notranslate"><span class="pre">run_state</span></code> (temperature, pressure, volume and
+density of a run, after its equilibration), <code class="docutils literal notranslate"><span class="pre">summarize_state</span></code> over runs, with
+the equilibrium density of runs at constant volume estimated from a bulk
+modulus (<code class="docutils literal notranslate"><span class="pre">bulk_modulus</span></code>, from an NPT run’s volume fluctuations), and
+<code class="docutils literal notranslate"><span class="pre">state_table</span></code> for the output. <code class="docutils literal notranslate"><span class="pre">isotropy</span></code> says whether a run can be treated
+as isotropic.</p>
 </dd>
 <dt><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.correlate" title="seamm_md_analysis.correlate"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.correlate</span></code></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">ccovf</span></code>, the cross-covariance of two series by FFT (the definition of
 <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>), the errors of correlation functions, and

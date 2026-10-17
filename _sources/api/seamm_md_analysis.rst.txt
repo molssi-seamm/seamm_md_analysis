@@ -60,6 +60,14 @@ seamm\_md\_analysis.requirements module
    :show-inheritance:
    :undoc-members:
 
+seamm\_md\_analysis.state module
+--------------------------------
+
+.. automodule:: seamm_md_analysis.state
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 seamm\_md\_analysis.stats module
 --------------------------------
 
