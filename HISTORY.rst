@@ -1,6 +1,33 @@
 =======
 History
 =======
+2026.10.17.4 -- One route for MD analysis: checks, the state of the runs, and details
+    * The analysis steps no longer run their own MD: they analyze the MD run before
+      them, in a Loop for independent runs ("the last MD run of each loop iteration",
+      now the default), or md.h5md files. A flowchart that still asks a step to run
+      its own MD fails the check before the job runs, with a message saying what
+      replaces it.
+    * The check before the job runs also warns, with a fix where there is one, when
+      the analysis is inside the loop that holds its MD, when that loop changes the
+      temperature or pressure (the runs are then not replicas of one state), when the
+      MD in a loop is analyzed only for its last run, and when the thermostat does not
+      suit the analysis (Berendsen or plain rescaling for fluctuations; Langevin or NVE
+      for the dynamics).
+    * ``size_warnings`` for the structure before the MD runs: fewer than about 200
+      molecules, or a cell narrower than three times the longest molecule.
+    * The state of the analyzed runs -- temperature, pressure, volume and density with
+      their errors, and the equilibrium density of runs at constant volume from the
+      bulk modulus of an NPT run before them -- is printed once for a set of runs and
+      stored by every step (``report_state``, ``state_data``, ``state_results``).
+    * ``print_details`` writes detailed tables (each run, block or component) to the
+      step's step.out only.
+    * A value whose error is negligible -- the same in every run, such as the dipole of
+      a rigid molecule -- is shown without ±.
+    * Bugfix: the first sample of LAMMPS runs with constraints (SHAKE) has an invalid
+      virial -- pressures of up to 1e307 were seen; the state skips it in files written
+      before lammps-step 2026.10.17.2.
+    * ``cell_widths`` and ``molecule_extents``, used by Set Cell.
+
 2026.10.17.3 -- Bugfix: nested loops mixed the runs of different systems
     * With a loop over systems around a loop over replicas, "the last MD run of each
       loop iteration" also took the replicas of the systems before: the directories
