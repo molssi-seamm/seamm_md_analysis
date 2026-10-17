@@ -665,10 +665,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">formatted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""The value and its 95% interval as text, e.g. ("0.72", "0.19").</span>
 
-<span class="sd">        A value without an error, or the same in every sample (e.g. the volume of</span>
-<span class="sd">        runs at constant volume), is given to six significant figures, without ±.</span>
+<span class="sd">        A value without an error, or one whose error is negligible -- the same in</span>
+<span class="sd">        every sample, like the volume of runs at constant volume or the dipole of a</span>
+<span class="sd">        rigid molecule -- is given to six significant figures, without ±.</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span> <span class="o">&lt;</span> <span class="mf">1.0e-4</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">""</span>
         <span class="k">return</span> <span class="n">fmt_err</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ci95</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="n">precision</span><span class="p">)</span></div>
 

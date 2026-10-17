@@ -1661,7 +1661,7 @@ the longest acceptable one; by default <code class="docutils literal notranslate
 
 <dl class="py class">
 <dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.requirements.</span></span><span class="sig-name descname"><span class="pre">Requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/requirements.html#Requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>What an analysis needs from the MD.</p>
 <dl class="field-list simple">
@@ -1669,9 +1669,17 @@ the longest acceptable one; by default <code class="docutils literal notranslate
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>needs</strong> (<em>[</em><a class="reference internal" href="#seamm_md_analysis.requirements.Need" title="seamm_md_analysis.requirements.Need"><em>Need</em></a><em>]</em>) – The data, each with its acceptable sampling.</p></li>
 <li><p><strong>periodic</strong> (<em>bool</em>) – Whether the system must be periodic.</p></li>
+<li><p><strong>dynamics</strong> (<em>bool</em>) – Whether the analysis uses the dynamics – transport properties such as the
+viscosity, diffusion and conductivities – so that a thermostat that
+perturbs the motion (Langevin) or none (NVE) should not be used.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements.dynamics">
+<span class="sig-name descname"><span class="pre">dynamics</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements.dynamics" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="seamm_md_analysis.requirements.Requirements.needs">
 <span class="sig-name descname"><span class="pre">needs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><a class="headerlink" href="#seamm_md_analysis.requirements.Requirements.needs" title="Link to this definition">#</a></dt>
@@ -2009,8 +2017,9 @@ sample).</p></li>
 <dt class="sig sig-object py" id="seamm_md_analysis.stats.Estimate.formatted">
 <span class="sig-name descname"><span class="pre">formatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/stats.html#Estimate.formatted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.stats.Estimate.formatted" title="Link to this definition">#</a></dt>
 <dd><p>The value and its 95% interval as text, e.g. (“0.72”, “0.19”).</p>
-<p>A value without an error, or the same in every sample (e.g. the volume of
-runs at constant volume), is given to six significant figures, without ±.</p>
+<p>A value without an error, or one whose error is negligible – the same in
+every sample, like the volume of runs at constant volume or the dipole of a
+rigid molecule – is given to six significant figures, without ±.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2230,10 +2239,47 @@ they will sample what the analysis needs, turning sampling on, and finding the
 files to read.</p>
 <p>They use only the methods of SEAMM’s nodes and flowcharts, so this library does not
 depend on SEAMM. An MD sub-step is any node with an <code class="docutils literal notranslate"><span class="pre">md_provides()</span></code> method.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.NOT_CANONICAL">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">NOT_CANONICAL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Berendsen',</span> <span class="pre">'velocity</span> <span class="pre">rescaling')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.NOT_CANONICAL" title="Link to this definition">#</a></dt>
+<dd><p>Thermostats that do not give the canonical fluctuations</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.STATE_PARAMETERS">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">STATE_PARAMETERS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('T',</span> <span class="pre">'T0',</span> <span class="pre">'T1',</span> <span class="pre">'P',</span> <span class="pre">'P0',</span> <span class="pre">'P1',</span> <span class="pre">'Pinitial',</span> <span class="pre">'Pfinal',</span> <span class="pre">'temperature',</span> <span class="pre">'pressure')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.STATE_PARAMETERS" title="Link to this definition">#</a></dt>
+<dd><p>The parameters of MD sub-steps that set the temperature or pressure</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.STATE_REPORTED">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">STATE_REPORTED</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_md_state_reported'</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.STATE_REPORTED" title="Link to this definition">#</a></dt>
+<dd><p>The workspace variable recording the runs whose state was last printed</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.STOCHASTIC">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">STOCHASTIC</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('Langevin',</span> <span class="pre">'canonical</span> <span class="pre">sampling,</span> <span class="pre">langevin</span> <span class="pre">dynamics</span> <span class="pre">(csld)')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.STOCHASTIC" title="Link to this definition">#</a></dt>
+<dd><p>Thermostats that perturb the motion of the particles</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.cell_widths">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">cell_widths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#cell_widths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.cell_widths" title="Link to this definition">#</a></dt>
+<dd><p>The perpendicular widths of a periodic cell, Å.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cell</strong> (<em>array_like(3, 3)</em>) – The cell vectors as rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.check_md_flowchart">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">check_md_flowchart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preceding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requirements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#check_md_flowchart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.check_md_flowchart" title="Link to this definition">#</a></dt>
 <dd><p>Check, before anything runs, that the MD will provide what an analysis needs.</p>
+<p>Besides the sampling, it checks where the analysis is relative to the loop
+around the MD, and the thermostat. Where it can, a problem comes with a fix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2244,10 +2290,23 @@ depend on SEAMM. An MD sub-step is any node with an <code class="docutils litera
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A description of each problem; empty if none.</p>
+<dd class="field-even"><p>A description of each problem (a seamm.Problem where seamm has them);
+empty if none.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.each_iteration">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">each_iteration</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration'</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.each_iteration" title="Link to this definition">#</a></dt>
+<dd><p>every run of the MD before the step, which in a Loop are its
+iterations’ runs, and otherwise the one run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default source</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2286,6 +2345,14 @@ per-particle property.</p></li>
 <dd class="field-odd"><p>[seamm.Node]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.molecule_extents">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">molecule_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#molecule_extents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.molecule_extents" title="Link to this definition">#</a></dt>
+<dd><p>The length of each molecule – the largest distance between two of its atoms,
+made whole across the cell by following its bonds – in Å, in the order of
+<code class="docutils literal notranslate"><span class="pre">configuration.find_molecules()</span></code>. The configuration is not changed.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2329,6 +2396,29 @@ bulk modulus from its volume fluctuations, and the pressure it was run at.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.print_details">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">print_details</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">printer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#print_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.print_details" title="Link to this definition">#</a></dt>
+<dd><p>Write detailed output – the tables of each run, block or component – to the
+step’s own output (step.out) only, not to the job’s.</p>
+<p>The step’s printer writes to step.out and, through the job’s printer, to job.out;
+this sends the text to the step.out handler alone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>printer</strong> (<em>logging.Logger</em>) – The step’s printer.</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – The text, already formatted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether it was written (False if the step has no step.out handler).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.publish_viscosity">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">publish_viscosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Green-Kubo'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#publish_viscosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.publish_viscosity" title="Link to this definition">#</a></dt>
 <dd><p>Record a viscosity for the steps after this one, such as Diffusivity.</p>
@@ -2358,6 +2448,28 @@ bulk modulus from its volume fluctuations, and the pressure it was run at.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.report_state">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">report_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#report_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.report_state" title="Link to this definition">#</a></dt>
+<dd><p>Print the state of the analysed runs and return it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<em>seamm.Node</em>) – The analysis step.</p></li>
+<li><p><strong>printer</strong> (<em>logging.Logger</em>) – The step’s printer.</p></li>
+<li><p><strong>paths</strong> (<em>[str or pathlib.Path]</em>) – The md.h5md files of the runs.</p></li>
+<li><p><strong>indent</strong> (<em>str</em>) – The indentation of the table.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None if the state could not be determined (it is noted, not raised).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>seamm_md_analysis.State or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.request_sampling">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">request_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flowchart</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requirements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#request_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.request_sampling" title="Link to this definition">#</a></dt>
 <dd><p>Turn on, in the last MD sub-step of a flowchart, what an analysis needs.</p>
@@ -2380,12 +2492,35 @@ bulk modulus from its volume fluctuations, and the pressure it was run at.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.run_own_md">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">run_own_md</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'run</span> <span class="pre">the</span> <span class="pre">MD</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sub-flowchart'</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.run_own_md" title="Link to this definition">#</a></dt>
-<dd><p>The choice of the analysis step’s source parameter that runs its own MD</p>
+<dd><p>The choice by which an analysis step used to run its own MD, in a sub-flowchart;
+no longer offered (phase 8): replicas are a Loop around the MD</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.size_warnings">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">size_warnings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widths_per_molecule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#size_warnings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.size_warnings" title="Link to this definition">#</a></dt>
+<dd><p>Whether a system is large enough for liquid properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>molsystem._Configuration</em>) – The structure about to be simulated.</p></li>
+<li><p><strong>min_molecules</strong> (<em>int</em>) – The fewest molecules for good statistics (~200-300).</p></li>
+<li><p><strong>widths_per_molecule</strong> (<em>float</em>) – The narrowest width of the cell should be at least this many times the
+length of the longest molecule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Warnings for the output; empty if the system is large enough.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.source_choices">
-<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">source_choices</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('run</span> <span class="pre">the</span> <span class="pre">MD</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sub-flowchart',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration',</span> <span class="pre">'files')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.source_choices" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">source_choices</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run',</span> <span class="pre">'the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration',</span> <span class="pre">'files')</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.source_choices" title="Link to this definition">#</a></dt>
 <dd><p>All choices of the source parameter</p>
 </dd></dl>
 
@@ -2407,6 +2542,12 @@ bulk modulus from its volume fluctuations, and the pressure it was run at.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.state_data">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">state_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#state_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.state_data" title="Link to this definition">#</a></dt>
+<dd><p>The state as results for <code class="docutils literal notranslate"><span class="pre">store_results</span></code>, keyed as in <code class="docutils literal notranslate"><span class="pre">state_results</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.step_support.state_of_runs">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">state_of_runs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/step_support.html#state_of_runs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.step_support.state_of_runs" title="Link to this definition">#</a></dt>
 <dd><p>The state of the analysed runs: T, P, V and ρ with their errors, and the
@@ -2422,6 +2563,12 @@ equilibrium density where an NPT run before them gives the bulk modulus.</p>
 <dd class="field-even"><p>seamm_md_analysis.State</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="seamm_md_analysis.step_support.state_results">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.step_support.</span></span><span class="sig-name descname"><span class="pre">state_results</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'P':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">mean</span> <span class="pre">pressure',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'atm'},</span> <span class="pre">'P,stderr':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">standard</span> <span class="pre">error</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">pressure',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'atm'},</span> <span class="pre">'T':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">mean</span> <span class="pre">temperature',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'K'},</span> <span class="pre">'T,stderr':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">standard</span> <span class="pre">error</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">temperature',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'K'},</span> <span class="pre">'V':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">mean</span> <span class="pre">volume',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'Å^3'},</span> <span class="pre">'bulk</span> <span class="pre">modulus':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">bulk</span> <span class="pre">modulus</span> <span class="pre">used</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">equilibrium</span> <span class="pre">density,</span> <span class="pre">from</span> <span class="pre">an</span> <span class="pre">NPT</span> <span class="pre">run',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'atm'},</span> <span class="pre">'density':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">mean</span> <span class="pre">density',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'g/mL'},</span> <span class="pre">'density,stderr':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">standard</span> <span class="pre">error</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">density',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'g/mL'},</span> <span class="pre">'equilibrium</span> <span class="pre">density':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">estimated</span> <span class="pre">density</span> <span class="pre">at</span> <span class="pre">the</span> <span class="pre">target</span> <span class="pre">pressure</span> <span class="pre">of</span> <span class="pre">runs</span> <span class="pre">at</span> <span class="pre">constant</span> <span class="pre">volume',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'g/mL'},</span> <span class="pre">'equilibrium</span> <span class="pre">density,stderr':</span> <span class="pre">{'description':</span> <span class="pre">'The</span> <span class="pre">standard</span> <span class="pre">error</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">estimated</span> <span class="pre">equilibrium</span> <span class="pre">density',</span> <span class="pre">'dimensionality':</span> <span class="pre">'scalar',</span> <span class="pre">'type':</span> <span class="pre">'float',</span> <span class="pre">'units':</span> <span class="pre">'g/mL'}}</span></span><a class="headerlink" href="#seamm_md_analysis.step_support.state_results" title="Link to this definition">#</a></dt>
+<dd><p>The results describing the state of the runs, for each analysis step’s metadata</p>
 </dd></dl>
 
 <dl class="py data">
@@ -3097,6 +3244,7 @@ output.</p>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements"><code class="docutils literal notranslate"><span class="pre">Requirements</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements.dynamics"><code class="docutils literal notranslate"><span class="pre">Requirements.dynamics</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements.needs"><code class="docutils literal notranslate"><span class="pre">Requirements.needs</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.requirements.Requirements.periodic"><code class="docutils literal notranslate"><span class="pre">Requirements.periodic</span></code></a></li>
 </ul>
@@ -3170,18 +3318,30 @@ output.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-seamm_md_analysis.step_support">seamm_md_analysis.step_support module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.NOT_CANONICAL"><code class="docutils literal notranslate"><span class="pre">NOT_CANONICAL</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.STATE_PARAMETERS"><code class="docutils literal notranslate"><span class="pre">STATE_PARAMETERS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.STATE_REPORTED"><code class="docutils literal notranslate"><span class="pre">STATE_REPORTED</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.STOCHASTIC"><code class="docutils literal notranslate"><span class="pre">STOCHASTIC</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.cell_widths"><code class="docutils literal notranslate"><span class="pre">cell_widths()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.check_md_flowchart"><code class="docutils literal notranslate"><span class="pre">check_md_flowchart()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.each_iteration"><code class="docutils literal notranslate"><span class="pre">each_iteration</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_inputs"><code class="docutils literal notranslate"><span class="pre">md_inputs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.md_substeps"><code class="docutils literal notranslate"><span class="pre">md_substeps()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.molecule_extents"><code class="docutils literal notranslate"><span class="pre">molecule_extents()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.npt_reference"><code class="docutils literal notranslate"><span class="pre">npt_reference()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.preceding_viscosity"><code class="docutils literal notranslate"><span class="pre">preceding_viscosity()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.print_details"><code class="docutils literal notranslate"><span class="pre">print_details()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.publish_viscosity"><code class="docutils literal notranslate"><span class="pre">publish_viscosity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.read_files"><code class="docutils literal notranslate"><span class="pre">read_files</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.report_state"><code class="docutils literal notranslate"><span class="pre">report_state()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.request_sampling"><code class="docutils literal notranslate"><span class="pre">request_sampling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.run_own_md"><code class="docutils literal notranslate"><span class="pre">run_own_md</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.size_warnings"><code class="docutils literal notranslate"><span class="pre">size_warnings()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_choices"><code class="docutils literal notranslate"><span class="pre">source_choices</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.source_parameters"><code class="docutils literal notranslate"><span class="pre">source_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.state_data"><code class="docutils literal notranslate"><span class="pre">state_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.state_of_runs"><code class="docutils literal notranslate"><span class="pre">state_of_runs()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.state_results"><code class="docutils literal notranslate"><span class="pre">state_results</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.step_support.viscosity_variable"><code class="docutils literal notranslate"><span class="pre">viscosity_variable</span></code></a></li>
 </ul>
 </li>

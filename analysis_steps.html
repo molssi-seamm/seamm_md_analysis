@@ -394,29 +394,33 @@ any analysis step can take part by implementing the methods below.</p>
 <p>The names are those of the H5MD file (see <a class="reference internal" href="h5md.html#h5md-layout"><span class="std std-ref">The H5MD file</span></a>): an observable such as
 <code class="docutils literal notranslate"><span class="pre">heat_flux</span></code> or <code class="docutils literal notranslate"><span class="pre">pressure_tensor</span></code>, or a per-particle property as
 <code class="docutils literal notranslate"><span class="pre">&lt;group&gt;/&lt;name&gt;</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">molecules/position</span></code>.</p>
-<section id="two-ways-to-get-the-md">
-<h2>Two ways to get the MD<a class="headerlink" href="#two-ways-to-get-the-md" title="Link to this heading">#</a></h2>
-<p>An analysis step’s <strong>MD to analyze</strong> parameter (<code class="docutils literal notranslate"><span class="pre">md</span> <span class="pre">source</span></code>) chooses where the MD
-comes from:</p>
+<section id="where-the-md-comes-from">
+<h2>Where the MD comes from<a class="headerlink" href="#where-the-md-comes-from" title="Link to this heading">#</a></h2>
+<p>An analysis step analyzes MD that ran before it in the flowchart. Its <strong>MD to
+analyze</strong> parameter (<code class="docutils literal notranslate"><span class="pre">md</span> <span class="pre">source</span></code>) chooses which:</p>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">run</span> <span class="pre">the</span> <span class="pre">MD</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">sub-flowchart</span></code></dt><dd><p>The step runs the MD in its own sub-flowchart a number of times, as independent
-runs, and takes the errors from their spread. This is how the steps have always
-worked.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration</span></code> (the default)</dt><dd><p>Every run by the same MD step as the last one, which in a Loop are the runs of its
+iterations, analyzed as independent runs. Only the innermost loop around the MD
+counts, so in a loop over temperatures around a loop over replicas, an analysis
+inside the temperature loop takes that temperature’s replicas. Without a loop it
+is the one run.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span></code></dt><dd><p>The step analyzes the last MD run earlier in the flowchart that sampled what it
-needs, found in the workspace variable <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>. One production run can then
-feed several analyses.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span> <span class="pre">of</span> <span class="pre">each</span> <span class="pre">loop</span> <span class="pre">iteration</span></code></dt><dd><p>Every run by the same MD step as the last one, which in a Loop are the runs of the
-iterations, analyzed as independent runs.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">the</span> <span class="pre">last</span> <span class="pre">MD</span> <span class="pre">run</span></code></dt><dd><p>The last MD run earlier in the flowchart that sampled what the step needs, found
+in the workspace variable <code class="docutils literal notranslate"><span class="pre">_md_runs</span></code>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">files</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">md.h5md</span></code> files given, each an independent run; <code class="docutils literal notranslate"><span class="pre">job://&lt;n&gt;/&lt;path&gt;</span></code> reads
 another job’s file.</p>
 </dd>
 </dl>
-<p>When a single run is analyzed, it is divided into consecutive blocks (<code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span>
-<span class="pre">blocks</span></code>, 5 by default), which are analyzed separately to estimate the errors. Each
-block must be much longer than the correlation time of what is analyzed.</p>
+<p>For independent runs, put the MD in a Loop – in parallel, each run starting from the
+same structure (“Discard the structure” in the MD sub-steps) with new velocities –
+and put the analysis after the loop. One set of runs can feed several analyses. When
+a single run is analyzed, it is divided into consecutive blocks (<code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span>
+<span class="pre">blocks</span></code>, 5 by default) for the errors; each block must be much longer than the
+correlation time of what is analyzed.</p>
+<p>The steps used to run their own MD in a sub-flowchart. That route is gone: a
+flowchart still asking for it fails the check before the job runs, with a message
+saying what replaces it.</p>
 </section>
 <section id="the-methods">
 <h2>The methods<a class="headerlink" href="#the-methods" title="Link to this heading">#</a></h2>
@@ -452,13 +456,14 @@ job starts, which stops before running any step if there are problems.</p>
 the next MD step. An analysis that will read this MD and cannot use the structure,
 such as one needing a periodic system, raises an exception, so the job stops
 before the MD. Periodicity is known only once the structure exists, so the
-flowchart check cannot catch it.</p>
+flowchart check cannot catch it. It may also return warnings, e.g. from
+<a class="reference internal" href="api/seamm_md_analysis.html#seamm_md_analysis.step_support.size_warnings" title="seamm_md_analysis.step_support.size_warnings"><code class="xref py py-func docutils literal notranslate"><span class="pre">size_warnings()</span></code></a>, which the MD step prints.</p>
 </dd>
 </dl>
-<p>When an analysis runs its own MD, it calls
-<a class="reference internal" href="api/seamm_md_analysis.html#seamm_md_analysis.step_support.request_sampling" title="seamm_md_analysis.step_support.request_sampling"><code class="xref py py-func docutils literal notranslate"><span class="pre">request_sampling()</span></code></a> on its sub-flowchart first,
-which turns on in the last MD sub-step whatever is missing and reports the changes;
-anything it cannot turn on stops the step before the MD.</p>
+<p>What the MD does not sample is reported by the flowchart check with a fix: the MD
+step’s <code class="docutils literal notranslate"><span class="pre">sampling_edits(need)</span></code> gives the parameter changes that turn the sampling
+on, which the editor offers as a button and <code class="docutils literal notranslate"><span class="pre">seamm-flowchart</span> <span class="pre">validate</span> <span class="pre">--fix</span></code>
+applies.</p>
 <p><a class="reference internal" href="api/seamm_md_analysis.html#module-seamm_md_analysis.step_support" title="seamm_md_analysis.step_support"><code class="xref py py-mod docutils literal notranslate"><span class="pre">seamm_md_analysis.step_support</span></code></a> holds the code the analysis steps share:
 the parameter definitions (<code class="docutils literal notranslate"><span class="pre">source_parameters</span></code>), finding the MD sub-steps, the
 checks, finding the files to read (<code class="docutils literal notranslate"><span class="pre">md_inputs</span></code>), and passing results between
@@ -550,7 +555,7 @@ modulus K, and the equilibrium density at its pressure is estimated as
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#two-ways-to-get-the-md">Two ways to get the MD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-the-md-comes-from">Where the MD comes from</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-methods">The methods</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#md-sub-steps">MD sub-steps</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Analysis steps</a></li>

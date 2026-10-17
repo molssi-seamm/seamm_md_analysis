@@ -473,10 +473,15 @@
 <span class="sd">        The data, each with its acceptable sampling.</span>
 <span class="sd">    periodic : bool</span>
 <span class="sd">        Whether the system must be periodic.</span>
+<span class="sd">    dynamics : bool</span>
+<span class="sd">        Whether the analysis uses the dynamics -- transport properties such as the</span>
+<span class="sd">        viscosity, diffusion and conductivities -- so that a thermostat that</span>
+<span class="sd">        perturbs the motion (Langevin) or none (NVE) should not be used.</span>
 <span class="sd">    """</span>
 
     <span class="n">needs</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+    <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dynamics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 
