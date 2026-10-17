@@ -545,5 +545,31 @@ def select_md_runs(records, source="the last MD run", name=None):
     if source == "the last MD run":
         return [last]
     if source == "the last MD run of each loop iteration":
-        return [r for r in records if r.get("step") == last.get("step")]
+        return [r for r in records if _same_step(r.get("step"), last.get("step"))]
     raise ValueError(f"Unknown source of MD runs: '{source}'")
+
+
+def _same_step(a, b):
+    """Whether two runs were made by the same MD step, perhaps in different loop
+    iterations.
+
+    A run's step is labelled by the step's id and title, e.g. "4.iter_2.0.4 NVT
+    dynamics". The numbers in the id are the positions of the steps; anything else is
+    the directory of a loop iteration (``iter_2``, or a system or configuration name),
+    which differs from one iteration to the next.
+    """
+    if a is None or b is None:
+        return False
+    if a == b:
+        return True
+    id_a, _, title_a = a.partition(" ")
+    id_b, _, title_b = b.partition(" ")
+    if title_a != title_b:
+        return False
+    parts_a = id_a.split(".")
+    parts_b = id_b.split(".")
+    if len(parts_a) != len(parts_b):
+        return False
+    return all(
+        x == y or not (x.isdigit() or y.isdigit()) for x, y in zip(parts_a, parts_b)
+    )
