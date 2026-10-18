@@ -275,13 +275,19 @@ def shear_stress_components(pressure_tensor):
     )
 
 
-def species_helfand_moments(v, species, m=None):
+def species_helfand_moments(v, species, m=None, max_bytes=256 * 2**20):
     """Single-molecule Helfand moments from velocities, for each species.
 
     For each molecule and direction, the square of the integral of its
     velocity over a window of k steps, averaged over n - m time origins, then
     averaged over the molecules of the species. A fourth column holds the total,
     the sum over x, y and z.
+
+    The molecules are taken a batch at a time, so the memory used is bounded by
+    ``max_bytes`` whatever the length of the run: the integrals and the FFTs
+    need several times the velocities of the molecules they work on, which for
+    every molecule of a long run at once was ~8 times the whole array. The
+    batches' means and spreads are combined exactly.
 
     Parameters
     ----------
@@ -291,6 +297,8 @@ def species_helfand_moments(v, species, m=None):
         The indices of the molecules of each species.
     m : int
         The number of lags; by default min(n // 2, 5000).
+    max_bytes : int
+        About how much memory a batch of molecules may use.
 
     Returns
     -------
@@ -300,21 +308,45 @@ def species_helfand_moments(v, species, m=None):
     [numpy.ndarray(m, 4)]
         The standard deviation over the molecules.
     """
-    v = np.asarray(v, dtype=float)
     n = v.shape[0]
     if m is None:
         m = min(n // 2, 5000)
     n_origins = n - m
+    # About 12 arrays of n x 3 floats per molecule: its velocities, their
+    # integral, the detrended copy, and the FFTs' work arrays
+    per_molecule = 12 * n * 3 * 8
+    batch = max(1, int(max_bytes // per_molecule))
 
     Ms = []
     M_errs = []
     for molecules in species:
-        vs = v[:, molecules, :]
-        G = cumulative_trapezoid(vs, axis=0, initial=0.0)
-        S = windowed_displacement_products(G, G, m, n_origins)
-        S = np.concatenate((S, S.sum(axis=2, keepdims=True)), axis=2)
-        Ms.append(np.average(S, axis=1) / n_origins)
-        M_errs.append(np.std(S, axis=1) / n_origins)
+        molecules = list(molecules)
+        count = 0
+        mean = None
+        M2 = None  # the sum of squared deviations from the mean
+        for i in range(0, len(molecules), batch):
+            chunk = molecules[i : i + batch]
+            vs = np.asarray(v[:, chunk, :], dtype=float)
+            G = cumulative_trapezoid(vs, axis=0, initial=0.0)
+            del vs
+            S = windowed_displacement_products(G, G, m, n_origins)
+            del G
+            S = np.concatenate((S, S.sum(axis=2, keepdims=True)), axis=2)
+            S /= n_origins
+            k = S.shape[1]
+            chunk_mean = S.mean(axis=1)
+            chunk_M2 = ((S - chunk_mean[:, None, :]) ** 2).sum(axis=1)
+            if mean is None:
+                count, mean, M2 = k, chunk_mean, chunk_M2
+            else:
+                # Chan et al.'s combination of two sets' means and variances
+                total = count + k
+                delta = chunk_mean - mean
+                mean = mean + delta * (k / total)
+                M2 = M2 + chunk_M2 + delta**2 * (count * k / total)
+                count = total
+        Ms.append(mean)
+        M_errs.append(np.sqrt(M2 / count))
     return Ms, M_errs
 
 

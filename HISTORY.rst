@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.18 -- Bugfix: the Helfand moments of long runs used too much memory
+    * The velocity route of the diffusion coefficient (the single-molecule Helfand
+      moments) worked on every molecule of a run at once, needing about eight times the
+      velocities: a run of 50,000 frames of 1000 molecules took about 10 GB. The
+      molecules are now taken in batches of bounded size, with the same results, so the
+      memory needed hardly grows with the length of the run.
+
 2026.10.17.4 -- One route for MD analysis: checks, the state of the runs, and details
     * The analysis steps no longer run their own MD: they analyze the MD run before
       them, in a Loop for independent runs ("the last MD run of each loop iteration",

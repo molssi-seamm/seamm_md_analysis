@@ -315,3 +315,18 @@ def test_green_kubo_shorter_than_the_window():
     ts = np.arange(2 * 200 + 2) * 0.002
     fit = transport.fit_green_kubo_integral(1.0 - np.exp(-ts / 0.1), ts)
     assert fit.value == pytest.approx(1.0, rel=0.05)
+
+
+def test_species_helfand_moments_in_batches(rng):
+    """Batches of molecules, down to one at a time, give the same moments and
+    spreads as all the molecules at once."""
+    v = rng.normal(size=(300, 11, 3))
+    species = [[0, 2, 4, 6, 8, 10], [1, 3, 5, 7, 9]]
+    whole, whole_err = transport.species_helfand_moments(v, species, m=40)
+    per_molecule = 12 * 300 * 3 * 8
+    for batch in (1, 2, 4):
+        parts, parts_err = transport.species_helfand_moments(
+            v, species, m=40, max_bytes=batch * per_molecule
+        )
+        for a, b in zip(parts + parts_err, whole + whole_err):
+            np.testing.assert_allclose(a, b, rtol=1e-10, atol=1e-13 * abs(b).max())
