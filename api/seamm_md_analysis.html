@@ -2907,18 +2907,24 @@ of <a class="reference internal" href="#seamm_md_analysis.transport.SHEAR_COMPON
 
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.transport.species_helfand_moments">
-<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">species_helfand_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#species_helfand_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.species_helfand_moments" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">species_helfand_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">species</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">268435456</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#species_helfand_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.species_helfand_moments" title="Link to this definition">#</a></dt>
 <dd><p>Single-molecule Helfand moments from velocities, for each species.</p>
 <p>For each molecule and direction, the square of the integral of its
 velocity over a window of k steps, averaged over n - m time origins, then
 averaged over the molecules of the species. A fourth column holds the total,
 the sum over x, y and z.</p>
+<p>The molecules are taken a batch at a time, so the memory used is bounded by
+<code class="docutils literal notranslate"><span class="pre">max_bytes</span></code> whatever the length of the run: the integrals and the FFTs
+need several times the velocities of the molecules they work on, which for
+every molecule of a long run at once was ~8 times the whole array. The
+batches’ means and spreads are combined exactly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>v</strong> (<em>numpy.ndarray(n, n_molecules, 3)</em>) – The velocities at each step.</p></li>
 <li><p><strong>species</strong> (<em>[[int]]</em>) – The indices of the molecules of each species.</p></li>
 <li><p><strong>m</strong> (<em>int</em>) – The number of lags; by default min(n // 2, 5000).</p></li>
+<li><p><strong>max_bytes</strong> (<em>int</em>) – About how much memory a batch of molecules may use.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -664,13 +664,19 @@
 
 <div class="viewcode-block" id="species_helfand_moments">
 <a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.transport.species_helfand_moments">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">species_helfand_moments</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">species_helfand_moments</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_bytes</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="mi">20</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Single-molecule Helfand moments from velocities, for each species.</span>
 
 <span class="sd">    For each molecule and direction, the square of the integral of its</span>
 <span class="sd">    velocity over a window of k steps, averaged over n - m time origins, then</span>
 <span class="sd">    averaged over the molecules of the species. A fourth column holds the total,</span>
 <span class="sd">    the sum over x, y and z.</span>
+
+<span class="sd">    The molecules are taken a batch at a time, so the memory used is bounded by</span>
+<span class="sd">    ``max_bytes`` whatever the length of the run: the integrals and the FFTs</span>
+<span class="sd">    need several times the velocities of the molecules they work on, which for</span>
+<span class="sd">    every molecule of a long run at once was ~8 times the whole array. The</span>
+<span class="sd">    batches' means and spreads are combined exactly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -680,6 +686,8 @@
 <span class="sd">        The indices of the molecules of each species.</span>
 <span class="sd">    m : int</span>
 <span class="sd">        The number of lags; by default min(n // 2, 5000).</span>
+<span class="sd">    max_bytes : int</span>
+<span class="sd">        About how much memory a batch of molecules may use.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -689,21 +697,45 @@
 <span class="sd">    [numpy.ndarray(m, 4)]</span>
 <span class="sd">        The standard deviation over the molecules.</span>
 <span class="sd">    """</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">m</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
     <span class="n">n_origins</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">m</span>
+    <span class="c1"># About 12 arrays of n x 3 floats per molecule: its velocities, their</span>
+    <span class="c1"># integral, the detrended copy, and the FFTs' work arrays</span>
+    <span class="n">per_molecule</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">8</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_bytes</span> <span class="o">//</span> <span class="n">per_molecule</span><span class="p">))</span>
 
     <span class="n">Ms</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">M_errs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">molecules</span> <span class="ow">in</span> <span class="n">species</span><span class="p">:</span>
-        <span class="n">vs</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">molecules</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="n">G</span> <span class="o">=</span> <span class="n">cumulative_trapezoid</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">Ms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_origins</span><span class="p">)</span>
-        <span class="n">M_errs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_origins</span><span class="p">)</span>
+        <span class="n">molecules</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">M2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># the sum of squared deviations from the mean</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">molecules</span><span class="p">),</span> <span class="n">batch</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">molecules</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">batch</span><span class="p">]</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">[:,</span> <span class="n">chunk</span><span class="p">,</span> <span class="p">:],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">G</span> <span class="o">=</span> <span class="n">cumulative_trapezoid</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">vs</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">windowed_displacement_products</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n_origins</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">G</span>
+            <span class="n">S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">S</span> <span class="o">/=</span> <span class="n">n_origins</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">chunk_mean</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">chunk_M2</span> <span class="o">=</span> <span class="p">((</span><span class="n">S</span> <span class="o">-</span> <span class="n">chunk_mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">count</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">M2</span> <span class="o">=</span> <span class="n">k</span><span class="p">,</span> <span class="n">chunk_mean</span><span class="p">,</span> <span class="n">chunk_M2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Chan et al.'s combination of two sets' means and variances</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="n">k</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="n">chunk_mean</span> <span class="o">-</span> <span class="n">mean</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">+</span> <span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span>
+                <span class="n">M2</span> <span class="o">=</span> <span class="n">M2</span> <span class="o">+</span> <span class="n">chunk_M2</span> <span class="o">+</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">count</span> <span class="o">*</span> <span class="n">k</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">total</span>
+        <span class="n">Ms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+        <span class="n">M_errs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">M2</span> <span class="o">/</span> <span class="n">count</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">Ms</span><span class="p">,</span> <span class="n">M_errs</span></div>
 
 
