@@ -31,6 +31,19 @@ def test_classify_molecules():
     assert c["charge"][2] == pytest.approx(-1.0)
 
 
+def test_classify_scaled_ions():
+    """With the charges of the ions scaled by 0.8, they are still ions of formal
+    charge +-1, not molecules with a broken charge."""
+    charges = [-0.8476, 0.4238, 0.4238, 0.8, 0.72, -0.38, -0.38, -0.38, -0.38]
+    molecules = [[0, 1, 2], [3], [4, 5, 6, 7, 8]]
+    plain = classify_molecules(charges, molecules)
+    assert plain["ions"] == [] and plain["other"] == [1, 2]
+    c = classify_molecules(charges, molecules, scale=0.8)
+    assert c["neutral"] == [0] and c["ions"] == [1, 2] and c["other"] == []
+    assert c["z"].tolist() == [0, 1, -1]
+    assert c["charge"][1] == pytest.approx(0.8)
+
+
 def test_cell_dipole_of_a_neutral_molecule_does_not_depend_on_the_origin():
     x = np.array([[0.0, 0, 0], [1.0, 0, 0], [0, 1.0, 0]])
     q = np.array([-0.8, 0.4, 0.4])

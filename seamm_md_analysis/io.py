@@ -192,6 +192,15 @@ class MDData:
         return result
 
     @property
+    def ion_charge_scale(self):
+        """The factor the charges of the ions were scaled by, 1 if they were not."""
+        value = self.parameters.get("ion_charge_scale", 1.0)
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 1.0
+
+    @property
     def provenance(self):
         """SEAMM's provenance (``parameters/seamm``)."""
         if "parameters/seamm" not in self.first:

@@ -91,6 +91,8 @@ def test_round_trip(tmp_path):
         assert md.periodic
         assert md.parameters["ensemble"] == "NVT"
         assert md.parameters["thermostat"]["T"] == 300
+        # Not recorded: the charges were not scaled
+        assert md.ion_charge_scale == 1.0
         assert md.provenance["job"] == 12
         assert md.provenance["model"] == {"name": "OPLS-AA"}
         assert md.provenance["segments"]["node"] == ["n1"]
@@ -260,3 +262,12 @@ def test_mdanalysis_topology_from_configuration(tmp_path):
         assert list(u.residues[0].atoms.indices) == [0, 1, 2]
         assert len(u.bonds) == 2
         assert list(u.atoms.names) == ["O", "H", "H", "C"]
+
+
+def test_ion_charge_scale(tmp_path):
+    path = tmp_path / "md.h5md"
+    with H5MDWriter(path) as w:
+        w.particles(ids=[1, 2], species=[3, 9], masses=[6.94, 19.0])
+        w.parameters({"ensemble": "NVT", "ion_charge_scale": 0.8})
+    with open_md(path) as md:
+        assert md.ion_charge_scale == pytest.approx(0.8)
