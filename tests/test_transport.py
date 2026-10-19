@@ -330,3 +330,146 @@ def test_species_helfand_moments_in_batches(rng):
         )
         for a, b in zip(parts + parts_err, whole + whole_err):
             np.testing.assert_allclose(a, b, rtol=1e-10, atol=1e-13 * abs(b).max())
+
+
+def _ar1(rng, phi, shape):
+    """A correlated series along the last axis."""
+    noise = rng.normal(size=shape)
+    x = np.zeros(shape)
+    for t in range(1, shape[-1]):
+        x[..., t] = phi * x[..., t - 1] + noise[..., t]
+    return x
+
+
+def _science_reference(e, fluxes, m):
+    """The loop of the multicomponent analysis script, one direction at a time."""
+    result = []
+    for d in range(3):
+        X = np.column_stack([e[d]] + [f[d] for f in fluxes])
+        n, k = X.shape
+        X = X - X.mean(0)
+        nfft = 1 << int(np.ceil(np.log2(2 * n)))
+        F = np.fft.rfft(X, nfft, axis=0)
+        C = np.empty((m, k, k))
+        for a in range(k):
+            for b in range(k):
+                c = np.fft.irfft(F[:, a] * np.conj(F[:, b]), nfft)[:m]
+                C[:, a, b] = c / (n - np.arange(m))
+        C = 0.5 * (C + C.transpose(0, 2, 1))
+        L = np.cumsum(C, axis=0) - 0.5 * (C + C[0:1])
+        kappa = [0.0]
+        for t in range(1, m):
+            kappa.append(
+                L[t, 0, 0] - L[t, 0, 1:] @ np.linalg.solve(L[t, 1:, 1:], L[t, 0, 1:])
+            )
+        result.append(kappa)
+    return np.array(result)
+
+
+def test_multicomponent_correlation_functions_match_script(rng):
+    e = _ar1(rng, 0.9, (3, 4000))
+    fluxes = _ar1(rng, 0.95, (2, 3, 4000))
+    e = e + 3 * fluxes[0] - 2 * fluxes[1]
+    ccf, integral = transport.multicomponent_correlation_functions(e, fluxes, m=400)
+    expected = _science_reference(e, fluxes, 400)
+    np.testing.assert_allclose(integral[:3], expected, rtol=1e-8, atol=1e-8)
+    # The diagonal correlation functions are the derivatives of the integrals
+    np.testing.assert_allclose(
+        np.diff(integral[0])[5:],
+        0.5 * (ccf[0, 5:-1] + ccf[0, 6:]),
+        atol=1e-4 * abs(ccf[0]).max(),
+    )
+
+
+def test_multicomponent_removes_the_species_fluxes(rng):
+    """Adding any multiple of the species fluxes to the heat flux, or scaling the
+    species fluxes, changes nothing; and the result is the conductivity of the
+    part of the heat flux uncorrelated with them."""
+    n = 50000
+    e0 = _ar1(rng, 0.9, (3, n))
+    fluxes = _ar1(rng, 0.95, (2, 3, n))
+    e = e0 + 3 * fluxes[0] - 2 * fluxes[1]
+
+    _, plain = transport.multicomponent_correlation_functions(e0, fluxes, m=2000)
+    _, mixed = transport.multicomponent_correlation_functions(e, fluxes, m=2000)
+    _, scaled = transport.multicomponent_correlation_functions(e, 1e3 * fluxes, m=2000)
+    np.testing.assert_allclose(mixed[:3], plain[:3], rtol=1e-8, atol=1e-8)
+    np.testing.assert_allclose(scaled[:3], plain[:3], rtol=1e-6, atol=1e-6)
+
+    M_plain = transport.multicomponent_helfand_moments(e0, fluxes, m=1000)
+    M_mixed = transport.multicomponent_helfand_moments(e, fluxes, m=1000)
+    np.testing.assert_allclose(M_mixed[:3], M_plain[:3], rtol=1e-6, atol=1e-6)
+    # The off-diagonal terms are those of the heat flux alone
+    M_raw = transport.collective_helfand_moments(e, m=1000)
+    np.testing.assert_allclose(M_mixed[3:], M_raw[3:])
+
+    # The slope of the moments is twice the Green-Kubo integral: for an AR(1)
+    # series var * (1 + phi) / (1 - phi), with var = 1 / (1 - phi^2), ~ 100 here
+    def slope(M):
+        return (M[:3, -1] - M[:3, 500]).mean() / 499
+
+    exact = (1 / (1 - 0.81)) * 1.9 / 0.1
+    assert slope(M_mixed) == pytest.approx(exact, rel=0.1)
+    assert slope(transport.collective_helfand_moments(e, m=1000)) > 10 * exact
+
+
+def test_multicomponent_checks_shapes(rng):
+    e = rng.normal(size=(3, 100))
+    with pytest.raises(ValueError):
+        transport.multicomponent_correlation_functions(e, rng.normal(size=(2, 3, 99)))
+    # One species flux may be given as 3 x n
+    _, a = transport.multicomponent_correlation_functions(
+        e, rng.normal(size=(3, 100)), m=10
+    )
+    assert a.shape == (6, 10)
+
+
+def test_flux_matrices_hold_the_plain_heat_flux(rng):
+    """The heat-flux element of the matrices is the plain analysis of the heat
+    flux, and the matrices are symmetric."""
+    from seamm_md_analysis.correlate import tensor_correlation_functions
+
+    e = _ar1(rng, 0.9, (3, 3000))
+    fluxes = _ar1(rng, 0.95, (2, 3, 3000))
+    C, L = transport.flux_correlation_matrices(e, fluxes, m=300)
+    assert L.shape == (3, 300, 3, 3)
+    ccf, integral = tensor_correlation_functions(e, m=300)
+    np.testing.assert_allclose(L[:, :, 0, 0], integral[:3], rtol=1e-9, atol=1e-9)
+    np.testing.assert_allclose(C[:, :, 0, 0], ccf[:3], rtol=1e-9, atol=1e-9)
+    np.testing.assert_allclose(L, L.transpose(0, 1, 3, 2))
+
+    M = transport.flux_helfand_matrices(e, fluxes, m=200)
+    plain = transport.collective_helfand_moments(e, m=200)
+    np.testing.assert_allclose(M[:, :, 0, 0], plain[:3], rtol=1e-9, atol=1e-9)
+    np.testing.assert_allclose(M, M.transpose(0, 1, 3, 2))
+
+
+def test_schur_complement_of_averaged_runs(rng):
+    """Averaging the matrices of several runs, then taking the complement, removes
+    the species fluxes as for one long run."""
+    n = 20000
+    e0 = _ar1(rng, 0.9, (3, n))
+    fluxes = _ar1(rng, 0.95, (2, 3, n))
+    e = e0 + 3 * fluxes[0] - 2 * fluxes[1]
+    runs = [
+        transport.flux_helfand_matrices(
+            e[:, i : i + 5000], fluxes[..., i : i + 5000], m=500
+        )
+        for i in range(0, n, 5000)
+    ]
+    kappa = transport.schur_complement(np.mean(runs, axis=0))
+    plain = np.mean(
+        [
+            transport.collective_helfand_moments(e0[:, i : i + 5000], m=500)
+            for i in range(0, n, 5000)
+        ],
+        axis=0,
+    )
+    slope = (kappa[:, -1] - kappa[:, 250]).mean() / 249
+    expected = (plain[:3, -1] - plain[:3, 250]).mean() / 249
+    assert slope == pytest.approx(expected, rel=0.15)
+    # A single matrix, or a batch with leading dimensions
+    assert transport.schur_complement(runs[0][0, 10]).shape == ()
+    value, a = transport.schur_complement(runs[0], coefficients=True)
+    assert value.shape == (3, 500) and a.shape == (3, 500, 2)
+    assert np.all(a[:, 0] == 0.0)
