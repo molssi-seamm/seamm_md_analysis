@@ -881,7 +881,7 @@ version, package versions, hashes of model files, …</p></li>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="seamm_md_analysis.h5md.standard_observables">
-<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.h5md.</span></span><span class="sig-name descname"><span class="pre">standard_observables</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'density':</span> <span class="pre">(),</span> <span class="pre">'hbond_count':</span> <span class="pre">(),</span> <span class="pre">'hbond_energy':</span> <span class="pre">(),</span> <span class="pre">'heat_flux':</span> <span class="pre">(3,),</span> <span class="pre">'kinetic_energy':</span> <span class="pre">(),</span> <span class="pre">'molecular_energy':</span> <span class="pre">(),</span> <span class="pre">'pair_energy':</span> <span class="pre">(),</span> <span class="pre">'potential_energy':</span> <span class="pre">(),</span> <span class="pre">'pressure':</span> <span class="pre">(),</span> <span class="pre">'pressure_tensor':</span> <span class="pre">(3,</span> <span class="pre">3),</span> <span class="pre">'temperature':</span> <span class="pre">(),</span> <span class="pre">'total_dipole':</span> <span class="pre">(3,),</span> <span class="pre">'total_energy':</span> <span class="pre">(),</span> <span class="pre">'volume':</span> <span class="pre">()}</span></span><a class="headerlink" href="#seamm_md_analysis.h5md.standard_observables" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.h5md.</span></span><span class="sig-name descname"><span class="pre">standard_observables</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'density':</span> <span class="pre">(),</span> <span class="pre">'hbond_count':</span> <span class="pre">(),</span> <span class="pre">'hbond_energy':</span> <span class="pre">(),</span> <span class="pre">'heat_flux':</span> <span class="pre">(3,),</span> <span class="pre">'kinetic_energy':</span> <span class="pre">(),</span> <span class="pre">'molecular_energy':</span> <span class="pre">(),</span> <span class="pre">'pair_energy':</span> <span class="pre">(),</span> <span class="pre">'potential_energy':</span> <span class="pre">(),</span> <span class="pre">'pressure':</span> <span class="pre">(),</span> <span class="pre">'pressure_tensor':</span> <span class="pre">(3,</span> <span class="pre">3),</span> <span class="pre">'species_mass_flux':</span> <span class="pre">(None,</span> <span class="pre">3),</span> <span class="pre">'temperature':</span> <span class="pre">(),</span> <span class="pre">'total_dipole':</span> <span class="pre">(3,),</span> <span class="pre">'total_energy':</span> <span class="pre">(),</span> <span class="pre">'volume':</span> <span class="pre">()}</span></span><a class="headerlink" href="#seamm_md_analysis.h5md.standard_observables" title="Link to this definition">#</a></dt>
 <dd><p>The standard observable names and their shapes; MD steps map their output onto
 these, and analysis steps ask for them.</p>
 </dd></dl>
@@ -2743,6 +2743,23 @@ biases the moments low.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.effective_correlation_functions">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">effective_correlation_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#effective_correlation_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.effective_correlation_functions" title="Link to this definition">#</a></dt>
+<dd><p>The derivative of the Schur complement of the integrals: the correlation
+function of the heat flux less the part carried by the species, with the
+coefficients L_JJ^-1 L_Je taken as fixed at each lag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>C, L</strong> (<em>numpy.ndarray(…, m, 1 + k, 1 + k)</em>) – The correlation functions and their integrals, from
+<a class="reference internal" href="#seamm_md_analysis.transport.flux_correlation_matrices" title="seamm_md_analysis.transport.flux_correlation_matrices"><code class="xref py py-func docutils literal notranslate"><span class="pre">flux_correlation_matrices()</span></code></a> or averages of them.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray(…, m)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.transport.exp_1">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">exp_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#exp_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.exp_1" title="Link to this definition">#</a></dt>
 <dd><p>A single rising exponential, a * (1 - exp(-t / tau)).</p>
@@ -2836,6 +2853,63 @@ if any value is zero or not finite, the fit is unweighted.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.flux_correlation_matrices">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">flux_correlation_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#flux_correlation_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.flux_correlation_matrices" title="Link to this definition">#</a></dt>
+<dd><p>The correlation functions of the heat flux and the species’ mass fluxes, and
+their running integrals, for each direction.</p>
+<p>For direction d the series are the heat flux J_d and the mass fluxes of the
+species in the same direction. The correlation functions are symmetrized,
+(&lt;a(t) b(0)&gt; + &lt;b(t) a(0)&gt;) / 2, as the Onsager coefficients of two fluxes odd
+in time are. Being linear in the data, the matrices of several runs can be
+averaged before <a class="reference internal" href="#seamm_md_analysis.transport.schur_complement" title="seamm_md_analysis.transport.schur_complement"><code class="xref py py-func docutils literal notranslate"><span class="pre">schur_complement()</span></code></a> is applied, which is much less noisy
+than the complement of each run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>numpy.ndarray(3, n)</em>) – The x, y and z components of the heat flux.</p></li>
+<li><p><strong>fluxes</strong> (<em>numpy.ndarray(k, 3, n)</em>) – The mass fluxes of k species, with k one less than the number of species.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The number of lags to keep; all of them by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>numpy.ndarray(3, m, 1 + k, 1 + k)</em> – The correlation functions, the heat flux first.</p></li>
+<li><p><em>numpy.ndarray(3, m, 1 + k, 1 + k)</em> – Their running integrals, in units of the sampling interval.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.flux_helfand_matrices">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">flux_helfand_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#flux_helfand_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.flux_helfand_matrices" title="Link to this definition">#</a></dt>
+<dd><p>The Helfand moments of the heat flux and the species’ mass fluxes, for each
+direction.</p>
+<p>The matrix form of <a class="reference internal" href="#seamm_md_analysis.transport.collective_helfand_moments" title="seamm_md_analysis.transport.collective_helfand_moments"><code class="xref py py-func docutils literal notranslate"><span class="pre">collective_helfand_moments()</span></code></a>: for direction d,
+&lt;G_a(k) G_b(k)&gt; for the integrals G of the heat flux J_d and of the mass fluxes
+of the species in the same direction. Like
+<a class="reference internal" href="#seamm_md_analysis.transport.flux_correlation_matrices" title="seamm_md_analysis.transport.flux_correlation_matrices"><code class="xref py py-func docutils literal notranslate"><span class="pre">flux_correlation_matrices()</span></code></a>, the matrices of several runs can be
+averaged before <a class="reference internal" href="#seamm_md_analysis.transport.schur_complement" title="seamm_md_analysis.transport.schur_complement"><code class="xref py py-func docutils literal notranslate"><span class="pre">schur_complement()</span></code></a> is applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>numpy.ndarray(3, n)</em>) – The x, y and z components of the heat flux.</p></li>
+<li><p><strong>fluxes</strong> (<em>numpy.ndarray(k, 3, n)</em>) – The mass fluxes of k species, with k one less than the number of species.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The number of lags; by default min(n // 20, 10000).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Helfand moments, in units of the sampling interval squared, the heat
+flux first.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray(3, m, 1 + k, 1 + k)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.transport.helfand_slope">
 <span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">helfand_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#helfand_slope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.helfand_slope" title="Link to this definition">#</a></dt>
 <dd><p>The local slope of a Helfand moment, by central differences.</p>
@@ -2877,6 +2951,104 @@ a backward difference at the last point.</p></li>
 <dd class="field-even"><p><ul class="simple">
 <li><p><em>[numpy.ndarray(n, 3 or 4)]</em> – The MSD of each species.</p></li>
 <li><p><em>[numpy.ndarray(n, 3 or 4)]</em> – The standard deviation over the molecules.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.multicomponent_correlation_functions">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">multicomponent_correlation_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#multicomponent_correlation_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.multicomponent_correlation_functions" title="Link to this definition">#</a></dt>
+<dd><p>The Green–Kubo input for the heat flux of a mixture.</p>
+<p>In a mixture the heat flux is correlated with the interdiffusion of the
+species, and the Green–Kubo integral of its autocorrelation function gives too
+large a thermal conductivity. The thermal conductivity comes instead from the
+Schur complement of the matrix of Onsager coefficients (Bertossa, Grasselli,
+Ercole and Baroni, Phys. Rev. Lett. 122, 255901 (2019)):</p>
+<div class="math notranslate nohighlight">
+\[\kappa \propto L_{ee} - L_{eJ} L_{JJ}^{-1} L_{Je}, \qquad
+L_{ab}(t) = \int_0^t \langle a(\tau) b(0) \rangle \, d\tau\]</div>
+<p>with e the heat flux and J the mass fluxes of all the species but one (the
+last is fixed by the total momentum, which is zero). Their scale cancels, so
+any units, or the momenta of the species, will do. The complement is taken for
+each lag and each direction, coupling the fluxes in the same direction, as
+for an isotropic fluid.</p>
+<p>This is for one run. The complement of a short run is noisy, since L_JJ is
+small and poorly known; for several runs or blocks, average their
+<a class="reference internal" href="#seamm_md_analysis.transport.flux_correlation_matrices" title="seamm_md_analysis.transport.flux_correlation_matrices"><code class="xref py py-func docutils literal notranslate"><span class="pre">flux_correlation_matrices()</span></code></a> and take the complement of the average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>numpy.ndarray(3, n)</em>) – The x, y and z components of the heat flux.</p></li>
+<li><p><strong>fluxes</strong> (<em>numpy.ndarray(k, 3, n)</em>) – The mass fluxes of k species, with k one less than the number of species.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The number of lags to keep; all of them by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>numpy.ndarray(6, m)</em> – The correlation functions, in the order of
+<a class="reference internal" href="#seamm_md_analysis.correlate.TENSOR_COMPONENTS" title="seamm_md_analysis.correlate.TENSOR_COMPONENTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">seamm_md_analysis.correlate.TENSOR_COMPONENTS</span></code></a>. The diagonal ones
+are the derivatives of the corrected integrals
+(<a class="reference internal" href="#seamm_md_analysis.transport.effective_correlation_functions" title="seamm_md_analysis.transport.effective_correlation_functions"><code class="xref py py-func docutils literal notranslate"><span class="pre">effective_correlation_functions()</span></code></a>); the off-diagonal ones are
+those of the heat flux alone, which are zero either way for an isotropic
+system.</p></li>
+<li><p><em>numpy.ndarray(6, m)</em> – Their running integrals, in units of the sampling interval.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.multicomponent_helfand_moments">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">multicomponent_helfand_moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#multicomponent_helfand_moments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.multicomponent_helfand_moments" title="Link to this definition">#</a></dt>
+<dd><p>The Helfand moments of the heat flux of a mixture.</p>
+<p>The Helfand-moment form of <a class="reference internal" href="#seamm_md_analysis.transport.multicomponent_correlation_functions" title="seamm_md_analysis.transport.multicomponent_correlation_functions"><code class="xref py py-func docutils literal notranslate"><span class="pre">multicomponent_correlation_functions()</span></code></a>: the
+Schur complement, for each lag and direction, of the matrix of Helfand moments
+of the heat flux and the mass fluxes of all the species but one. At long times
+the moments grow as twice the time times the Onsager coefficients, so the
+slope of the complement gives the thermal conductivity of the mixture. As
+there, for several runs average their <a class="reference internal" href="#seamm_md_analysis.transport.flux_helfand_matrices" title="seamm_md_analysis.transport.flux_helfand_matrices"><code class="xref py py-func docutils literal notranslate"><span class="pre">flux_helfand_matrices()</span></code></a> and take
+the complement of the average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>numpy.ndarray(3, n)</em>) – The x, y and z components of the heat flux.</p></li>
+<li><p><strong>fluxes</strong> (<em>numpy.ndarray(k, 3, n)</em>) – The mass fluxes of k species, with k one less than the number of species.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The number of lags; by default min(n // 20, 10000).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Helfand moments, in units of the sampling interval squared, in the
+order of <a class="reference internal" href="#seamm_md_analysis.correlate.TENSOR_COMPONENTS" title="seamm_md_analysis.correlate.TENSOR_COMPONENTS"><code class="xref py py-data docutils literal notranslate"><span class="pre">seamm_md_analysis.correlate.TENSOR_COMPONENTS</span></code></a>. The
+off-diagonal ones are those of the heat flux alone, as from
+<a class="reference internal" href="#seamm_md_analysis.transport.collective_helfand_moments" title="seamm_md_analysis.transport.collective_helfand_moments"><code class="xref py py-func docutils literal notranslate"><span class="pre">collective_helfand_moments()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray(6, m)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="seamm_md_analysis.transport.schur_complement">
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.transport.</span></span><span class="sig-name descname"><span class="pre">schur_complement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/transport.html#schur_complement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.transport.schur_complement" title="Link to this definition">#</a></dt>
+<dd><p>L_ee - L_eJ L_JJ^-1 L_Je for each lag: the thermal conductivity of a mixture.</p>
+<p>The matrices are of the Green-Kubo integrals or Helfand moments of the heat
+flux e, first, and the mass fluxes J of all the species but one (see
+<a class="reference internal" href="#seamm_md_analysis.transport.multicomponent_correlation_functions" title="seamm_md_analysis.transport.multicomponent_correlation_functions"><code class="xref py py-func docutils literal notranslate"><span class="pre">multicomponent_correlation_functions()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>numpy.ndarray(…, m, 1 + k, 1 + k)</em>) – The matrices for each lag, with the heat flux first.</p></li>
+<li><p><strong>coefficients</strong> (<em>bool = False</em>) – Also return the coefficients L_JJ^-1 L_Je.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>numpy.ndarray(…, m)</em> – The Schur complement; L_ee at lags where L_JJ is singular, such as lag 0.</p></li>
+<li><p><em>numpy.ndarray(…, m, k)</em> – The coefficients, if asked for; zero where L_JJ is singular.</p></li>
 </ul>
 </p>
 </dd>
@@ -3375,13 +3547,19 @@ output.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.axb"><code class="docutils literal notranslate"><span class="pre">axb()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.collective_helfand_moments"><code class="docutils literal notranslate"><span class="pre">collective_helfand_moments()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.component_helfand_moments"><code class="docutils literal notranslate"><span class="pre">component_helfand_moments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.effective_correlation_functions"><code class="docutils literal notranslate"><span class="pre">effective_correlation_functions()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.exp_1"><code class="docutils literal notranslate"><span class="pre">exp_1()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.exp_2"><code class="docutils literal notranslate"><span class="pre">exp_2()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.fit_green_kubo_integral"><code class="docutils literal notranslate"><span class="pre">fit_green_kubo_integral()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.fit_helfand_moment"><code class="docutils literal notranslate"><span class="pre">fit_helfand_moment()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.fit_slope"><code class="docutils literal notranslate"><span class="pre">fit_slope()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.flux_correlation_matrices"><code class="docutils literal notranslate"><span class="pre">flux_correlation_matrices()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.flux_helfand_matrices"><code class="docutils literal notranslate"><span class="pre">flux_helfand_matrices()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.helfand_slope"><code class="docutils literal notranslate"><span class="pre">helfand_slope()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.msd_by_species"><code class="docutils literal notranslate"><span class="pre">msd_by_species()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.multicomponent_correlation_functions"><code class="docutils literal notranslate"><span class="pre">multicomponent_correlation_functions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.multicomponent_helfand_moments"><code class="docutils literal notranslate"><span class="pre">multicomponent_helfand_moments()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.schur_complement"><code class="docutils literal notranslate"><span class="pre">schur_complement()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.shear_stress_components"><code class="docutils literal notranslate"><span class="pre">shear_stress_components()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.species_helfand_moments"><code class="docutils literal notranslate"><span class="pre">species_helfand_moments()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.transport.squared_displacement_sums"><code class="docutils literal notranslate"><span class="pre">squared_displacement_sums()</span></code></a></li>

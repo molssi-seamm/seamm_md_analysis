@@ -136,6 +136,13 @@ shapes.
      - 3
      - ``W m-2``
      - Periodic systems only.
+   * - ``species_mass_flux``
+     - k × 3
+     - the code's mass × velocity
+     - The total momentum of the molecules of each of the k species of a mixture,
+       sampled with the heat flux, for its thermal conductivity. The attribute
+       ``species`` of the value lists the species (canonical SMILES), the one with
+       the most atoms first. Periodic systems only.
    * - ``total_dipole``
      - 3
      - ``e Angstrom``
