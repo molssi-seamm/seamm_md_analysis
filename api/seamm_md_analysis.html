@@ -598,20 +598,25 @@ molecules does not depend on the origin.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="seamm_md_analysis.electric.classify_molecules">
-<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">classify_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#classify_molecules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.classify_molecules" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">seamm_md_analysis.electric.</span></span><span class="sig-name descname"><span class="pre">classify_molecules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">charges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/electric.html#classify_molecules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.electric.classify_molecules" title="Link to this definition">#</a></dt>
 <dd><p>Sort the molecules into neutral ones, ions, and others by their total charge.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>charges</strong> (<em>array_like</em>) – The charge of each atom, e.</p></li>
 <li><p><strong>molecules</strong> (<em>[[int]]</em>) – The atoms of each molecule.</p></li>
-<li><p><strong>tolerance</strong> (<em>float</em>) – How far from an integer a total charge may be.</p></li>
+<li><p><strong>tolerance</strong> (<em>float</em>) – How far from an integer a total charge may be, in units of the formal
+charge.</p></li>
+<li><p><strong>scale</strong> (<em>float</em>) – The factor the charges of the ions were scaled by in the MD, as in the
+scaled-charge models of electrolytes (the parameter <code class="docutils literal notranslate"><span class="pre">ion_charge_scale</span></code>
+of md.h5md): an ion’s total charge is then <code class="docutils literal notranslate"><span class="pre">scale</span></code> times its formal
+charge.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">neutral</span></code>, <code class="docutils literal notranslate"><span class="pre">ions</span></code> and <code class="docutils literal notranslate"><span class="pre">other</span></code>: lists of molecule indices;
-<code class="docutils literal notranslate"><span class="pre">charge</span></code>: the total charge of each molecule; <code class="docutils literal notranslate"><span class="pre">z</span></code>: the nearest
-integer charge of each.</p>
+<code class="docutils literal notranslate"><span class="pre">charge</span></code>: the total charge of each molecule; <code class="docutils literal notranslate"><span class="pre">z</span></code>: the formal charge of
+each, the nearest integer to its charge divided by <code class="docutils literal notranslate"><span class="pre">scale</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
@@ -953,6 +958,12 @@ repeated at the boundary between segments is used once.</p>
 <dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.ids">
 <span class="sig-name descname"><span class="pre">ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/seamm_md_analysis/io.html#MDData.ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#seamm_md_analysis.io.MDData.ids" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.ion_charge_scale">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ion_charge_scale</span></span><a class="headerlink" href="#seamm_md_analysis.io.MDData.ion_charge_scale" title="Link to this definition">#</a></dt>
+<dd><p>The factor the charges of the ions were scaled by, 1 if they were not.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="seamm_md_analysis.io.MDData.iter_frames">
@@ -3344,6 +3355,7 @@ output.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.has_observable"><code class="docutils literal notranslate"><span class="pre">MDData.has_observable()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.has_particles"><code class="docutils literal notranslate"><span class="pre">MDData.has_particles()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.ids"><code class="docutils literal notranslate"><span class="pre">MDData.ids()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.ion_charge_scale"><code class="docutils literal notranslate"><span class="pre">MDData.ion_charge_scale</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.iter_frames"><code class="docutils literal notranslate"><span class="pre">MDData.iter_frames()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.masses"><code class="docutils literal notranslate"><span class="pre">MDData.masses()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#seamm_md_analysis.io.MDData.n_frames"><code class="docutils literal notranslate"><span class="pre">MDData.n_frames()</span></code></a></li>

@@ -406,7 +406,7 @@
 <span class="c1"># ----------------------------------------------------------------------</span>
 <div class="viewcode-block" id="classify_molecules">
 <a class="viewcode-back" href="../../api/seamm_md_analysis.html#seamm_md_analysis.electric.classify_molecules">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">classify_molecules</span><span class="p">(</span><span class="n">charges</span><span class="p">,</span> <span class="n">molecules</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">classify_molecules</span><span class="p">(</span><span class="n">charges</span><span class="p">,</span> <span class="n">molecules</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Sort the molecules into neutral ones, ions, and others by their total charge.</span>
 
 <span class="sd">    Parameters</span>
@@ -416,19 +416,26 @@
 <span class="sd">    molecules : [[int]]</span>
 <span class="sd">        The atoms of each molecule.</span>
 <span class="sd">    tolerance : float</span>
-<span class="sd">        How far from an integer a total charge may be.</span>
+<span class="sd">        How far from an integer a total charge may be, in units of the formal</span>
+<span class="sd">        charge.</span>
+<span class="sd">    scale : float</span>
+<span class="sd">        The factor the charges of the ions were scaled by in the MD, as in the</span>
+<span class="sd">        scaled-charge models of electrolytes (the parameter ``ion_charge_scale``</span>
+<span class="sd">        of md.h5md): an ion's total charge is then ``scale`` times its formal</span>
+<span class="sd">        charge.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">        ``neutral``, ``ions`` and ``other``: lists of molecule indices;</span>
-<span class="sd">        ``charge``: the total charge of each molecule; ``z``: the nearest</span>
-<span class="sd">        integer charge of each.</span>
+<span class="sd">        ``charge``: the total charge of each molecule; ``z``: the formal charge of</span>
+<span class="sd">        each, the nearest integer to its charge divided by ``scale``.</span>
 <span class="sd">    """</span>
     <span class="n">charges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">charges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">charges</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">])</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">total</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">integral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">total</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span>
+    <span class="n">scaled</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">scaled</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">scaled</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"neutral"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"ions"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"other"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"charge"</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span> <span class="s2">"z"</span><span class="p">:</span> <span class="n">z</span><span class="p">}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">ok</span><span class="p">,</span> <span class="n">zi</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">integral</span><span class="p">,</span> <span class="n">z</span><span class="p">)):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>

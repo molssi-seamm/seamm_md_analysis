@@ -78,8 +78,10 @@ The layout
      - if defined
    * - ``parameters/``
      - Attributes: the ensemble, temperature, pressure, timestep, thermostat and
-       barostat with their damping, and the number of steps. Nested dicts are
-       groups.
+       barostat with their damping, and the number of steps; ``ion_charge_scale``,
+       the factor the charges of the ions were scaled by (1 if they were not,
+       ``MDData.ion_charge_scale``), which :func:`classify_molecules` needs to
+       recognize the ions. Nested dicts are groups.
      - yes
    * - ``parameters/seamm/``
      - Provenance: ``layout_version`` (now 1), ``written`` (UTC), ``periodic``, the
