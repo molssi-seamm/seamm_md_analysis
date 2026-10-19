@@ -1,6 +1,13 @@
 =======
 History
 =======
+2026.10.19 -- Scaled ion charges
+    * classify_molecules takes the factor the charges of the ions were scaled by in the
+      MD, as in the scaled-charge models of electrolytes (e.g. 0.8), so that the ions
+      are still recognized, with their formal charges. md.h5md records the factor as
+      the parameter ion_charge_scale, and MDData.ion_charge_scale reads it (1 if it was
+      not recorded).
+
 2026.10.18.1 -- The thermal conductivity of mixtures
     * New functions for the heat flux of a mixture, whose interdiffusion must be
       removed from the thermal conductivity using the mass fluxes of all the species

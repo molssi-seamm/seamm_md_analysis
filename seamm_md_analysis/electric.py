@@ -38,7 +38,7 @@ KB = 1.380649e-23
 # ----------------------------------------------------------------------
 # Molecules and charges
 # ----------------------------------------------------------------------
-def classify_molecules(charges, molecules, tolerance=0.05):
+def classify_molecules(charges, molecules, tolerance=0.05, scale=1.0):
     """Sort the molecules into neutral ones, ions, and others by their total charge.
 
     Parameters
@@ -48,19 +48,26 @@ def classify_molecules(charges, molecules, tolerance=0.05):
     molecules : [[int]]
         The atoms of each molecule.
     tolerance : float
-        How far from an integer a total charge may be.
+        How far from an integer a total charge may be, in units of the formal
+        charge.
+    scale : float
+        The factor the charges of the ions were scaled by in the MD, as in the
+        scaled-charge models of electrolytes (the parameter ``ion_charge_scale``
+        of md.h5md): an ion's total charge is then ``scale`` times its formal
+        charge.
 
     Returns
     -------
     dict
         ``neutral``, ``ions`` and ``other``: lists of molecule indices;
-        ``charge``: the total charge of each molecule; ``z``: the nearest
-        integer charge of each.
+        ``charge``: the total charge of each molecule; ``z``: the formal charge of
+        each, the nearest integer to its charge divided by ``scale``.
     """
     charges = np.asarray(charges, dtype=float)
     total = np.array([charges[list(m)].sum() for m in molecules])
-    z = np.rint(total).astype(int)
-    integral = np.abs(total - z) <= tolerance
+    scaled = total / float(scale)
+    z = np.rint(scaled).astype(int)
+    integral = np.abs(scaled - z) <= tolerance
     result = {"neutral": [], "ions": [], "other": [], "charge": total, "z": z}
     for i, (ok, zi) in enumerate(zip(integral, z)):
         if not ok:
