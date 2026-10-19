@@ -198,6 +198,279 @@ def collective_helfand_moments(J, m=None):
     return M / n_origins
 
 
+def _species_fluxes(J, fluxes):
+    """Check the heat flux and species fluxes; return them as arrays.
+
+    Returns
+    -------
+    numpy.ndarray(3, n)
+        The heat flux.
+    numpy.ndarray(k, 3, n)
+        The species fluxes.
+    """
+    J = np.asarray(J, dtype=float)
+    fluxes = np.asarray(fluxes, dtype=float)
+    if fluxes.ndim == 2:
+        fluxes = fluxes[np.newaxis]
+    if J.ndim != 2 or J.shape[0] != 3:
+        raise ValueError(f"The heat flux must be 3 x n, not {J.shape}")
+    if fluxes.ndim != 3 or fluxes.shape[1:] != J.shape:
+        raise ValueError(
+            f"The species fluxes must be k x 3 x {J.shape[1]}, not {fluxes.shape}"
+        )
+    return J, fluxes
+
+
+def schur_complement(L, coefficients=False):
+    """L_ee - L_eJ L_JJ^-1 L_Je for each lag: the thermal conductivity of a mixture.
+
+    The matrices are of the Green-Kubo integrals or Helfand moments of the heat
+    flux e, first, and the mass fluxes J of all the species but one (see
+    :func:`multicomponent_correlation_functions`).
+
+    Parameters
+    ----------
+    L : numpy.ndarray(..., m, 1 + k, 1 + k)
+        The matrices for each lag, with the heat flux first.
+    coefficients : bool = False
+        Also return the coefficients L_JJ^-1 L_Je.
+
+    Returns
+    -------
+    numpy.ndarray(..., m)
+        The Schur complement; L_ee at lags where L_JJ is singular, such as lag 0.
+    numpy.ndarray(..., m, k)
+        The coefficients, if asked for; zero where L_JJ is singular.
+    """
+    L = np.asarray(L, dtype=float)
+    shape = L.shape[:-2]
+    p = L.shape[-1]
+    L = L.reshape(-1, p, p)
+    result = L[:, 0, 0].copy()
+    a = np.zeros((L.shape[0], p - 1))
+    LJJ = L[:, 1:, 1:]
+    LJe = L[:, 1:, 0]
+    usable = np.abs(np.linalg.det(LJJ)) > 0
+    if np.any(usable):
+        try:
+            x = np.linalg.solve(LJJ[usable], LJe[usable][..., np.newaxis])[..., 0]
+        except np.linalg.LinAlgError:
+            x = np.einsum("mij,mj->mi", np.linalg.pinv(LJJ[usable]), LJe[usable])
+        a[usable] = x
+        result[usable] -= np.einsum("mi,mi->m", LJe[usable], x)
+    result = result.reshape(shape)
+    if coefficients:
+        return result, a.reshape(shape + (p - 1,))
+    return result
+
+
+def flux_correlation_matrices(J, fluxes, m=None):
+    """The correlation functions of the heat flux and the species' mass fluxes, and
+    their running integrals, for each direction.
+
+    For direction d the series are the heat flux J_d and the mass fluxes of the
+    species in the same direction. The correlation functions are symmetrized,
+    (<a(t) b(0)> + <b(t) a(0)>) / 2, as the Onsager coefficients of two fluxes odd
+    in time are. Being linear in the data, the matrices of several runs can be
+    averaged before :func:`schur_complement` is applied, which is much less noisy
+    than the complement of each run.
+
+    Parameters
+    ----------
+    J : numpy.ndarray(3, n)
+        The x, y and z components of the heat flux.
+    fluxes : numpy.ndarray(k, 3, n)
+        The mass fluxes of k species, with k one less than the number of species.
+    m : int
+        The number of lags to keep; all of them by default.
+
+    Returns
+    -------
+    numpy.ndarray(3, m, 1 + k, 1 + k)
+        The correlation functions, the heat flux first.
+    numpy.ndarray(3, m, 1 + k, 1 + k)
+        Their running integrals, in units of the sampling interval.
+    """
+    J, fluxes = _species_fluxes(J, fluxes)
+    n = J.shape[1]
+    if m is None:
+        m = n
+    p = 1 + fluxes.shape[0]
+    length = next_fast_len(2 * n - 1, real=True)
+    adjust = np.arange(n, n - m, -1)[:, np.newaxis]
+    C = np.empty((3, m, p, p))
+    for d in range(3):
+        X = np.concatenate([J[d : d + 1], fluxes[:, d]])
+        X = X - X.mean(axis=1, keepdims=True)
+        F = rfft(X, length, axis=1)
+        for a in range(p):
+            # <x_a(t + k) x_b(t)> for all b at once
+            C[d, :, a, :] = irfft(F[a] * np.conj(F), length, axis=1)[:, :m].T / adjust
+    C = 0.5 * (C + C.transpose(0, 1, 3, 2))
+    return C, cumulative_trapezoid(C, axis=1, initial=0.0)
+
+
+def flux_helfand_matrices(J, fluxes, m=None):
+    """The Helfand moments of the heat flux and the species' mass fluxes, for each
+    direction.
+
+    The matrix form of :func:`collective_helfand_moments`: for direction d,
+    <G_a(k) G_b(k)> for the integrals G of the heat flux J_d and of the mass fluxes
+    of the species in the same direction. Like
+    :func:`flux_correlation_matrices`, the matrices of several runs can be
+    averaged before :func:`schur_complement` is applied.
+
+    Parameters
+    ----------
+    J : numpy.ndarray(3, n)
+        The x, y and z components of the heat flux.
+    fluxes : numpy.ndarray(k, 3, n)
+        The mass fluxes of k species, with k one less than the number of species.
+    m : int
+        The number of lags; by default min(n // 20, 10000).
+
+    Returns
+    -------
+    numpy.ndarray(3, m, 1 + k, 1 + k)
+        The Helfand moments, in units of the sampling interval squared, the heat
+        flux first.
+    """
+    J, fluxes = _species_fluxes(J, fluxes)
+    n = J.shape[1]
+    if m is None:
+        m = min(n // 20, 10000)
+    n_origins = n - m
+    p = 1 + fluxes.shape[0]
+    ia, ib = np.triu_indices(p)
+    M = np.empty((3, m, p, p))
+    for d in range(3):
+        X = np.concatenate([J[d : d + 1], fluxes[:, d]])
+        G = cumulative_trapezoid(X, axis=1, initial=0.0)
+        S = windowed_displacement_products(G[ia].T, G[ib].T, m, n_origins)
+        M[d][:, ia, ib] = S
+        M[d][:, ib, ia] = S
+    return M / n_origins
+
+
+def effective_correlation_functions(C, L):
+    """The derivative of the Schur complement of the integrals: the correlation
+    function of the heat flux less the part carried by the species, with the
+    coefficients L_JJ^-1 L_Je taken as fixed at each lag.
+
+    Parameters
+    ----------
+    C, L : numpy.ndarray(..., m, 1 + k, 1 + k)
+        The correlation functions and their integrals, from
+        :func:`flux_correlation_matrices` or averages of them.
+
+    Returns
+    -------
+    numpy.ndarray(..., m)
+    """
+    _, a = schur_complement(L, coefficients=True)
+    # At lag 0 the integrals vanish; use the coefficients of lag 1
+    if a.shape[-2] > 1:
+        a[..., 0, :] = a[..., 1, :]
+    return (
+        C[..., 0, 0]
+        - 2 * np.einsum("...i,...i->...", a, C[..., 1:, 0])
+        + np.einsum("...i,...ij,...j->...", a, C[..., 1:, 1:], a)
+    )
+
+
+def multicomponent_correlation_functions(J, fluxes, m=None):
+    """The Green–Kubo input for the heat flux of a mixture.
+
+    In a mixture the heat flux is correlated with the interdiffusion of the
+    species, and the Green–Kubo integral of its autocorrelation function gives too
+    large a thermal conductivity. The thermal conductivity comes instead from the
+    Schur complement of the matrix of Onsager coefficients (Bertossa, Grasselli,
+    Ercole and Baroni, Phys. Rev. Lett. 122, 255901 (2019)):
+
+    .. math::
+
+        \\kappa \\propto L_{ee} - L_{eJ} L_{JJ}^{-1} L_{Je}, \\qquad
+        L_{ab}(t) = \\int_0^t \\langle a(\\tau) b(0) \\rangle \\, d\\tau
+
+    with e the heat flux and J the mass fluxes of all the species but one (the
+    last is fixed by the total momentum, which is zero). Their scale cancels, so
+    any units, or the momenta of the species, will do. The complement is taken for
+    each lag and each direction, coupling the fluxes in the same direction, as
+    for an isotropic fluid.
+
+    This is for one run. The complement of a short run is noisy, since L_JJ is
+    small and poorly known; for several runs or blocks, average their
+    :func:`flux_correlation_matrices` and take the complement of the average.
+
+    Parameters
+    ----------
+    J : numpy.ndarray(3, n)
+        The x, y and z components of the heat flux.
+    fluxes : numpy.ndarray(k, 3, n)
+        The mass fluxes of k species, with k one less than the number of species.
+    m : int
+        The number of lags to keep; all of them by default.
+
+    Returns
+    -------
+    numpy.ndarray(6, m)
+        The correlation functions, in the order of
+        :data:`seamm_md_analysis.correlate.TENSOR_COMPONENTS`. The diagonal ones
+        are the derivatives of the corrected integrals
+        (:func:`effective_correlation_functions`); the off-diagonal ones are
+        those of the heat flux alone, which are zero either way for an isotropic
+        system.
+    numpy.ndarray(6, m)
+        Their running integrals, in units of the sampling interval.
+    """
+    from .correlate import tensor_correlation_functions
+
+    J, fluxes = _species_fluxes(J, fluxes)
+    if m is None:
+        m = J.shape[1]
+    ccf, integral = tensor_correlation_functions(J, m=m)
+    C, L = flux_correlation_matrices(J, fluxes, m=m)
+    integral[:3] = schur_complement(L)
+    ccf[:3] = effective_correlation_functions(C, L)
+    return ccf, integral
+
+
+def multicomponent_helfand_moments(J, fluxes, m=None):
+    """The Helfand moments of the heat flux of a mixture.
+
+    The Helfand-moment form of :func:`multicomponent_correlation_functions`: the
+    Schur complement, for each lag and direction, of the matrix of Helfand moments
+    of the heat flux and the mass fluxes of all the species but one. At long times
+    the moments grow as twice the time times the Onsager coefficients, so the
+    slope of the complement gives the thermal conductivity of the mixture. As
+    there, for several runs average their :func:`flux_helfand_matrices` and take
+    the complement of the average.
+
+    Parameters
+    ----------
+    J : numpy.ndarray(3, n)
+        The x, y and z components of the heat flux.
+    fluxes : numpy.ndarray(k, 3, n)
+        The mass fluxes of k species, with k one less than the number of species.
+    m : int
+        The number of lags; by default min(n // 20, 10000).
+
+    Returns
+    -------
+    numpy.ndarray(6, m)
+        The Helfand moments, in units of the sampling interval squared, in the
+        order of :data:`seamm_md_analysis.correlate.TENSOR_COMPONENTS`. The
+        off-diagonal ones are those of the heat flux alone, as from
+        :func:`collective_helfand_moments`.
+    """
+    J, fluxes = _species_fluxes(J, fluxes)
+    if m is None:
+        m = min(J.shape[1] // 20, 10000)
+    M = collective_helfand_moments(J, m=m)
+    M[:3] = schur_complement(flux_helfand_matrices(J, fluxes, m=m))
+    return M
+
+
 def component_helfand_moments(X, m=None, demean=True):
     """The Helfand moment of each of several independent series.
 

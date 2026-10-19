@@ -1,6 +1,20 @@
 =======
 History
 =======
+2026.10.18.1 -- The thermal conductivity of mixtures
+    * New functions for the heat flux of a mixture, whose interdiffusion must be
+      removed from the thermal conductivity using the mass fluxes of all the species
+      but one (Bertossa, Grasselli, Ercole and Baroni, Phys. Rev. Lett. 122, 255901
+      (2019)): flux_correlation_matrices and flux_helfand_matrices give the matrices of
+      the Green-Kubo integrals and Helfand moments of the heat flux and the species
+      fluxes, which can be averaged over runs, and schur_complement gives the thermal
+      conductivity from them. multicomponent_correlation_functions and
+      multicomponent_helfand_moments do both for one run. In a mixture the heat flux
+      alone gives too large a thermal conductivity: for 1 m NaCl in water about 1.15
+      W/m/K instead of 0.81.
+    * md.h5md has a new standard observable, species_mass_flux, the momentum of each
+      species sampled with the heat flux.
+
 2026.10.18 -- Bugfix: the Helfand moments of long runs used too much memory
     * The velocity route of the diffusion coefficient (the single-molecule Helfand
       moments) worked on every molecule of a run at once, needing about eight times the

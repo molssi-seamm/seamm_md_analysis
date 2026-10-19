@@ -36,6 +36,7 @@ standard_observables = {
     "volume": (),
     "density": (),
     "heat_flux": (3,),
+    "species_mass_flux": (None, 3),
     "total_dipole": (3,),
     "hbond_count": (),
     "hbond_energy": (),
